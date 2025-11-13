@@ -24,13 +24,13 @@ def home(request):
     # Buscar vagas de voluntariado abertas
     vagas_destaque = VagaVoluntariado.objects.filter(status='aberta').order_by('-criada_em')[:3]
     
-    # ✅ Buscar notícias publicadas (máximo 3 para a home)
+    # Buscar notícias publicadas (máximo 3 para a home)
     noticias = Noticia.objects.filter(publicado=True).order_by('-destaque', '-data_publicacao')[:3]
     
     context = {
         'workshops_destaque': workshops_destaque,
         'vagas_destaque': vagas_destaque,
-        'noticias': noticias,  # ✅ Adicionar notícias ao contexto
+        'noticias': noticias,
     }
     return render(request, 'home/home.html', context)
 
@@ -200,3 +200,24 @@ def newsletter_inscricao(request):
         return redirect(request.META.get('HTTP_REFERER', 'home'))
     
     return redirect('home')
+
+
+# ========================================
+# ✅ NOVA VIEW: DETALHES DA NOTÍCIA
+# ========================================
+
+def noticia_detalhe(request, id):
+    """View para exibir os detalhes completos de uma notícia"""
+    noticia = get_object_or_404(Noticia, id=id, publicado=True)
+    
+    # Buscar notícias relacionadas (mesma categoria, excluindo a atual)
+    noticias_relacionadas = Noticia.objects.filter(
+        categoria=noticia.categoria,
+        publicado=True
+    ).exclude(id=noticia.id).order_by('-data_publicacao')[:3]
+    
+    context = {
+        'noticia': noticia,
+        'noticias_relacionadas': noticias_relacionadas,
+    }
+    return render(request, 'home/noticia_detalhe.html', context)

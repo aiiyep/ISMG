@@ -12,11 +12,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/4d8c8e1f2b.js" crossorigin="anonymous"></script>
-    <style>
+        <style>
         /* Estilos do Navbar */
         body {
             margin: 0;
-            padding-top: 70px; /* Compensa o navbar fixo */
+            padding-top: 0;
         }
 
         .navbar {
@@ -73,14 +73,12 @@
             transform: rotate(180deg);
         }
 
+        /* ✅ CORRIGIDO: Dropdown com padding-top invisível para preencher o gap */
         .dropdown-content {
-            display: flex;
+            display: none; /* ✅ Mudado de flex para none inicialmente */
             opacity: 0;
-            max-height: 0;
-            overflow: hidden;
-            pointer-events: none;
             position: absolute;
-            top: 40px;
+            top: 100%; /* ✅ Cola direto abaixo do item */
             left: 0;
             background: #fff;
             border-radius: 8px;
@@ -89,13 +87,39 @@
             padding: 10px 0;
             flex-direction: column;
             gap: 5px;
-            transition: opacity 0.4s ease-out, max-height 0.4s ease-out;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            margin-top: 0; /* ✅ Remove margem */
         }
 
+        /* ✅ CORRIGIDO: Mantém dropdown visível quando hover no li */
         .navbar .menu li:hover .dropdown-content {
+            display: flex; /* ✅ Mostra o dropdown */
             opacity: 1;
-            max-height: 500px;
             pointer-events: auto;
+            animation: fadeInDown 0.3s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ✅ ADICIONAR: Área invisível para manter hover */
+        .navbar .menu li::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 10px; /* ✅ Ponte invisível de 10px */
+            background: transparent;
         }
 
         .dropdown-content .item {
@@ -116,6 +140,7 @@
             padding: 0;
             width: 100%;
             color: inherit;
+            text-decoration: none; /* ✅ Remove sublinhado */
         }
 
         .dropdown-content .item > a > div {
@@ -168,6 +193,11 @@
             color: #ff5722;
         }
 
+        /* Compensar navbar na hero-section */
+        .hero-section {
+            padding-top: 100px;
+        }
+
         /* Responsive Navbar */
         @media (max-width: 768px) {
             .navbar {
@@ -176,6 +206,10 @@
             
             .navbar .menu {
                 display: none;
+            }
+
+            .hero-section {
+                padding-top: 90px;
             }
         }
     </style>
@@ -486,7 +520,7 @@
                             <p class="news-excerpt">
                                 {{ noticia.conteudo|truncatewords:30 }}
                             </p>
-                            <a href="#" class="news-read-more">
+                            <a href="{% url 'noticia_detalhe' noticia.id %}" class="news-read-more">
                                 Ler mais <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
