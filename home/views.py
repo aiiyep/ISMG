@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter
+from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
 
 
 def home(request):
@@ -18,15 +18,19 @@ def home(request):
                 messages.info(request, 'Este e-mail já está cadastrado.')
         return redirect('home')
     
-    # Buscar workshops disponíveis (para mostrar na home se quiser)
+    # Buscar workshops disponíveis
     workshops_destaque = Workshop.objects.filter(status='disponivel').order_by('data_inicio')[:3]
     
     # Buscar vagas de voluntariado abertas
     vagas_destaque = VagaVoluntariado.objects.filter(status='aberta').order_by('-criada_em')[:3]
     
+    # ✅ Buscar notícias publicadas (máximo 3 para a home)
+    noticias = Noticia.objects.filter(publicado=True).order_by('-destaque', '-data_publicacao')[:3]
+    
     context = {
         'workshops_destaque': workshops_destaque,
         'vagas_destaque': vagas_destaque,
+        'noticias': noticias,  # ✅ Adicionar notícias ao contexto
     }
     return render(request, 'home/home.html', context)
 
@@ -47,18 +51,15 @@ def workshop_inscricao(request):
         workshop_id = request.POST.get('workshop_id')
         workshop = get_object_or_404(Workshop, id=workshop_id)
         
-        # Verificar se ainda há vagas
         if not workshop.esta_disponivel():
             messages.error(request, 'Desculpe, este workshop não está mais disponível.')
             return redirect('workshops')
         
-        # Verificar se já existe inscrição com este email
         email = request.POST.get('email')
         if InscricaoWorkshop.objects.filter(workshop=workshop, email=email).exists():
             messages.warning(request, 'Você já está inscrito neste workshop.')
             return redirect('workshops')
         
-        # Criar inscrição
         inscricao = InscricaoWorkshop(
             workshop=workshop,
             nome=request.POST.get('nome'),
@@ -70,13 +71,11 @@ def workshop_inscricao(request):
         )
         inscricao.save()
         
-        # Atualizar vagas ocupadas
         workshop.vagas_ocupadas += 1
         if workshop.vagas_ocupadas >= workshop.vagas_totais:
             workshop.status = 'esgotado'
         workshop.save()
         
-        # Enviar email de confirmação (opcional)
         try:
             send_mail(
                 subject=f'Inscrição confirmada - {workshop.titulo}',
@@ -123,25 +122,21 @@ def voluntariado_candidatura(request):
     if request.method == 'POST':
         vaga_id = request.POST.get('vaga_id')
         
-        # Buscar vaga
         try:
             vaga = VagaVoluntariado.objects.get(id=vaga_id)
         except VagaVoluntariado.DoesNotExist:
             messages.error(request, 'Vaga não encontrada.')
             return redirect('voluntariado')
         
-        # Verificar se vaga está aberta
         if not vaga.esta_aberta():
             messages.error(request, 'Desculpe, esta vaga não está mais disponível.')
             return redirect('voluntariado')
         
-        # ✅ VERIFICAR SE JÁ EXISTE CANDIDATURA COM ESTE EMAIL
         email = request.POST.get('email')
         if CandidaturaVoluntariado.objects.filter(vaga=vaga, email=email).exists():
             messages.warning(request, 'Você já se candidatou para esta vaga.')
             return redirect('voluntariado')
         
-        # Criar candidatura como PENDENTE (não aprovada ainda)
         candidatura = CandidaturaVoluntariado(
             vaga=vaga,
             nome=request.POST.get('nome'),
@@ -152,22 +147,18 @@ def voluntariado_candidatura(request):
             experiencia=request.POST.get('experiencia', ''),
             motivacao=request.POST.get('motivacao'),
             disponibilidade=request.POST.get('disponibilidade', ''),
-            status='pendente'  # ✅ Criar como PENDENTE
+            status='pendente'
         )
         candidatura.save()
         
-        # ✅ DECREMENTAR VAGAS DISPONÍVEIS IMEDIATAMENTE
-        # (Quando a candidatura é criada, a vaga já fica reservada)
         vaga.vagas_disponiveis -= 1
         
-        # ✅ VERIFICAR SE ESGOTOU AS VAGAS
         if vaga.vagas_disponiveis <= 0:
             vaga.status = 'pausada'
             vaga.vagas_disponiveis = 0
         
         vaga.save()
         
-        # Enviar email de confirmação
         try:
             send_mail(
                 subject=f'Candidatura recebida - {vaga.titulo}',
@@ -206,7 +197,6 @@ def newsletter_inscricao(request):
             else:
                 messages.info(request, 'Este e-mail já está cadastrado.')
         
-        # Redirecionar para a página anterior
         return redirect(request.META.get('HTTP_REFERER', 'home'))
     
     return redirect('home')

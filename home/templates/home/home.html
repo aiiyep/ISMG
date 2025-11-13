@@ -436,6 +436,72 @@
         </div>
     </section>
 
+    <section class="news-section">
+            <div class="news-container">
+                <div class="section-header">
+                    <h2>Últimas Notícias</h2>
+                    <p>Acompanhe nossas conquistas, eventos e histórias de transformação</p>
+                </div>
+
+                {% if noticias %}
+                <div class="news-grid">
+                    {% for noticia in noticias %}
+                    <article class="news-card">
+                        <div class="news-image">
+                            {% if noticia.imagem %}
+                                <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
+                            {% else %}
+                                <img src="{% static 'home/img/placeholder-news.jpg' %}" alt="{{ noticia.titulo }}">
+                            {% endif %}
+                            <div class="news-category {{ noticia.categoria }}">
+                                {% if noticia.categoria == 'evento' %}
+                                    <i class="fas fa-calendar-alt"></i> Evento
+                                {% elif noticia.categoria == 'projeto' %}
+                                    <i class="fas fa-lightbulb"></i> Projeto
+                                {% elif noticia.categoria == 'conquista' %}
+                                    <i class="fas fa-trophy"></i> Conquista
+                                {% elif noticia.categoria == 'parceria' %}
+                                    <i class="fas fa-handshake"></i> Parceria
+                                {% else %}
+                                    <i class="fas fa-newspaper"></i> Notícia
+                                {% endif %}
+                            </div>
+                            {% if noticia.destaque %}
+                            <div class="news-badge">
+                                <i class="fas fa-star"></i> Destaque
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span class="news-date">
+                                    <i class="far fa-clock"></i> 
+                                    {{ noticia.data_publicacao|date:"d/m/Y" }}
+                                </span>
+                            </div>
+                            <h3 class="news-title">{{ noticia.titulo }}</h3>
+                            {% if noticia.subtitulo %}
+                            <p class="news-subtitle">{{ noticia.subtitulo }}</p>
+                            {% endif %}
+                            <p class="news-excerpt">
+                                {{ noticia.conteudo|truncatewords:30 }}
+                            </p>
+                            <a href="#" class="news-read-more">
+                                Ler mais <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-news">
+                    <i class="far fa-newspaper"></i>
+                    <p>Nenhuma notícia disponível no momento. Volte em breve para conferir nossas atualizações!</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
     <!-- Footer -->
     <footer>
         <div class="newsletter-container">

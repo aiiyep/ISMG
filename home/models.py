@@ -42,11 +42,15 @@ class Workshop(models.Model):
     
     @property
     def vagas_disponiveis(self):
+        if self.vagas_totais is None or self.vagas_ocupadas is None:
+            return 0
         return self.vagas_totais - self.vagas_ocupadas
     
     @property
     def percentual_ocupacao(self):
-        if self.vagas_totais == 0:
+        if self.vagas_totais is None or self.vagas_totais == 0:
+            return 0
+        if self.vagas_ocupadas is None:
             return 0
         return int((self.vagas_ocupadas / self.vagas_totais) * 100)
     
@@ -62,6 +66,12 @@ class InscricaoWorkshop(models.Model):
         ('avancada', 'Avançada'),
     ]
     
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('confirmado', 'Confirmado'),
+        ('recusado', 'Recusado'),
+    ]
+    
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, related_name='inscricoes')
     nome = models.CharField(max_length=200)
     email = models.EmailField()
@@ -70,7 +80,7 @@ class InscricaoWorkshop(models.Model):
     experiencia = models.CharField(max_length=20, choices=EXPERIENCIA_CHOICES)
     motivacao = models.TextField(blank=True)
     inscrito_em = models.DateTimeField(auto_now_add=True)
-    confirmado = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
     
     class Meta:
         verbose_name = 'Inscrição em Workshop'
@@ -146,6 +156,39 @@ class CandidaturaVoluntariado(models.Model):
     
     def __str__(self):
         return f"{self.nome} - {self.vaga.titulo}"
+
+
+# ========================================
+# ✅ NOVO MODEL: NOTÍCIA
+# ========================================
+
+class Noticia(models.Model):
+    CATEGORIA_CHOICES = [
+        ('evento', 'Evento'),
+        ('projeto', 'Projeto'),
+        ('conquista', 'Conquista'),
+        ('parceria', 'Parceria'),
+        ('geral', 'Geral'),
+    ]
+    
+    titulo = models.CharField(max_length=200, verbose_name='Título')
+    subtitulo = models.CharField(max_length=300, blank=True, verbose_name='Subtítulo')
+    conteudo = models.TextField(verbose_name='Conteúdo')
+    imagem = models.ImageField(upload_to='noticias/', verbose_name='Imagem de Capa')
+    categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='geral', verbose_name='Categoria')
+    destaque = models.BooleanField(default=False, verbose_name='Notícia em Destaque', help_text='Notícias em destaque aparecem primeiro')
+    publicado = models.BooleanField(default=True, verbose_name='Publicado')
+    data_publicacao = models.DateTimeField(default=timezone.now, verbose_name='Data de Publicação')
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Notícia'
+        verbose_name_plural = 'Notícias'
+        ordering = ['-destaque', '-data_publicacao']
+    
+    def __str__(self):
+        return self.titulo
 
 
 class Newsletter(models.Model):

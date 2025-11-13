@@ -506,49 +506,7 @@
             </div>
         </section>
 
-        <!-- Why Volunteer Section -->
-        <section class="why-volunteer">
-            <div class="container">
-                <h2 class="section-title">Por que ser voluntário?</h2>
-                <p class="section-subtitle">Descubra como você pode fazer a diferença enquanto desenvolve novas habilidades e amplia sua rede de contatos.</p>
-                
-                <div class="benefits-grid">
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <h3 class="benefit-title">Impacto Real</h3>
-                        <p class="benefit-description">Contribua diretamente para a transformação de vidas e comunidades inteiras.</p>
-                    </div>
-
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3 class="benefit-title">Networking</h3>
-                        <p class="benefit-description">Conheça pessoas inspiradoras e amplie sua rede de contatos profissionais.</p>
-                    </div>
-
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <h3 class="benefit-title">Desenvolvimento</h3>
-                        <p class="benefit-description">Desenvolva novas habilidades e ganhe experiência em projetos sociais.</p>
-                    </div>
-
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <h3 class="benefit-title">Diversidade Cultural</h3>
-                        <p class="benefit-description">Vivencie trocas culturais enriquecedoras com mulheres de diversos países.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Opportunities Section -->
+        <!-- ✅ OPPORTUNITIES SECTION MOVIDA PARA CIMA -->
         <section class="opportunities">
             <div class="container">
                 <h2 class="section-title">Oportunidades de Voluntariado</h2>
@@ -615,6 +573,48 @@
                         <p>No momento não há vagas de voluntariado disponíveis. Volte em breve para conferir novas oportunidades!</p>
                     </div>
                     {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Volunteer Section -->
+        <section class="why-volunteer">
+            <div class="container">
+                <h2 class="section-title">Por que ser voluntário?</h2>
+                <p class="section-subtitle">Descubra como você pode fazer a diferença enquanto desenvolve novas habilidades e amplia sua rede de contatos.</p>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="benefit-title">Impacto Real</h3>
+                        <p class="benefit-description">Contribua diretamente para a transformação de vidas e comunidades inteiras.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="benefit-title">Networking</h3>
+                        <p class="benefit-description">Conheça pessoas inspiradoras e amplie sua rede de contatos profissionais.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="benefit-title">Desenvolvimento</h3>
+                        <p class="benefit-description">Desenvolva novas habilidades e ganhe experiência em projetos sociais.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3 class="benefit-title">Diversidade Cultural</h3>
+                        <p class="benefit-description">Vivencie trocas culturais enriquecedoras com mulheres de diversos países.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -723,7 +723,7 @@
                 document.getElementById('candidaturaModal').classList.remove('active');
             }
 
-            // Close modal when clicking outside
+            // Fechar modal ao clicar fora
             document.getElementById('candidaturaModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeModal();

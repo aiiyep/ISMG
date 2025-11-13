@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter
+from django.db import transaction
+from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
 
 
 @admin.register(Workshop)
@@ -36,8 +37,8 @@ class WorkshopAdmin(admin.ModelAdmin):
 
 @admin.register(InscricaoWorkshop)
 class InscricaoWorkshopAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'email', 'workshop', 'experiencia', 'inscrito_em', 'confirmado']
-    list_filter = ['workshop', 'experiencia', 'confirmado', 'inscrito_em']
+    list_display = ['nome', 'email', 'workshop', 'experiencia', 'status', 'inscrito_em']
+    list_filter = ['workshop', 'experiencia', 'status', 'inscrito_em']
     search_fields = ['nome', 'email', 'telefone']
     date_hierarchy = 'inscrito_em'
     readonly_fields = ['inscrito_em']
@@ -49,22 +50,49 @@ class InscricaoWorkshopAdmin(admin.ModelAdmin):
         ('Workshop', {
             'fields': ('workshop', 'experiencia', 'motivacao')
         }),
-        ('Status', {
-            'fields': ('confirmado', 'inscrito_em')
+        ('Status e Data', {
+            'fields': ('status', 'inscrito_em')
         }),
     )
     
-    actions = ['confirmar_inscricoes', 'cancelar_inscricoes']
+    actions = ['confirmar_inscricoes', 'recusar_inscricoes', 'marcar_pendente']
+    
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+    
+    def delete_model(self, request, obj):
+        super().delete_model(request, obj)
+    
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            self.delete_model(request, obj)
     
     def confirmar_inscricoes(self, request, queryset):
-        updated = queryset.update(confirmado=True)
-        self.message_user(request, f'{updated} inscrição(ões) confirmada(s).')
-    confirmar_inscricoes.short_description = 'Confirmar inscrições selecionadas'
+        count = 0
+        for inscricao in queryset:
+            inscricao.status = 'confirmado'
+            inscricao.save()
+            count += 1
+        self.message_user(request, f'{count} inscrição(ões) confirmada(s).')
+    confirmar_inscricoes.short_description = '✅ Confirmar inscrições selecionadas'
     
-    def cancelar_inscricoes(self, request, queryset):
-        updated = queryset.update(confirmado=False)
-        self.message_user(request, f'{updated} inscrição(ões) cancelada(s).')
-    cancelar_inscricoes.short_description = 'Cancelar inscrições selecionadas'
+    def recusar_inscricoes(self, request, queryset):
+        count = 0
+        for inscricao in queryset:
+            inscricao.status = 'recusado'
+            inscricao.save()
+            count += 1
+        self.message_user(request, f'{count} inscrição(ões) recusada(s). Vagas liberadas!')
+    recusar_inscricoes.short_description = '❌ Recusar inscrições selecionadas'
+    
+    def marcar_pendente(self, request, queryset):
+        count = 0
+        for inscricao in queryset:
+            inscricao.status = 'pendente'
+            inscricao.save()
+            count += 1
+        self.message_user(request, f'{count} inscrição(ões) marcada(s) como pendente.')
+    marcar_pendente.short_description = '⏳ Marcar como pendente'
 
 
 @admin.register(VagaVoluntariado)
@@ -120,20 +148,101 @@ class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
     
     actions = ['aprovar_candidaturas', 'recusar_candidaturas', 'analisar_candidaturas']
     
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+    
     def aprovar_candidaturas(self, request, queryset):
-        updated = queryset.update(status='aprovado')
-        self.message_user(request, f'{updated} candidatura(s) aprovada(s). Vagas foram mantidas ocupadas.')
+        count = 0
+        for candidatura in queryset:
+            candidatura.status = 'aprovado'
+            candidatura.save()
+            count += 1
+        
+        self.message_user(request, f'{count} candidatura(s) aprovada(s).')
     aprovar_candidaturas.short_description = '✅ Aprovar candidaturas selecionadas'
     
     def recusar_candidaturas(self, request, queryset):
-        updated = queryset.update(status='recusado')
-        self.message_user(request, f'{updated} candidatura(s) recusada(s). Vagas foram liberadas automaticamente!')
+        count = 0
+        for candidatura in queryset:
+            candidatura.status = 'recusado'
+            candidatura.save()
+            count += 1
+        
+        self.message_user(request, f'{count} candidatura(s) recusada(s). Vagas liberadas automaticamente!')
     recusar_candidaturas.short_description = '❌ Recusar candidaturas selecionadas'
     
     def analisar_candidaturas(self, request, queryset):
-        updated = queryset.update(status='em_analise')
-        self.message_user(request, f'{updated} candidatura(s) em análise.')
+        count = 0
+        for candidatura in queryset:
+            candidatura.status = 'em_analise'
+            candidatura.save()
+            count += 1
+        
+        self.message_user(request, f'{count} candidatura(s) em análise.')
     analisar_candidaturas.short_description = '🔍 Colocar em análise'
+
+
+# ========================================
+# ✅ ADMIN DE NOTÍCIAS COM PREVIEW DA IMAGEM
+# ========================================
+
+@admin.register(Noticia)
+class NoticiaAdmin(admin.ModelAdmin):
+    list_display = ['titulo', 'categoria', 'destaque', 'publicado', 'data_publicacao', 'imagem_preview']
+    list_filter = ['categoria', 'destaque', 'publicado', 'data_publicacao']
+    search_fields = ['titulo', 'subtitulo', 'conteudo']
+    date_hierarchy = 'data_publicacao'
+    readonly_fields = ['criado_em', 'atualizado_em', 'imagem_preview']
+    
+    fieldsets = (
+        ('Conteúdo', {
+            'fields': ('titulo', 'subtitulo', 'conteudo')
+        }),
+        ('Imagem de Capa', {
+            'fields': ('imagem', 'imagem_preview'),
+            'description': '📐 <strong>Tamanho recomendado:</strong> 800x480 pixels (proporção 5:3) | <strong>Formatos:</strong> JPG, PNG | <strong>Tamanho máximo:</strong> 5MB'
+        }),
+        ('Classificação', {
+            'fields': ('categoria', 'destaque')
+        }),
+        ('Publicação', {
+            'fields': ('publicado', 'data_publicacao')
+        }),
+        ('Informações', {
+            'fields': ('criado_em', 'atualizado_em'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['publicar_noticias', 'despublicar_noticias', 'marcar_destaque', 'desmarcar_destaque']
+    
+    # ✅ PREVIEW DA IMAGEM NO ADMIN
+    def imagem_preview(self, obj):
+        if obj.imagem:
+            return f'<img src="{obj.imagem.url}" style="max-width: 300px; max-height: 180px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />'
+        return '<span style="color: #999;">Nenhuma imagem</span>'
+    imagem_preview.short_description = 'Preview da Imagem'
+    imagem_preview.allow_tags = True
+    
+    def publicar_noticias(self, request, queryset):
+        updated = queryset.update(publicado=True)
+        self.message_user(request, f'{updated} notícia(s) publicada(s).')
+    publicar_noticias.short_description = '✅ Publicar notícias selecionadas'
+    
+    def despublicar_noticias(self, request, queryset):
+        updated = queryset.update(publicado=False)
+        self.message_user(request, f'{updated} notícia(s) despublicada(s).')
+    despublicar_noticias.short_description = '❌ Despublicar notícias selecionadas'
+    
+    def marcar_destaque(self, request, queryset):
+        updated = queryset.update(destaque=True)
+        self.message_user(request, f'{updated} notícia(s) marcada(s) como destaque.')
+    marcar_destaque.short_description = '⭐ Marcar como destaque'
+    
+    def desmarcar_destaque(self, request, queryset):
+        updated = queryset.update(destaque=False)
+        self.message_user(request, f'{updated} notícia(s) desmarcada(s) de destaque.')
+    desmarcar_destaque.short_description = '☆ Desmarcar destaque'
 
 
 @admin.register(Newsletter)
