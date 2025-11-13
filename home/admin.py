@@ -4,33 +4,34 @@ from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVo
 
 @admin.register(Workshop)
 class WorkshopAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'data_inicio', 'data_fim', 'nivel', 'vagas_disponiveis', 'status', 'preco_display']
-    list_filter = ['status', 'nivel', 'gratuito', 'data_inicio']
+    list_display = ['titulo', 'nivel', 'data_inicio', 'data_fim', 'vagas_ocupadas', 'vagas_totais', 'vagas_disponiveis_display', 'status']
+    list_filter = ['status', 'nivel', 'gratuito']
     search_fields = ['titulo', 'descricao']
     date_hierarchy = 'data_inicio'
+    readonly_fields = ['criado_em', 'atualizado_em', 'vagas_disponiveis_display', 'percentual_ocupacao_display']
     
     fieldsets = (
         ('Informações Básicas', {
             'fields': ('titulo', 'descricao', 'imagem', 'nivel')
         }),
         ('Datas e Carga Horária', {
-            'fields': ('data_inicio', 'data_fim', 'numero_encontros', 'carga_horaria')
+            'fields': ('data_inicio', 'data_fim', 'carga_horaria', 'numero_encontros')
         }),
-        ('Vagas', {
-            'fields': ('vagas_totais', 'vagas_ocupadas', 'status')
+        ('Vagas e Preço', {
+            'fields': ('vagas_totais', 'vagas_ocupadas', 'vagas_disponiveis_display', 'percentual_ocupacao_display', 'preco', 'gratuito')
         }),
-        ('Preço', {
-            'fields': ('preco', 'gratuito')
+        ('Status', {
+            'fields': ('status', 'criado_em', 'atualizado_em')
         }),
     )
     
-    def preco_display(self, obj):
-        return 'Gratuito' if obj.gratuito else f'R$ {obj.preco}'
-    preco_display.short_description = 'Preço'
+    def vagas_disponiveis_display(self, obj):
+        return obj.vagas_disponiveis
+    vagas_disponiveis_display.short_description = 'Vagas Disponíveis'
     
-    def vagas_disponiveis(self, obj):
-        return f'{obj.vagas_disponiveis}/{obj.vagas_totais}'
-    vagas_disponiveis.short_description = 'Vagas Disponíveis'
+    def percentual_ocupacao_display(self, obj):
+        return f"{obj.percentual_ocupacao}%"
+    percentual_ocupacao_display.short_description = 'Ocupação'
 
 
 @admin.register(InscricaoWorkshop)
@@ -56,58 +57,49 @@ class InscricaoWorkshopAdmin(admin.ModelAdmin):
     actions = ['confirmar_inscricoes', 'cancelar_inscricoes']
     
     def confirmar_inscricoes(self, request, queryset):
-        queryset.update(confirmado=True)
-        self.message_user(request, f'{queryset.count()} inscrições confirmadas.')
+        updated = queryset.update(confirmado=True)
+        self.message_user(request, f'{updated} inscrição(ões) confirmada(s).')
     confirmar_inscricoes.short_description = 'Confirmar inscrições selecionadas'
     
     def cancelar_inscricoes(self, request, queryset):
-        queryset.update(confirmado=False)
-        self.message_user(request, f'{queryset.count()} inscrições canceladas.')
+        updated = queryset.update(confirmado=False)
+        self.message_user(request, f'{updated} inscrição(ões) cancelada(s).')
     cancelar_inscricoes.short_description = 'Cancelar inscrições selecionadas'
 
 
 @admin.register(VagaVoluntariado)
 class VagaVoluntariadoAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'tipo', 'horas_semanais', 'vagas_disponiveis', 'status', 'criada_em']
+    list_display = ['titulo', 'tipo', 'local', 'horas_semanais', 'vagas_disponiveis', 'status', 'criada_em']
     list_filter = ['status', 'tipo', 'criada_em']
-    search_fields = ['titulo', 'descricao', 'requisitos']
+    search_fields = ['titulo', 'descricao', 'local']
     date_hierarchy = 'criada_em'
+    readonly_fields = ['criada_em', 'atualizada_em', 'total_candidaturas']
     
     fieldsets = (
-        ('Informações Básicas', {
-            'fields': ('titulo', 'descricao', 'requisitos')
+        ('Informações da Vaga', {
+            'fields': ('titulo', 'descricao', 'requisitos', 'tipo')
         }),
-        ('Detalhes da Vaga', {
-            'fields': ('tipo', 'local', 'horas_semanais', 'duracao_minima')
+        ('Localização e Tempo', {
+            'fields': ('local', 'horas_semanais', 'duracao_minima')
         }),
         ('Vagas e Status', {
-            'fields': ('vagas_disponiveis', 'status')
+            'fields': ('vagas_disponiveis', 'status', 'total_candidaturas')
+        }),
+        ('Datas', {
+            'fields': ('criada_em', 'atualizada_em')
         }),
     )
     
-    actions = ['abrir_vagas', 'pausar_vagas', 'encerrar_vagas']
-    
-    def abrir_vagas(self, request, queryset):
-        queryset.update(status='aberta')
-        self.message_user(request, f'{queryset.count()} vagas abertas.')
-    abrir_vagas.short_description = 'Abrir vagas selecionadas'
-    
-    def pausar_vagas(self, request, queryset):
-        queryset.update(status='pausada')
-        self.message_user(request, f'{queryset.count()} vagas pausadas.')
-    pausar_vagas.short_description = 'Pausar vagas selecionadas'
-    
-    def encerrar_vagas(self, request, queryset):
-        queryset.update(status='encerrada')
-        self.message_user(request, f'{queryset.count()} vagas encerradas.')
-    encerrar_vagas.short_description = 'Encerrar vagas selecionadas'
+    def total_candidaturas(self, obj):
+        return obj.candidaturas.count()
+    total_candidaturas.short_description = 'Total de Candidaturas'
 
 
 @admin.register(CandidaturaVoluntariado)
 class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
     list_display = ['nome', 'email', 'vaga', 'status', 'candidatou_em']
     list_filter = ['status', 'vaga', 'candidatou_em']
-    search_fields = ['nome', 'email', 'telefone', 'profissao']
+    search_fields = ['nome', 'email', 'telefone', 'vaga__titulo']
     date_hierarchy = 'candidatou_em'
     readonly_fields = ['candidatou_em']
     
@@ -118,30 +110,30 @@ class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
         ('Vaga', {
             'fields': ('vaga',)
         }),
-        ('Informações da Candidatura', {
+        ('Informações Adicionais', {
             'fields': ('experiencia', 'motivacao', 'disponibilidade')
         }),
-        ('Status', {
+        ('Status e Data', {
             'fields': ('status', 'candidatou_em')
         }),
     )
     
-    actions = ['aprovar_candidaturas', 'reprovar_candidaturas', 'analisar_candidaturas']
+    actions = ['aprovar_candidaturas', 'recusar_candidaturas', 'analisar_candidaturas']
     
     def aprovar_candidaturas(self, request, queryset):
-        queryset.update(status='aprovado')
-        self.message_user(request, f'{queryset.count()} candidaturas aprovadas.')
-    aprovar_candidaturas.short_description = 'Aprovar candidaturas selecionadas'
+        updated = queryset.update(status='aprovado')
+        self.message_user(request, f'{updated} candidatura(s) aprovada(s). Vagas foram mantidas ocupadas.')
+    aprovar_candidaturas.short_description = '✅ Aprovar candidaturas selecionadas'
     
-    def reprovar_candidaturas(self, request, queryset):
-        queryset.update(status='recusado')
-        self.message_user(request, f'{queryset.count()} candidaturas recusadas.')
-    reprovar_candidaturas.short_description = 'Recusar candidaturas selecionadas'
+    def recusar_candidaturas(self, request, queryset):
+        updated = queryset.update(status='recusado')
+        self.message_user(request, f'{updated} candidatura(s) recusada(s). Vagas foram liberadas automaticamente!')
+    recusar_candidaturas.short_description = '❌ Recusar candidaturas selecionadas'
     
     def analisar_candidaturas(self, request, queryset):
-        queryset.update(status='em_analise')
-        self.message_user(request, f'{queryset.count()} candidaturas em análise.')
-    analisar_candidaturas.short_description = 'Colocar em análise'
+        updated = queryset.update(status='em_analise')
+        self.message_user(request, f'{updated} candidatura(s) em análise.')
+    analisar_candidaturas.short_description = '🔍 Colocar em análise'
 
 
 @admin.register(Newsletter)
@@ -155,11 +147,11 @@ class NewsletterAdmin(admin.ModelAdmin):
     actions = ['ativar_inscricoes', 'desativar_inscricoes']
     
     def ativar_inscricoes(self, request, queryset):
-        queryset.update(ativo=True)
-        self.message_user(request, f'{queryset.count()} inscrições ativadas.')
+        updated = queryset.update(ativo=True)
+        self.message_user(request, f'{updated} inscrição(ões) ativada(s).')
     ativar_inscricoes.short_description = 'Ativar inscrições selecionadas'
     
     def desativar_inscricoes(self, request, queryset):
-        queryset.update(ativo=False)
-        self.message_user(request, f'{queryset.count()} inscrições desativadas.')
+        updated = queryset.update(ativo=False)
+        self.message_user(request, f'{updated} inscrição(ões) desativada(s).')
     desativar_inscricoes.short_description = 'Desativar inscrições selecionadas'

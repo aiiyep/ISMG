@@ -135,19 +135,37 @@ def voluntariado_candidatura(request):
             messages.error(request, 'Desculpe, esta vaga não está mais disponível.')
             return redirect('voluntariado')
         
-        # Criar candidatura
+        # ✅ VERIFICAR SE JÁ EXISTE CANDIDATURA COM ESTE EMAIL
+        email = request.POST.get('email')
+        if CandidaturaVoluntariado.objects.filter(vaga=vaga, email=email).exists():
+            messages.warning(request, 'Você já se candidatou para esta vaga.')
+            return redirect('voluntariado')
+        
+        # Criar candidatura como PENDENTE (não aprovada ainda)
         candidatura = CandidaturaVoluntariado(
             vaga=vaga,
             nome=request.POST.get('nome'),
-            email=request.POST.get('email'),
+            email=email,
             telefone=request.POST.get('telefone'),
             idade=request.POST.get('idade') or None,
             profissao=request.POST.get('profissao', ''),
             experiencia=request.POST.get('experiencia', ''),
             motivacao=request.POST.get('motivacao'),
             disponibilidade=request.POST.get('disponibilidade', ''),
+            status='pendente'  # ✅ Criar como PENDENTE
         )
         candidatura.save()
+        
+        # ✅ DECREMENTAR VAGAS DISPONÍVEIS IMEDIATAMENTE
+        # (Quando a candidatura é criada, a vaga já fica reservada)
+        vaga.vagas_disponiveis -= 1
+        
+        # ✅ VERIFICAR SE ESGOTOU AS VAGAS
+        if vaga.vagas_disponiveis <= 0:
+            vaga.status = 'pausada'
+            vaga.vagas_disponiveis = 0
+        
+        vaga.save()
         
         # Enviar email de confirmação
         try:

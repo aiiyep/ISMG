@@ -359,69 +359,170 @@
             <!-- Filters -->
             <div class="filters">
                 <button class="filter-btn active" data-filter="todos">Todos</button>
-                <button class="filter-btn" data-filter="disponivel">Vagas Disponíveis</button>
                 <button class="filter-btn" data-filter="gratuito">Gratuitos</button>
                 <button class="filter-btn" data-filter="iniciante">Iniciante</button>
+                <button class="filter-btn" data-filter="intermediario">Intermediário</button>
+                <button class="filter-btn" data-filter="avancado">Avançado</button>
             </div>
 
             <!-- Workshops Grid -->
-                    <div class="workshops-grid">
-            {% for workshop in workshops %}
-            <div class="workshop-card" data-category="{% if workshop.gratuito %}gratuito {% endif %}{% if workshop.nivel == 'iniciante' %}iniciante{% endif %} disponivel">
-                {% if workshop.imagem %}
-                <img src="{{ workshop.imagem.url }}" alt="{{ workshop.titulo }}" class="workshop-image">
-                {% else %}
-                <img src="https://images.unsplash.com/photo-1528832253532-9c22462c0086?w=600" alt="{{ workshop.titulo }}" class="workshop-image">
-                {% endif %}
-                
-                <div class="workshop-content">
-                    {% if workshop.esta_disponivel %}
-                    <span class="workshop-badge disponivel">Vagas Disponíveis</span>
+            <div class="workshops-grid">
+                {% for workshop in workshops %}
+                <div class="workshop-card" data-category="{% if workshop.gratuito %}gratuito {% endif %}{{ workshop.nivel }}">
+                    {% if workshop.imagem %}
+                    <img src="{{ workshop.imagem.url }}" alt="{{ workshop.titulo }}" class="workshop-image">
                     {% else %}
-                    <span class="workshop-badge esgotado">Esgotado</span>
+                    <img src="https://images.unsplash.com/photo-1528832253532-9c22462c0086?w=600" alt="{{ workshop.titulo }}" class="workshop-image">
                     {% endif %}
                     
-                    <h3 class="workshop-title">{{ workshop.titulo }}</h3>
-                    <p class="workshop-description">{{ workshop.descricao }}</p>
-                    
-                    <div class="workshop-meta">
-                        <div class="workshop-meta-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>{{ workshop.data_inicio|date:"d/m/Y" }} - {{ workshop.data_fim|date:"d/m/Y" }}</span>
-                        </div>
-                        <div class="workshop-meta-item">
-                            <i class="fas fa-clock"></i>
-                            <span>{{ workshop.numero_encontros }} encontros ({{ workshop.carga_horaria }}h)</span>
-                        </div>
-                        <div class="workshop-meta-item">
-                            <i class="fas fa-users"></i>
-                            <span>{{ workshop.vagas_ocupadas }}/{{ workshop.vagas_totais }} vagas</span>
-                        </div>
-                        <div class="workshop-meta-item">
-                            <i class="fas fa-signal"></i>
-                            <span>{{ workshop.get_nivel_display }}</span>
-                        </div>
-                    </div>
-
-                    <div class="workshop-footer">
-                        {% if workshop.gratuito %}
-                        <span class="workshop-price gratuito">Gratuito</span>
+                    <div class="workshop-content">
+                        {% if workshop.esta_disponivel %}
+                        <span class="workshop-badge disponivel">Vagas Disponíveis</span>
                         {% else %}
-                        <span class="workshop-price">R$ {{ workshop.preco }}</span>
+                        <span class="workshop-badge esgotado">Esgotado</span>
                         {% endif %}
                         
-                        {% if workshop.esta_disponivel %}
-                        <button class="btn-inscricao" onclick="openModal('{{ workshop.id }}')">Inscrever-se</button>
-                        {% else %}
-                        <button class="btn-inscricao" disabled>Vagas Esgotadas</button>
-                        {% endif %}
+                        <h3 class="workshop-title">{{ workshop.titulo }}</h3>
+                        <p class="workshop-description">{{ workshop.descricao }}</p>
+                        
+                        <div class="workshop-meta">
+                            <div class="workshop-meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>{{ workshop.data_inicio|date:"d/m/Y" }} - {{ workshop.data_fim|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="workshop-meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ workshop.numero_encontros }} encontros ({{ workshop.carga_horaria }}h)</span>
+                            </div>
+                            <div class="workshop-meta-item">
+                                <i class="fas fa-users"></i>
+                                <span>{{ workshop.vagas_ocupadas }}/{{ workshop.vagas_totais }} vagas</span>
+                            </div>
+                            <div class="workshop-meta-item">
+                                <i class="fas fa-signal"></i>
+                                <span>{{ workshop.get_nivel_display }}</span>
+                            </div>
+                        </div>
+
+                        <div class="workshop-footer">
+                            {% if workshop.gratuito %}
+                            <span class="workshop-price gratuito">Gratuito</span>
+                            {% else %}
+                            <span class="workshop-price">R$ {{ workshop.preco }}</span>
+                            {% endif %}
+                            
+                            {% if workshop.esta_disponivel %}
+                            <button class="btn-inscricao" onclick="openModal('{{ workshop.id }}')">Inscrever-se</button>
+                            {% else %}
+                            <button class="btn-inscricao" disabled>Vagas Esgotadas</button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+                {% empty %}
+                <p style="grid-column: 1/-1; text-align: center; padding: 3rem;">Nenhum workshop disponível no momento.</p>
+                {% endfor %}
             </div>
-        {% empty %}
-        <p style="grid-column: 1/-1; text-align: center; padding: 3rem;">Nenhum workshop disponível no momento.</p>
-        {% endfor %}
-    </div>
+        </div>
+
+        <!-- Modal de Inscrição -->
+        <div id="inscricaoModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Inscrever-se no Workshop</h2>
+                    <button class="close-modal" onclick="closeModal()">&times;</button>
+                </div>
+                <form method="POST" action="{% url 'workshop_inscricao' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="workshop_id" id="workshop_id">
+                    
+                    <div class="form-group">
+                        <label for="nome">Nome Completo *</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-mail *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefone">Telefone *</label>
+                        <input type="tel" id="telefone" name="telefone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idade">Idade</label>
+                        <input type="number" id="idade" name="idade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experiencia">Nível de Experiência *</label>
+                        <select id="experiencia" name="experiencia" required>
+                            <option value="">Selecione...</option>
+                            <option value="nenhuma">Nenhuma experiência</option>
+                            <option value="basica">Básica</option>
+                            <option value="intermediaria">Intermediária</option>
+                            <option value="avancada">Avançada</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="motivacao">Por que deseja participar?</label>
+                        <textarea id="motivacao" name="motivacao"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Confirmar Inscrição</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            // Sistema de filtros
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const workshopCards = document.querySelectorAll('.workshop-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active de todos os botões
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Adiciona active no botão clicado
+                    btn.classList.add('active');
+                    
+                    const filter = btn.getAttribute('data-filter');
+                    
+                    workshopCards.forEach(card => {
+                        if (filter === 'todos') {
+                            card.style.display = 'block';
+                        } else {
+                            const categories = card.getAttribute('data-category');
+                            if (categories.includes(filter)) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Modal functions
+            function openModal(workshopId) {
+                document.getElementById('workshop_id').value = workshopId;
+                document.getElementById('inscricaoModal').classList.add('active');
+            }
+
+            function closeModal() {
+                document.getElementById('inscricaoModal').classList.remove('active');
+            }
+
+            // Fechar modal ao clicar fora
+            document.getElementById('inscricaoModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        </script>
 
     </body>
 </html>

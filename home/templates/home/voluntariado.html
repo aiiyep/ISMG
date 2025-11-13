@@ -225,10 +225,16 @@
                 color: #059669;
             }
 
+            .opportunity-badge.hibrido {
+                background: #FEF3C7;
+                color: #D97706;
+            }
+
             .opportunity-description {
                 color: #6B7280;
                 line-height: 1.6;
                 margin-bottom: 1.5rem;
+                white-space: pre-line;
             }
 
             .opportunity-requirements {
@@ -317,6 +323,19 @@
             .btn-candidatar:hover {
                 background: #BE185D;
                 transform: scale(1.05);
+            }
+
+            .btn-candidatar:disabled {
+                background: #D1D5DB;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .no-vagas {
+                text-align: center;
+                padding: 3rem;
+                color: #6B7280;
+                font-size: 1.125rem;
             }
 
             /* Modal */
@@ -437,6 +456,10 @@
                     gap: 1.5rem;
                 }
 
+                .opportunity-card {
+                    grid-template-columns: 1fr;
+                }
+
                 .opportunity-cta {
                     flex-direction: row;
                     justify-content: space-between;
@@ -532,227 +555,66 @@
                 <p class="section-subtitle">Encontre a oportunidade que mais combina com você e suas habilidades.</p>
                 
                 <div class="opportunities-grid">
-                    
-                    <!-- Oportunidade 1 -->
+                    {% for vaga in vagas %}
+                    <!-- Vaga {{ forloop.counter }} -->
                     <div class="opportunity-card">
                         <div class="opportunity-content">
-                            <span class="opportunity-badge presencial">Presencial</span>
-                            <h3>Instrutor(a) de Costura</h3>
-                            <p class="opportunity-description">
-                                Ensine técnicas de costura para mulheres refugiadas que desejam desenvolver habilidades profissionais. Auxilie no aprendizado de máquinas de costura, pontos, acabamentos e projetos práticos.
-                            </p>
+                            <span class="opportunity-badge {{ vaga.tipo }}">
+                                {% if vaga.tipo == 'presencial' %}
+                                    Presencial
+                                {% elif vaga.tipo == 'remoto' %}
+                                    Remoto
+                                {% else %}
+                                    Híbrido
+                                {% endif %}
+                            </span>
+                            <h3>{{ vaga.titulo }}</h3>
+                            <p class="opportunity-description">{{ vaga.descricao }}</p>
                             
                             <div class="opportunity-requirements">
                                 <h4>O que buscamos:</h4>
                                 <ul>
-                                    <li>Experiência em costura (básica ou avançada)</li>
-                                    <li>Paciência e habilidade didática</li>
-                                    <li>Disponibilidade de 4h por semana</li>
-                                    <li>Comprometimento mínimo de 3 meses</li>
+                                    {% for requisito in vaga.requisitos.splitlines %}
+                                        {% if requisito.strip %}
+                                            <li>{{ requisito }}</li>
+                                        {% endif %}
+                                    {% endfor %}
                                 </ul>
                             </div>
 
                             <div class="opportunity-meta">
                                 <div class="opportunity-meta-item">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>Maricá, RJ</span>
+                                    <i class="fas fa-{% if vaga.tipo == 'remoto' %}laptop{% else %}map-marker-alt{% endif %}"></i>
+                                    <span>{% if vaga.tipo == 'remoto' %}100% Remoto{% else %}{{ vaga.local }}{% endif %}</span>
                                 </div>
                                 <div class="opportunity-meta-item">
                                     <i class="fas fa-clock"></i>
-                                    <span>4h/semana</span>
+                                    <span>{{ vaga.horas_semanais }}h/semana</span>
                                 </div>
                                 <div class="opportunity-meta-item">
                                     <i class="fas fa-calendar"></i>
-                                    <span>Mínimo 3 meses</span>
+                                    <span>{{ vaga.duracao_minima }}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="opportunity-cta">
                             <div class="vagas-info">
-                                <div class="vagas-number">3</div>
-                                <div class="vagas-label">vagas abertas</div>
+                                <div class="vagas-number">{{ vaga.vagas_disponiveis }}</div>
+                                <div class="vagas-label">vaga{% if vaga.vagas_disponiveis != 1 %}s{% endif %} aberta{% if vaga.vagas_disponiveis != 1 %}s{% endif %}</div>
                             </div>
-                            <button class="btn-candidatar" onclick="openModal('instrutor-costura', 'Instrutor(a) de Costura')">Candidatar-se</button>
+                            {% if vaga.esta_aberta %}
+                                <button class="btn-candidatar" onclick="openModal('{{ vaga.id }}', '{{ vaga.titulo }}')">Candidatar-se</button>
+                            {% else %}
+                                <button class="btn-candidatar" disabled>Indisponível</button>
+                            {% endif %}
                         </div>
                     </div>
-
-                    <!-- Oportunidade 2 -->
-                    <div class="opportunity-card">
-                        <div class="opportunity-content">
-                            <span class="opportunity-badge remoto">Remoto</span>
-                            <h3>Designer Gráfico</h3>
-                            <p class="opportunity-description">
-                                Ajude na criação de materiais visuais para divulgação dos nossos projetos, produtos e eventos. Desenvolva identidade visual, posts para redes sociais e materiais impressos.
-                            </p>
-                            
-                            <div class="opportunity-requirements">
-                                <h4>O que buscamos:</h4>
-                                <ul>
-                                    <li>Conhecimento em ferramentas de design (Photoshop, Illustrator, Canva)</li>
-                                    <li>Criatividade e senso estético</li>
-                                    <li>Disponibilidade de 3h por semana</li>
-                                    <li>Portfólio com trabalhos anteriores</li>
-                                </ul>
-                            </div>
-
-                            <div class="opportunity-meta">
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>100% Remoto</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>3h/semana</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>Flexível</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="opportunity-cta">
-                            <div class="vagas-info">
-                                <div class="vagas-number">2</div>
-                                <div class="vagas-label">vagas abertas</div>
-                            </div>
-                            <button class="btn-candidatar" onclick="openModal('designer-grafico', 'Designer Gráfico')">Candidatar-se</button>
-                        </div>
+                    {% empty %}
+                    <div class="no-vagas">
+                        <p>No momento não há vagas de voluntariado disponíveis. Volte em breve para conferir novas oportunidades!</p>
                     </div>
-
-                    <!-- Oportunidade 3 -->
-                    <div class="opportunity-card">
-                        <div class="opportunity-content">
-                            <span class="opportunity-badge remoto">Remoto</span>
-                            <h3>Mentor(a) de Empreendedorismo</h3>
-                            <p class="opportunity-description">
-                                Auxilie mulheres refugiadas no desenvolvimento de seus negócios de costura. Oriente sobre gestão financeira, precificação, marketing e vendas online.
-                            </p>
-                            
-                            <div class="opportunity-requirements">
-                                <h4>O que buscamos:</h4>
-                                <ul>
-                                    <li>Experiência em empreendedorismo ou gestão de negócios</li>
-                                    <li>Habilidades de mentoria e coaching</li>
-                                    <li>Disponibilidade de 2h por semana</li>
-                                    <li>Empatia e sensibilidade cultural</li>
-                                </ul>
-                            </div>
-
-                            <div class="opportunity-meta">
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>100% Remoto</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>2h/semana</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>Mínimo 6 meses</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="opportunity-cta">
-                            <div class="vagas-info">
-                                <div class="vagas-number">5</div>
-                                <div class="vagas-label">vagas abertas</div>
-                            </div>
-                            <button class="btn-candidatar" onclick="openModal('mentor-empreendedorismo', 'Mentor(a) de Empreendedorismo')">Candidatar-se</button>
-                        </div>
-                    </div>
-
-                    <!-- Oportunidade 4 -->
-                    <div class="opportunity-card">
-                        <div class="opportunity-content">
-                            <span class="opportunity-badge presencial">Presencial</span>
-                            <h3>Assistente de Eventos</h3>
-                            <p class="opportunity-description">
-                                Apoie na organização e execução de eventos, feiras, workshops e apresentações. Ajude na montagem, recepção, vendas e desmontagem de eventos.
-                            </p>
-                            
-                            <div class="opportunity-requirements">
-                                <h4>O que buscamos:</h4>
-                                <ul>
-                                    <li>Proatividade e trabalho em equipe</li>
-                                    <li>Boa comunicação</li>
-                                    <li>Disponibilidade em finais de semana (ocasionalmente)</li>
-                                    <li>Experiência em eventos é um diferencial</li>
-                                </ul>
-                            </div>
-
-                            <div class="opportunity-meta">
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>Maricá e região</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Sob demanda</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>Flexível</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="opportunity-cta">
-                            <div class="vagas-info">
-                                <div class="vagas-number">8</div>
-                                <div class="vagas-label">vagas abertas</div>
-                            </div>
-                            <button class="btn-candidatar" onclick="openModal('assistente-eventos', 'Assistente de Eventos')">Candidatar-se</button>
-                        </div>
-                    </div>
-
-                    <!-- Oportunidade 5 -->
-                    <div class="opportunity-card">
-                        <div class="opportunity-content">
-                            <span class="opportunity-badge remoto">Remoto</span>
-                            <h3>Social Media</h3>
-                            <p class="opportunity-description">
-                                Gerencie nossas redes sociais, crie conteúdo engajador, responda mensagens e fortaleça nossa presença digital para alcançar mais pessoas.
-                            </p>
-                            
-                            <div class="opportunity-requirements">
-                                <h4>O que buscamos:</h4>
-                                <ul>
-                                    <li>Experiência com redes sociais (Instagram, Facebook)</li>
-                                    <li>Criatividade para criar conteúdo</li>
-                                    <li>Disponibilidade de 5h por semana</li>
-                                    <li>Conhecimento em ferramentas de agendamento</li>
-                                </ul>
-                            </div>
-
-                            <div class="opportunity-meta">
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>100% Remoto</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>5h/semana</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>Mínimo 4 meses</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="opportunity-cta">
-                            <div class="vagas-info">
-                                <div class="vagas-number">2</div>
-                                <div class="vagas-label">vagas abertas</div>
-                            </div>
-                            <button class="btn-candidatar" onclick="openModal('social-media', 'Social Media')">Candidatar-se</button>
-                        </div>
-                    </div>
-
+                    {% endfor %}
                 </div>
             </div>
         </section>
@@ -824,7 +686,7 @@
             <div class="newsletter-container">
                 <h2>Receba novidades sobre voluntariado</h2>
                 <p>Inscreva-se e fique por dentro das novas oportunidades de voluntariado.</p>
-                <form class="newsletter" method="POST">
+                <form class="newsletter" method="POST" action="{% url 'newsletter_inscricao' %}">
                     {% csrf_token %}
                     <input type="email" name="email" placeholder="Seu melhor e-mail" required>
                     <button type="submit">Inscrever-se</button>
