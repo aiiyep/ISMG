@@ -1,0 +1,296 @@
+/* --- Configurações Globais e Variáveis --- */
+:root {
+    --color-primary: #E11D48; /* Tom de rosa/vermelho */
+    --color-text: #374151;
+    --color-heading: #111827;
+    --color-background-start: #F9FAFB;
+    --color-background-end: #FFF1F2;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif; /* Fonte sugerida para um visual moderno */
+    color: var(--color-text);
+}
+
+/* --- Estrutura Principal --- */
+.hero-section {
+    padding: 4rem 0; /* Espaçamento vertical menor para mobile */
+    background: linear-gradient(to bottom right, var(--color-background-start), var(--color-background-end));
+}
+
+.container {
+    max-width: 1152px; /* Largura máxima do conteúdo */
+    margin: 0 auto; /* Centraliza o container */
+    padding: 0 1rem; /* Espaçamento lateral para não colar nas bordas */
+}
+
+.hero-layout {
+    display: flex;
+    flex-direction: column; /* Empilha as colunas em telas pequenas */
+    gap: 3rem;
+    align-items: center;
+}
+
+/* --- Coluna da Esquerda: Conteúdo --- */
+.hero-content {
+    text-align: center; /* Centraliza texto em telas pequenas */
+}
+
+.hero-title {
+    font-size: 2.25rem; /* Tamanho de fonte menor para mobile */
+    font-weight: 700;
+    color: var(--color-heading);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.hero-title .highlight {
+    color: var(--color-primary);
+}
+
+.hero-description {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    max-width: 500px; /* Limita a largura do parágrafo */
+    margin: 0 auto 2rem auto; /* Centraliza e adiciona espaço abaixo */
+    color: black;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas iguais */
+    gap: 1.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.stat-item .stat-number {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.stat-item .stat-label {
+    font-size: 0.875rem;
+    color: var(--color-text);
+}
+
+
+/* --- Coluna da Direita: Imagem e Depoimento --- */
+.hero-image-wrapper {
+    position: relative; /* Essencial para posicionar o depoimento */
+    width: 100%;
+    max-width: 500px; /* Limita o tamanho da imagem em mobile */
+}
+
+.hero-image-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block; /* Remove espaço extra abaixo da imagem */
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.testimonial-card {
+    position: absolute;
+    bottom: -2rem; /* Move para baixo, saindo da imagem */
+    left: -1rem; /* Move para a esquerda, saindo da imagem */
+    width: 80%; /* Largura do card */
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-text {
+    font-size: 0.875rem;
+    font-style: italic;
+    margin: 0 0 0.5rem 0;
+    color: black;
+}
+
+.testimonial-author {
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* --- Estilos da Seção Missão (VERSÃO ATUALIZADA) --- */
+.mission-section {
+    padding: 5rem 0; /* py-20 */
+    background-color: #fff;
+}
+
+.section-header {
+    text-align: center;
+    max-width: 48rem; /* max-w-3xl */
+    margin: 0 auto 4rem auto; /* Centraliza e mb-16 */
+}
+
+.section-header h2 {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700;
+    color: #111827; /* text-gray-900 */
+    margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.section-header p {
+    font-size: 1.125rem; /* text-lg */
+    line-height: 1.6;
+    color: #4B5563; /* text-gray-600 */
+}
+
+/* ATUALIZADO: Usando Grid para o layout principal, como no seu novo código */
+.mission-layout {
+    display: grid;
+    grid-template-columns: 1fr; /* Uma coluna por padrão */
+    gap: 4rem; /* gap-16 */
+    align-items: center;
+    margin-bottom: 5rem; /* mb-20 */
+}
+
+.mission-content h3 {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.5rem;
+}
+
+.mission-content p {
+    color: #4B5563;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.mission-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem; /* rounded-2xl */
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); /* shadow-xl */
+}
+
+/* --- Box de Impacto (Atualizado) --- */
+.impact-box {
+    background-color: #FEF2F2; /* bg-rose-50 */
+    padding: 1.5rem; /* p-6 */
+    border-radius: 0.75rem; /* rounded-xl */
+    margin-top: 2rem;
+}
+
+.impact-box h4 {
+    font-size: 1rem;
+    font-weight: 600; /* font-semibold */
+    margin: 0 0 1rem 0; /* mb-4 */
+    color: #111827;
+}
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* grid-cols-2 */
+    gap: 1rem; /* gap-4 */
+}
+
+.impact-number {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 700;
+    color: #E11D48; /* text-rose-600 */
+}
+
+.impact-label {
+    font-size: 0.875rem; /* text-sm */
+    color: #4B5563;
+}
+
+/* --- Grade de Ícones/Valores (Layout CORRIGIDO) --- */
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* 1 coluna por padrão (mobile) */
+    gap: 2rem; /* gap-8 */
+}
+
+.feature-item {
+    text-align: center;
+}
+
+.feature-icon {
+    width: 4rem; /* w-16 */
+    height: 4rem; /* h-16 */
+    border-radius: 9999px; /* rounded-full */
+    background-color: #FEE2E2; /* bg-rose-100 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto; /* Centraliza e adiciona espaço abaixo */
+}
+
+.feature-icon svg {
+    width: 2rem; /* w-8 */
+    height: 2rem; /* h-8 */
+    color: #E11D48; /* text-rose-600 */
+}
+
+.feature-item h4 {
+    font-size: 1.125rem;
+    font-weight: 600; /* font-semibold */
+    margin: 0 0 0.5rem 0;
+    color: #111827;
+}
+
+.feature-item p {
+    font-size: 0.875rem; /* text-sm */
+    line-height: 1.6;
+    color: #4B5563;
+}
+
+/* --- Media Queries para Responsividade --- */
+
+/* Telas de desktop para cima */
+@media (min-width: 1024px) {
+    .mission-section {
+        padding: 8rem 0; /* lg:py-32 */
+    }
+    .section-header h2 {
+        font-size: 3rem; /* lg:text-5xl */
+    }
+    .mission-layout {
+        grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+    }
+    .features-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+    }
+}
+
+/* --- Media Query para Responsividade (Telas Maiores) --- */
+@media (min-width: 768px) {
+    .hero-section {
+        padding: 6rem 0; /* Aumenta o espaçamento vertical */
+    }
+
+    .hero-layout {
+        flex-direction: row; /* Colunas lado a lado */
+    }
+    
+    .hero-content {
+        flex: 1; /* Faz a coluna ocupar metade do espaço */
+        text-align: left; /* Alinha texto à esquerda */
+    }
+
+    .hero-image-wrapper {
+        flex: 1; /* Faz a coluna ocupar a outra metade */
+        max-width: none;
+    }
+
+    .hero-title {
+        font-size: 3.75rem; /* Aumenta a fonte do título */
+    }
+
+    .hero-description {
+        margin-left: 0; /* Remove a centralização */
+    }
+
+    .testimonial-card {
+        left: -2rem; /* Ajusta a posição do card em telas maiores */
+        width: 75%;
+    }
+}

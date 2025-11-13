@@ -1,0 +1,14 @@
+# Ambiente virtual
+venv/
+
+# Arquivos do Django
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Configurações do VSCode (opcional)
+.vscode/

@@ -1,0 +1,488 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instituto Mulheres do Sul Global</title>
+    <link rel="stylesheet" href="{% static 'home/style.css' %}">
+    <link rel="stylesheet" href="{% static 'home/style_footer.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/4d8c8e1f2b.js" crossorigin="anonymous"></script>
+    <style>
+        /* Estilos do Navbar */
+        body {
+            margin: 0;
+            padding-top: 70px; /* Compensa o navbar fixo */
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px 50px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .navbar .logo img {
+            height: 45px;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar .menu li {
+            position: relative;
+        }
+
+        .navbar .menu a {
+            text-decoration: none;
+            color: #E11D48;
+            font-weight: 600;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .navbar .menu a:hover {
+            color: #ff5722;
+        }
+
+        .navbar .menu a i {
+            font-size: 10px !important;
+            transition: transform 0.3s ease-out;
+        }
+
+        .navbar .menu li:hover > a i {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            display: flex;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            pointer-events: none;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            min-width: 300px;
+            padding: 10px 0;
+            flex-direction: column;
+            gap: 5px;
+            transition: opacity 0.4s ease-out, max-height 0.4s ease-out;
+        }
+
+        .navbar .menu li:hover .dropdown-content {
+            opacity: 1;
+            max-height: 500px;
+            pointer-events: auto;
+        }
+
+        .dropdown-content .item {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-content .item:hover {
+            background-color: #f7f7f7;
+        }
+
+        .dropdown-content .item > a {
+            display: flex;
+            gap: 15px;
+            padding: 0;
+            width: 100%;
+            color: inherit;
+        }
+
+        .dropdown-content .item > a > div {
+            flex-grow: 1;
+        }
+
+        .dropdown-content .item i {
+            font-size: 22px;
+            color: #E11D48;
+            min-width: 22px;
+            transition: color 0.3s;
+        }
+
+        .dropdown-content .item:hover i {
+            color: #ff5722;
+        }
+
+        .dropdown-content .item h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .dropdown-content .item:hover h4 {
+            color: #ff5722;
+        }
+
+        .dropdown-content .item p {
+            margin: 3px 0 0;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #666;
+        }
+
+        .social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social a {
+            color: #E11D48;
+            font-size: 20px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .social a:hover {
+            color: #ff5722;
+        }
+
+        /* Responsive Navbar */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+            
+            .navbar .menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="/"><img src="{% static 'home/img/logo.png' %}" alt="Mulheres do Sul Global"></a>
+        </div>
+
+        <ul class="menu">
+            <li>
+                <a href="#sobre">Quem Somos <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <div class="item">
+                        <a href="#sobre">
+                            <i class="fas fa-landmark"></i>
+                            <div>
+                                <h4>Nossa História</h4>
+                                <p>Conheça a trajetória de empoderamento e transformação social através da costura.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="#missao">
+                            <i class="fas fa-handshake"></i>
+                            <div>
+                                <h4>Missão e Valores</h4>
+                                <p>Promovemos o empoderamento econômico de mulheres refugiadas através da costura.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <a href="#servicos">O Que Fazemos <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <div class="item">
+                        <a href="#atelie">
+                            <i class="fas fa-ruler-combined"></i>
+                            <div>
+                                <h4>Ateliê sob Demanda</h4>
+                                <p>Produção responsável e em escala para empresas e marcas comprometidas.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="#produtos">
+                            <i class="fas fa-leaf"></i>
+                            <div>
+                                <h4>Marca Social</h4>
+                                <p>Coleções sustentáveis a partir de materiais e tecidos recuperados.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="/workshops">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <div>
+                                <h4>Workshops</h4>
+                                <p>Capacitação e desenvolvimento de habilidades em costura.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <a href="#contato">Contato <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <div class="item">
+                        <a href="mailto:contato@mulheresdosulglobal.com">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>contato@mulheresdosulglobal.com</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="https://wa.me/5521983551120" target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                            <div>
+                                <h4>WhatsApp</h4>
+                                <p>+55 21 98355-1120</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <a href="/voluntariado">Seja Voluntário <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <div class="item">
+                        <a href="/voluntariado">
+                            <i class="fas fa-hands-helping"></i>
+                            <div>
+                                <h4>Oportunidades</h4>
+                                <p>Faça parte da nossa equipe de voluntários.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <a href="#apoie">Apoie <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <div class="item">
+                        <a href="#doacao">
+                            <i class="fas fa-donate"></i>
+                            <div>
+                                <h4>Faça uma Doação</h4>
+                                <p>Contribua com nosso trabalho de forma segura.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="#produtos">
+                            <i class="fas fa-shopping-bag"></i>
+                            <div>
+                                <h4>Compre Produtos</h4>
+                                <p>Adquira peças sustentáveis feitas por nossas artesãs.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <div class="social">
+            <a href="https://www.facebook.com/mulheresdosulglobal" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.instagram.com/mulheresdosulglobal" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-layout">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Empoderando <span class="highlight">Mulheres</span><br> Refugiadas
+                    </h1>
+                    <p class="hero-description">
+                        Acolhemos e apoiamos mulheres refugiadas através da costura, criando oportunidades de renda e construindo uma comunidade de esperança e solidariedade.
+                    </p>
+
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">150+</div>
+                            <div class="stat-label">Mulheres Atendidas</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Produtos Vendidos</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Anos de Impacto</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-image-wrapper">
+                    <img src="{% static 'home/img/mulheres_do_sul_global_cover.jpg' %}" alt="Artesã trabalhando em um mercado de artesanato">
+                    
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">
+                            "Aqui encontrei não apenas trabalho, mas uma família que me acolheu com carinho."
+                        </p>
+                        <p class="testimonial-author">
+                            - Amira, artesã
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="sobre" class="mission-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nossa Missão</h2>
+                <p>A ONG Mulheres do Sul Global nasceu do desejo de transformar vidas e construir pontes entre culturas. Trabalhamos para que cada mulher refugiada encontre aqui não apenas abrigo, mas oportunidade de crescimento e realização pessoal através do ofício da costura.</p>
+            </div>
+
+            <div class="mission-layout">
+                <div class="mission-content">
+                    <h3>Transformando Vidas Através da Costura</h3>
+                    <p>Acreditamos que o trabalho manual não é apenas uma forma de sustento, mas também uma ferramenta poderosa de cura, conexão e expressão cultural. Através dos nossos programas, as mulheres refugiadas desenvolvem habilidades em costura e constroem autoestima e independência.</p>
+                    <p>Cada peça criada carrega consigo uma história de superação, uma tradição cultural preservada e um passo em direção a um futuro mais promissor. Somos um negócio social comprometido com os novos paradigmas de produzir e consumir de forma sustentável.</p>
+
+                    <div class="impact-box">
+                        <h4>Nosso Impacto</h4>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <div class="impact-number">95%</div>
+                                <div class="impact-label">Taxa de reintegração social</div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-number">R$ 2.500</div>
+                                <div class="impact-label">Renda média mensal gerada</div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-number">30</div>
+                                <div class="impact-label">Países de origem representados</div>
+                            </div>
+                            <div class="impact-item">
+                                <div class="impact-number">85%</div>
+                                <div class="impact-label">Conseguem independência financeira</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mission-image">
+                    <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080" alt="Mulheres trabalhando em conjunto">
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+                    </div>
+                    <h4>Acolhimento</h4>
+                    <p>Oferecemos um ambiente seguro e acolhedor para mulheres refugiadas reconstruírem suas vidas.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.75 0a8.014 8.014 0 01-15.75 0m15.75 0A2.25 2.25 0 0013.5 15h-3a2.25 2.25 0 00-2.25 2.25m12 0A2.25 2.25 0 0118 15h-2.25m-7.5-6h7.5m-7.5 3h7.5m-7.5 3h7.5" /></svg>
+                    </div>
+                    <h4>Capacitação</h4>
+                    <p>Desenvolvemos habilidades em costura e empreendedorismo para autonomia econômica.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
+                    </div>
+                    <h4>Diversidade</h4>
+                    <p>Celebramos as diferentes culturas e tradições que enriquecem nossa comunidade.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m0 0H9m3 0h3" /></svg>
+                    </div>
+                    <h4>Sustentabilidade</h4>
+                    <p>Produção consciente utilizando materiais recuperados e práticas sustentáveis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="newsletter-container">
+            <h2>Fique por dentro das nossas novidades</h2>
+            <p>Inscreva-se na nossa newsletter e receba atualizações sobre nossos projetos e histórias inspiradoras.</p>
+            <form class="newsletter" method="POST">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Seu melhor e-mail" required>
+                <button type="submit">Inscrever-se</button>
+            </form>
+        </div>
+
+        <div class="footer-content">
+            <div class="institucional">
+                <h3>Instituto Mulheres do Sul Global</h3>
+                <p>
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/marker.png" alt="Localização">
+                    Maricá, Rio de Janeiro, Brasil
+                </p>
+                <p>
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/phone.png" alt="Telefone">
+                    <a href="https://wa.me/5521983551120">+55 21 98355-1120</a>
+                </p>
+                <p>
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/email.png" alt="Email">
+                    <a href="mailto:contato@mulheresdosulglobal.com">contato@mulheresdosulglobal.com</a>
+                </p>
+
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/mulheresdosulglobal" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/mulheresdosulglobal" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="apoio">
+                <h4>Como você pode ajudar</h4>
+                <button class="doacao" onclick="window.location.href='#doacao'">Fazer uma Doação</button>
+                <button onclick="window.location.href='/voluntariado'">Seja Voluntário</button>
+                <button onclick="window.location.href='/workshops'">Participe dos Workshops</button>
+            </div>
+        </div>
+
+        <div class="copy">
+            <p>&copy; 2025 Instituto Mulheres do Sul Global. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

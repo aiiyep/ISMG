@@ -1,0 +1,427 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Workshops - Instituto MSG</title>
+        <link rel="stylesheet" href="{% static 'home/style.css' %}">
+        <link rel="stylesheet" href="{% static 'home/style_footer.css' %}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/4d8c8e1f2b.js" crossorigin="anonymous"></script>
+        <style>
+            body {
+                margin: 0;
+                padding-top: 70px;
+                background-color: #F9FAFB;
+            }
+
+            /* Navbar styles (igual ao home) */
+            .navbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: #fff;
+                padding: 15px 50px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                position: fixed;
+                top: 0;
+                width: 100%;
+                z-index: 1000;
+                box-sizing: border-box;
+            }
+
+            .navbar .logo img {
+                height: 45px;
+            }
+
+            .navbar .menu {
+                display: flex;
+                gap: 30px;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .navbar .menu a {
+                text-decoration: none;
+                color: #E11D48;
+                font-weight: 600;
+            }
+
+            /* Workshops Page Styles */
+            .workshops-header {
+                background: linear-gradient(135deg, #E11D48 0%, #BE185D 100%);
+                color: white;
+                padding: 4rem 0 3rem;
+                text-align: center;
+            }
+
+            .workshops-header h1 {
+                font-size: 3rem;
+                margin: 0 0 1rem 0;
+                font-weight: 700;
+            }
+
+            .workshops-header p {
+                font-size: 1.25rem;
+                max-width: 700px;
+                margin: 0 auto;
+                opacity: 0.95;
+            }
+
+            .workshops-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 3rem 1rem;
+            }
+
+            .filters {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+            }
+
+            .filter-btn {
+                padding: 0.75rem 1.5rem;
+                border: 2px solid #E11D48;
+                background: white;
+                color: #E11D48;
+                border-radius: 50px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s;
+            }
+
+            .filter-btn:hover,
+            .filter-btn.active {
+                background: #E11D48;
+                color: white;
+            }
+
+            .workshops-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 2rem;
+                margin-bottom: 3rem;
+            }
+
+            .workshop-card {
+                background: white;
+                border-radius: 1rem;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+
+            .workshop-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            }
+
+            .workshop-image {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+
+            .workshop-content {
+                padding: 1.5rem;
+            }
+
+            .workshop-badge {
+                display: inline-block;
+                padding: 0.35rem 0.75rem;
+                background: #FEE2E2;
+                color: #E11D48;
+                border-radius: 50px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+            }
+
+            .workshop-badge.disponivel {
+                background: #D1FAE5;
+                color: #059669;
+            }
+
+            .workshop-badge.esgotado {
+                background: #FEE2E2;
+                color: #DC2626;
+            }
+
+            .workshop-title {
+                font-size: 1.5rem;
+                color: #111827;
+                margin: 0 0 0.75rem 0;
+                font-weight: 700;
+            }
+
+            .workshop-description {
+                color: #6B7280;
+                line-height: 1.6;
+                margin-bottom: 1.25rem;
+            }
+
+            .workshop-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                margin-bottom: 1.25rem;
+                font-size: 0.875rem;
+                color: #6B7280;
+            }
+
+            .workshop-meta-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .workshop-meta-item i {
+                color: #E11D48;
+            }
+
+            .workshop-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 1rem;
+                border-top: 1px solid #E5E7EB;
+            }
+
+            .workshop-price {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #E11D48;
+            }
+
+            .workshop-price.gratuito {
+                color: #059669;
+            }
+
+            .btn-inscricao {
+                padding: 0.75rem 1.5rem;
+                background: #E11D48;
+                color: white;
+                border: none;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .btn-inscricao:hover {
+                background: #BE185D;
+                transform: scale(1.05);
+            }
+
+            .btn-inscricao:disabled {
+                background: #D1D5DB;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            /* Modal Styles */
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                z-index: 2000;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal.active {
+                display: flex;
+            }
+
+            .modal-content {
+                background: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                max-width: 500px;
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .modal-header h2 {
+                margin: 0;
+                color: #111827;
+            }
+
+            .close-modal {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #6B7280;
+            }
+
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #D1D5DB;
+                border-radius: 0.5rem;
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+
+            .form-group textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
+
+            .btn-submit {
+                width: 100%;
+                padding: 1rem;
+                background: #E11D48;
+                color: white;
+                border: none;
+                border-radius: 0.5rem;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            .btn-submit:hover {
+                background: #BE185D;
+            }
+
+            @media (max-width: 768px) {
+                .workshops-header h1 {
+                    font-size: 2rem;
+                }
+                
+                .workshops-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- Navbar (simplificado) -->
+        <header class="navbar">
+            <div class="logo">
+                <a href="/"><img src="{% static 'home/img/logo.png' %}" alt="Mulheres do Sul Global"></a>
+            </div>
+            <ul class="menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/#sobre">Sobre</a></li>
+                <li><a href="/workshops">Workshops</a></li>
+                <li><a href="/voluntariado">Voluntariado</a></li>
+                <li><a href="/#contato">Contato</a></li>
+            </ul>
+        </header>
+
+        <!-- Header -->
+        <section class="workshops-header">
+            <div class="container">
+                <h1>Nossos Workshops</h1>
+                <p>Aprenda novas habilidades em costura e empreendedorismo com nossas artesãs experientes. Desenvolva sua autonomia e faça parte da nossa comunidade!</p>
+            </div>
+        </section>
+
+        <!-- Workshops Content -->
+        <div class="workshops-container">
+            
+            <!-- Filters -->
+            <div class="filters">
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="disponivel">Vagas Disponíveis</button>
+                <button class="filter-btn" data-filter="gratuito">Gratuitos</button>
+                <button class="filter-btn" data-filter="iniciante">Iniciante</button>
+            </div>
+
+            <!-- Workshops Grid -->
+                    <div class="workshops-grid">
+            {% for workshop in workshops %}
+            <div class="workshop-card" data-category="{% if workshop.gratuito %}gratuito {% endif %}{% if workshop.nivel == 'iniciante' %}iniciante{% endif %} disponivel">
+                {% if workshop.imagem %}
+                <img src="{{ workshop.imagem.url }}" alt="{{ workshop.titulo }}" class="workshop-image">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1528832253532-9c22462c0086?w=600" alt="{{ workshop.titulo }}" class="workshop-image">
+                {% endif %}
+                
+                <div class="workshop-content">
+                    {% if workshop.esta_disponivel %}
+                    <span class="workshop-badge disponivel">Vagas Disponíveis</span>
+                    {% else %}
+                    <span class="workshop-badge esgotado">Esgotado</span>
+                    {% endif %}
+                    
+                    <h3 class="workshop-title">{{ workshop.titulo }}</h3>
+                    <p class="workshop-description">{{ workshop.descricao }}</p>
+                    
+                    <div class="workshop-meta">
+                        <div class="workshop-meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ workshop.data_inicio|date:"d/m/Y" }} - {{ workshop.data_fim|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="workshop-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ workshop.numero_encontros }} encontros ({{ workshop.carga_horaria }}h)</span>
+                        </div>
+                        <div class="workshop-meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>{{ workshop.vagas_ocupadas }}/{{ workshop.vagas_totais }} vagas</span>
+                        </div>
+                        <div class="workshop-meta-item">
+                            <i class="fas fa-signal"></i>
+                            <span>{{ workshop.get_nivel_display }}</span>
+                        </div>
+                    </div>
+
+                    <div class="workshop-footer">
+                        {% if workshop.gratuito %}
+                        <span class="workshop-price gratuito">Gratuito</span>
+                        {% else %}
+                        <span class="workshop-price">R$ {{ workshop.preco }}</span>
+                        {% endif %}
+                        
+                        {% if workshop.esta_disponivel %}
+                        <button class="btn-inscricao" onclick="openModal('{{ workshop.id }}')">Inscrever-se</button>
+                        {% else %}
+                        <button class="btn-inscricao" disabled>Vagas Esgotadas</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+        <p style="grid-column: 1/-1; text-align: center; padding: 3rem;">Nenhum workshop disponível no momento.</p>
+        {% endfor %}
+    </div>
+
+    </body>
+</html>
