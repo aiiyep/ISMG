@@ -264,3 +264,27 @@ class NewsletterAdmin(admin.ModelAdmin):
         updated = queryset.update(ativo=False)
         self.message_user(request, f'{updated} inscrição(ões) desativada(s).')
     desativar_inscricoes.short_description = 'Desativar inscrições selecionadas'
+
+admin.register(Noticia)
+class NoticiaAdmin(admin.ModelAdmin):
+    # ...
+    readonly_fields = ['criado_em', 'atualizado_em', 'imagem_preview']
+    fieldsets = (
+        ('Conteúdo', {
+            'fields': ('titulo', 'subtitulo', 'conteudo')
+        }),
+        ('Imagem de Capa', {
+            'fields': ('imagem', 'imagem_preview'),
+            'description': '📐 <strong>Tamanho recomendado:</strong> 800x480 pixels (proporção 5:3) | <strong>Formatos:</strong> JPG, PNG | <strong>Tamanho máximo:</strong> 5MB'
+        }),
+        # ...
+    )
+
+    @admin.display(description='Preview da Imagem')
+    def imagem_preview(self, obj):
+        if obj and obj.imagem:
+            return format_html(
+                '<img src="{}" style="max-width: 320px; max-height: 180px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />',
+                obj.imagem.url
+            )
+        return "Nenhuma imagem"
