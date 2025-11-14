@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db import transaction
+from django.utils.html import format_html  # ✅ ADICIONE ESTE IMPORT
 from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
 
 
@@ -216,13 +217,15 @@ class NoticiaAdmin(admin.ModelAdmin):
     
     actions = ['publicar_noticias', 'despublicar_noticias', 'marcar_destaque', 'desmarcar_destaque']
     
-    # ✅ PREVIEW DA IMAGEM NO ADMIN
+    # ✅ PREVIEW DA IMAGEM NO ADMIN (USANDO format_html)
+    @admin.display(description='Preview da Imagem')
     def imagem_preview(self, obj):
-        if obj.imagem:
-            return f'<img src="{obj.imagem.url}" style="max-width: 300px; max-height: 180px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />'
-        return '<span style="color: #999;">Nenhuma imagem</span>'
-    imagem_preview.short_description = 'Preview da Imagem'
-    imagem_preview.allow_tags = True
+        if obj and obj.imagem:
+            return format_html(
+                '<img src="{}" style="max-width: 320px; max-height: 180px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />',
+                obj.imagem.url
+            )
+        return "Nenhuma imagem"
     
     def publicar_noticias(self, request, queryset):
         updated = queryset.update(publicado=True)
@@ -264,27 +267,3 @@ class NewsletterAdmin(admin.ModelAdmin):
         updated = queryset.update(ativo=False)
         self.message_user(request, f'{updated} inscrição(ões) desativada(s).')
     desativar_inscricoes.short_description = 'Desativar inscrições selecionadas'
-
-admin.register(Noticia)
-class NoticiaAdmin(admin.ModelAdmin):
-    # ...
-    readonly_fields = ['criado_em', 'atualizado_em', 'imagem_preview']
-    fieldsets = (
-        ('Conteúdo', {
-            'fields': ('titulo', 'subtitulo', 'conteudo')
-        }),
-        ('Imagem de Capa', {
-            'fields': ('imagem', 'imagem_preview'),
-            'description': '📐 <strong>Tamanho recomendado:</strong> 800x480 pixels (proporção 5:3) | <strong>Formatos:</strong> JPG, PNG | <strong>Tamanho máximo:</strong> 5MB'
-        }),
-        # ...
-    )
-
-    @admin.display(description='Preview da Imagem')
-    def imagem_preview(self, obj):
-        if obj and obj.imagem:
-            return format_html(
-                '<img src="{}" style="max-width: 320px; max-height: 180px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />',
-                obj.imagem.url
-            )
-        return "Nenhuma imagem"

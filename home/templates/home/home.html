@@ -11,8 +11,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://kit.fontawesome.com/4d8c8e1f2b.js" crossorigin="anonymous"></script>
-        <style>
+    <style>
         /* Estilos do Navbar */
         body {
             margin: 0;
@@ -64,21 +65,23 @@
             color: #ff5722;
         }
 
-        .navbar .menu a i {
+        /* ✅ CORRIGIDO: Apenas a chevron (setinha) fica pequena */
+        .navbar .menu > li > a > .fa-chevron-down {
             font-size: 10px !important;
             transition: transform 0.3s ease-out;
         }
 
-        .navbar .menu li:hover > a i {
+        /* ✅ CORRIGIDO: Rotaciona apenas a chevron */
+        .navbar .menu li:hover > a > .fa-chevron-down {
             transform: rotate(180deg);
         }
 
         /* ✅ CORRIGIDO: Dropdown com padding-top invisível para preencher o gap */
         .dropdown-content {
-            display: none; /* ✅ Mudado de flex para none inicialmente */
+            display: none;
             opacity: 0;
             position: absolute;
-            top: 100%; /* ✅ Cola direto abaixo do item */
+            top: 100%;
             left: 0;
             background: #fff;
             border-radius: 8px;
@@ -89,12 +92,12 @@
             gap: 5px;
             transition: opacity 0.3s ease;
             pointer-events: none;
-            margin-top: 0; /* ✅ Remove margem */
+            margin-top: 0;
         }
 
         /* ✅ CORRIGIDO: Mantém dropdown visível quando hover no li */
         .navbar .menu li:hover .dropdown-content {
-            display: flex; /* ✅ Mostra o dropdown */
+            display: flex;
             opacity: 1;
             pointer-events: auto;
             animation: fadeInDown 0.3s ease;
@@ -118,7 +121,7 @@
             top: 100%;
             left: 0;
             width: 100%;
-            height: 10px; /* ✅ Ponte invisível de 10px */
+            height: 10px;
             background: transparent;
         }
 
@@ -140,18 +143,20 @@
             padding: 0;
             width: 100%;
             color: inherit;
-            text-decoration: none; /* ✅ Remove sublinhado */
+            text-decoration: none;
         }
 
         .dropdown-content .item > a > div {
             flex-grow: 1;
         }
 
+        /* ✅ ÍCONES DO DROPDOWN - Tamanho normal e visível */
         .dropdown-content .item i {
-            font-size: 22px;
+            font-size: 22px !important;  /* ✅ Ícones grandes */
             color: #E11D48;
             min-width: 22px;
             transition: color 0.3s;
+            transform: none !important;  /* ✅ Previne rotação */
         }
 
         .dropdown-content .item:hover i {
@@ -223,12 +228,13 @@
         </div>
 
         <ul class="menu">
+            <!-- ✅ QUEM SOMOS -->
             <li>
                 <a href="#sobre">Quem Somos <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="#sobre">
-                            <i class="fas fa-landmark"></i>
+                            <i class="bi bi-book-half"></i>
                             <div>
                                 <h4>Nossa História</h4>
                                 <p>Conheça a trajetória de empoderamento e transformação social através da costura.</p>
@@ -237,7 +243,7 @@
                     </div>
                     <div class="item">
                         <a href="#missao">
-                            <i class="fas fa-handshake"></i>
+                            <i class="bi bi-bullseye"></i>
                             <div>
                                 <h4>Missão e Valores</h4>
                                 <p>Promovemos o empoderamento econômico de mulheres refugiadas através da costura.</p>
@@ -247,12 +253,13 @@
                 </div>
             </li>
 
+            <!-- ✅ O QUE FAZEMOS -->
             <li>
                 <a href="#servicos">O Que Fazemos <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="#atelie">
-                            <i class="fas fa-ruler-combined"></i>
+                            <i class="bi bi-scissors"></i>
                             <div>
                                 <h4>Ateliê sob Demanda</h4>
                                 <p>Produção responsável e em escala para empresas e marcas comprometidas.</p>
@@ -261,7 +268,7 @@
                     </div>
                     <div class="item">
                         <a href="#produtos">
-                            <i class="fas fa-leaf"></i>
+                            <i class="bi bi-bag-heart"></i>
                             <div>
                                 <h4>Marca Social</h4>
                                 <p>Coleções sustentáveis a partir de materiais e tecidos recuperados.</p>
@@ -270,7 +277,7 @@
                     </div>
                     <div class="item">
                         <a href="/workshops">
-                            <i class="fas fa-chalkboard-teacher"></i>
+                            <i class="bi bi-easel"></i>
                             <div>
                                 <h4>Workshops</h4>
                                 <p>Capacitação e desenvolvimento de habilidades em costura.</p>
@@ -280,9 +287,23 @@
                 </div>
             </li>
 
+            <!-- ✅ CONTATO -->
             <li>
-                <a href="#contato">Contato <i class="fas fa-chevron-down"></i></a>
+                <!-- ✅ Mantenha o link principal como está (ou mude para {% url 'contato' %}) -->
+                <a href="{% url 'contato' %}">Contato <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
+                    <!-- ✅ Adicione este item NOVO no topo -->
+                    <div class="item">
+                        <a href="{% url 'contato' %}">
+                            <i class="bi bi-chat-dots-fill"></i>
+                            <div>
+                                <h4>Formulário de Contato</h4>
+                                <p>Envie sua mensagem diretamente</p>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- ✅ Mantenha os outros itens -->
                     <div class="item">
                         <a href="mailto:contato@mulheresdosulglobal.com">
                             <i class="fas fa-envelope"></i>
@@ -304,12 +325,13 @@
                 </div>
             </li>
 
+            <!-- ✅ SEJA VOLUNTÁRIO -->
             <li>
                 <a href="/voluntariado">Seja Voluntário <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="/voluntariado">
-                            <i class="fas fa-hands-helping"></i>
+                            <i class="bi bi-people-fill"></i>
                             <div>
                                 <h4>Oportunidades</h4>
                                 <p>Faça parte da nossa equipe de voluntários.</p>
@@ -323,8 +345,8 @@
                 <a href="#apoie">Apoie <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
                     <div class="item">
-                        <a href="#doacao">
-                            <i class="fas fa-donate"></i>
+                        <a href="{% url 'doacao' %}">
+                            <i class="bi bi-heart-fill"></i>
                             <div>
                                 <h4>Faça uma Doação</h4>
                                 <p>Contribua com nosso trabalho de forma segura.</p>
@@ -333,7 +355,7 @@
                     </div>
                     <div class="item">
                         <a href="#produtos">
-                            <i class="fas fa-shopping-bag"></i>
+                            <i class="bi bi-cart-check"></i>
                             <div>
                                 <h4>Compre Produtos</h4>
                                 <p>Adquira peças sustentáveis feitas por nossas artesãs.</p>

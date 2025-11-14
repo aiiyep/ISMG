@@ -10,4 +10,6 @@ urlpatterns = [
     path('newsletter/inscricao/', views.newsletter_inscricao, name='newsletter_inscricao'),
     # ✅ NOVA URL PARA DETALHES DA NOTÍCIA
     path('noticia/<int:id>/', views.noticia_detalhe, name='noticia_detalhe'),
+    path('contato/', views.contato, name='contato'),
+    path('doacao/', views.doacao, name='doacao'),
 ]

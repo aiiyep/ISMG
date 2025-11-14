@@ -4,6 +4,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
 
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib import messages
+
 
 def home(request):
     """View da página inicial"""
@@ -221,3 +225,46 @@ def noticia_detalhe(request, id):
         'noticias_relacionadas': noticias_relacionadas,
     }
     return render(request, 'home/noticia_detalhe.html', context)
+
+
+
+def contato(request):
+    """View para processar formulário de contato"""
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        telefone = request.POST.get('telefone')
+        email = request.POST.get('email')
+        assunto = request.POST.get('assunto')
+        mensagem = request.POST.get('mensagem')
+        
+        # Enviar email
+        try:
+            send_mail(
+                subject=f'[CONTATO] {assunto} - {nome}',
+                message=f'''
+Nova mensagem de contato recebida:
+
+Nome: {nome}
+Email: {email}
+Telefone: {telefone}
+Assunto: {assunto}
+
+Mensagem:
+{mensagem}
+                ''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=['contato@mulheresdosulglobal.com'],
+                fail_silently=False,
+            )
+            
+            messages.success(request, '✅ Mensagem enviada com sucesso! Entraremos em contato em breve.')
+        except Exception as e:
+            messages.error(request, '❌ Erro ao enviar mensagem. Tente novamente mais tarde.')
+        
+        return redirect('contato')
+    
+    return render(request, 'home/contato.html')
+
+def doacao(request):
+    """View para página de doação"""
+    return render(request, 'home/doacao.html')
