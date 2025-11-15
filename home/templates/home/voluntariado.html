@@ -686,7 +686,7 @@
             <div class="newsletter-container">
                 <h2>Receba novidades sobre voluntariado</h2>
                 <p>Inscreva-se e fique por dentro das novas oportunidades de voluntariado.</p>
-                <form class="newsletter" method="POST" action="{% url 'newsletter_inscricao' %}">
+                <form class="newsletter" method="POST" action="{% url 'home' %}">
                     {% csrf_token %}
                     <input type="email" name="email" placeholder="Seu melhor e-mail" required>
                     <button type="submit">Inscrever-se</button>

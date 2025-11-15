@@ -422,7 +422,8 @@
         <div class="newsletter-container">
             <h2>Fique por dentro das novidades</h2>
             <p>Inscreva-se em nossa newsletter e receba atualizações sobre nossos projetos.</p>
-            <form class="newsletter" method="POST" action="{% url 'newsletter_inscricao' %}">
+            <!-- ✅ DEPOIS -->
+            <form class="newsletter" method="POST" action="{% url 'home' %}">
                 {% csrf_token %}
                 <input type="email" name="email" placeholder="Seu melhor e-mail" required>
                 <button type="submit">Inscrever-se</button>
