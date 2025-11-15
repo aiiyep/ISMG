@@ -1,216 +1,217 @@
+{% extends 'home/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Entre em Contato - Instituto Mulheres do Sul Global</title>
-        
-        <!-- ✅ Favicon -->
-        <link rel="icon" type="image/png" href="{% static 'home/img/logo.png' %}">
-        
-        <!-- ✅ Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-        
-        <!-- ✅ Bootstrap Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        
-        <!-- ✅ CSS -->
-        <link rel="stylesheet" href="{% static 'home/contato.css' %}">
-    </head>
-    <body>
+{% block title %}Entre em Contato - Instituto MSG{% endblock %}
 
-        <!-- ✅ Botão de Voltar -->
-        <a href="/" class="back-button">
-            <i class="bi bi-arrow-left"></i> Voltar para Home
-        </a>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'home/contato.css' %}">
+<style>
+    .back-button {
+        position: fixed;
+        top: 90px;
+        left: 20px;
+        z-index: 999;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: white;
+        color: #E11D48;
+        text-decoration: none;
+        border-radius: 50px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        font-weight: 600;
+        transition: all 0.3s;
+    }
 
-        <div class="container">
-            <div class="contact-form-section">
-                <!-- ✅ Mensagens de Feedback Django -->
-                {% if messages %}
-                    <div class="messages">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
-                                <i class="bi bi-check-circle-fill"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+    .back-button:hover {
+        background: #E11D48;
+        color: white;
+        transform: translateX(-5px);
+    }
 
-                <h1 class="title">Entre em Contato</h1>
-                <p class="subtitle">Estamos aqui para esclarecer suas dúvidas, receber sugestões e acolher novas parcerias. Juntos podemos fazer a diferença!</p>
+    @media (max-width: 768px) {
+        .back-button {
+            top: 80px;
+            left: 10px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+    }
+</style>
+{% endblock %}
 
-                <!-- ✅ Formulário com Django CSRF e validação -->
-                <form action="{% url 'contato' %}" method="POST" class="contact-form" id="contactForm">
-                    {% csrf_token %}
-                    
-                    <div class="form-group-pair">
-                        <div class="form-group">
-                            <label for="nome">
-                                <i class="bi bi-person"></i> Nome Completo *
-                            </label>
-                            <input 
-                                type="text" 
-                                id="nome" 
-                                name="nome" 
-                                placeholder="João Pedro Matias da Silva"
-                                required
-                                minlength="3"
-                            >
-                        </div>
-                        <div class="form-group">
-                            <label for="telefone">
-                                <i class="bi bi-telephone"></i> Telefone *
-                            </label>
-                            <input 
-                                type="tel" 
-                                id="telefone" 
-                                name="telefone" 
-                                placeholder="(21) 99999-9999"
-                                required
-                                maxlength="15"
-                            >
-                        </div>
-                    </div>
+{% block content %}
+<!-- Botão de Voltar -->
+<a href="/" class="back-button">
+    <i class="bi bi-arrow-left"></i> Voltar para Home
+</a>
 
-                    <div class="form-group-pair">
-                        <div class="form-group">
-                            <label for="email">
-                                <i class="bi bi-envelope"></i> Endereço de e-mail *
-                            </label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email" 
-                                placeholder="email@dominio.com.br"
-                                required
-                            >
-                        </div>
-                        <div class="form-group">
-                            <label for="assunto">
-                                <i class="bi bi-tag"></i> Assunto *
-                            </label>
-                            <select id="assunto" name="assunto" required>
-                                <option value="">Selecione um assunto</option>
-                                <option value="duvida">Dúvida Geral</option>
-                                <option value="parceria">Proposta de Parceria</option>
-                                <option value="voluntariado">Voluntariado</option>
-                                <option value="doacao">Doação</option>
-                                <option value="workshop">Workshops</option>
-                                <option value="outro">Outro</option>
-                            </select>
-                        </div>
-                    </div>
+<div class="container">
+    <div class="contact-form-section">
+        <h1 class="title">Entre em Contato</h1>
+        <p class="subtitle">Estamos aqui para esclarecer suas dúvidas, receber sugestões e acolher novas parcerias. Juntos podemos fazer a diferença!</p>
 
-                    <div class="form-group-full">
-                        <label for="mensagem">
-                            <i class="bi bi-chat-left-text"></i> Sua mensagem *
-                        </label>
-                        <textarea 
-                            id="mensagem" 
-                            name="mensagem" 
-                            rows="6" 
-                            placeholder="Digite sua pergunta ou mensagem"
-                            required
-                            minlength="10"
-                        ></textarea>
-                        <small class="char-counter">Mínimo 10 caracteres</small>
-                    </div>
-
-                    <button type="submit" class="submit-button">
-                        <i class="bi bi-send-fill"></i> Enviar Mensagem
-                    </button>
-                </form>
-
-                <!-- ✅ Informações de Contato Rápido -->
-                <div class="contact-info">
-                    <h3>Outras formas de contato</h3>
-                    <div class="info-grid">
-                        <a href="mailto:contato@mulheresdosulglobal.com" class="info-item">
-                            <i class="bi bi-envelope-fill"></i>
-                            <div>
-                                <strong>Email</strong>
-                                <p>contato@mulheresdosulglobal.com</p>
-                            </div>
-                        </a>
-                        <a href="https://wa.me/5521983551120" target="_blank" class="info-item">
-                            <i class="bi bi-whatsapp"></i>
-                            <div>
-                                <strong>WhatsApp</strong>
-                                <p>+55 21 98355-1120</p>
-                            </div>
-                        </a>
-                        <div class="info-item">
-                            <i class="bi bi-geo-alt-fill"></i>
-                            <div>
-                                <strong>Localização</strong>
-                                <p>Maricá, Rio de Janeiro</p>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Formulário com Django CSRF e validação -->
+        <form action="{% url 'contato' %}" method="POST" class="contact-form" id="contactForm">
+            {% csrf_token %}
+            
+            <div class="form-group-pair">
+                <div class="form-group">
+                    <label for="nome">
+                        <i class="bi bi-person"></i> Nome Completo *
+                    </label>
+                    <input 
+                        type="text" 
+                        id="nome" 
+                        name="nome" 
+                        placeholder="João Pedro Matias da Silva"
+                        required
+                        minlength="3"
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="telefone">
+                        <i class="bi bi-telephone"></i> Telefone *
+                    </label>
+                    <input 
+                        type="tel" 
+                        id="telefone" 
+                        name="telefone" 
+                        placeholder="(21) 99999-9999"
+                        required
+                        maxlength="15"
+                    >
                 </div>
             </div>
 
-            <div class="graphic-section">
-                <img src="{% static 'home/img/SULGLOB.jpg' %}" alt="Logo Instituto Mulheres do Sul Global" class="full-size-image">
+            <div class="form-group-pair">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="bi bi-envelope"></i> Endereço de e-mail *
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="email@dominio.com.br"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="assunto">
+                        <i class="bi bi-tag"></i> Assunto *
+                    </label>
+                    <select id="assunto" name="assunto" required>
+                        <option value="">Selecione um assunto</option>
+                        <option value="duvida">Dúvida Geral</option>
+                        <option value="parceria">Proposta de Parceria</option>
+                        <option value="voluntariado">Voluntariado</option>
+                        <option value="doacao">Doação</option>
+                        <option value="workshop">Workshops</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group-full">
+                <label for="mensagem">
+                    <i class="bi bi-chat-left-text"></i> Sua mensagem *
+                </label>
+                <textarea 
+                    id="mensagem" 
+                    name="mensagem" 
+                    rows="6" 
+                    placeholder="Digite sua pergunta ou mensagem"
+                    required
+                    minlength="10"
+                ></textarea>
+                <small class="char-counter">Mínimo 10 caracteres</small>
+            </div>
+
+            <button type="submit" class="submit-button">
+                <i class="bi bi-send-fill"></i> Enviar Mensagem
+            </button>
+        </form>
+
+        <!-- Informações de Contato Rápido -->
+        <div class="contact-info">
+            <h3>Outras formas de contato</h3>
+            <div class="info-grid">
+                <a href="mailto:contato@mulheresdosulglobal.com" class="info-item">
+                    <i class="bi bi-envelope-fill"></i>
+                    <div>
+                        <strong>Email</strong>
+                        <p>contato@mulheresdosulglobal.com</p>
+                    </div>
+                </a>
+                <a href="https://wa.me/5521983551120" target="_blank" class="info-item">
+                    <i class="bi bi-whatsapp"></i>
+                    <div>
+                        <strong>WhatsApp</strong>
+                        <p>+55 21 98355-1120</p>
+                    </div>
+                </a>
+                <div class="info-item">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <div>
+                        <strong>Localização</strong>
+                        <p>Maricá, Rio de Janeiro</p>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- ✅ Script de validação e feedback -->
-        <script>
-            // ✅ Máscara de telefone - LIMITADA a números brasileiros
-            document.getElementById('telefone').addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
-                
-                // ✅ LIMITA a 11 dígitos (DDD + 9 dígitos para celular)
-                if (value.length > 11) {
-                    value = value.slice(0, 11);
-                }
-                
-                // ✅ Aplica a máscara de acordo com o tamanho
-                if (value.length === 0) {
-                    e.target.value = '';
-                } else if (value.length <= 2) {
-                    // (XX
-                    e.target.value = `(${value}`;
-                } else if (value.length <= 6) {
-                    // (XX) XXXX
-                    e.target.value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-                } else if (value.length <= 10) {
-                    // (XX) XXXX-XXXX (telefone fixo)
-                    e.target.value = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`;
-                } else {
-                    // (XX) XXXXX-XXXX (celular com 9 dígitos)
-                    e.target.value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7, 11)}`;
-                }
-            });
+    <div class="graphic-section">
+        <img src="{% static 'home/img/SULGLOB.jpg' %}" alt="Logo Instituto Mulheres do Sul Global" class="full-size-image">
+    </div>
+</div>
+{% endblock %}
 
-            // Contador de caracteres
-            const textarea = document.getElementById('mensagem');
-            const counter = document.querySelector('.char-counter');
-            
-            textarea.addEventListener('input', function() {
-                const length = this.value.length;
-                if (length < 10) {
-                    counter.textContent = `Faltam ${10 - length} caracteres`;
-                    counter.style.color = '#e6004c';
-                } else {
-                    counter.textContent = `${length} caracteres`;
-                    counter.style.color = '#4c4c4c';
-                }
-            });
+{% block extra_js %}
+<script>
+    // Máscara de telefone - LIMITADA a números brasileiros
+    document.getElementById('telefone').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length > 11) {
+            value = value.slice(0, 11);
+        }
+        
+        if (value.length === 0) {
+            e.target.value = '';
+        } else if (value.length <= 2) {
+            e.target.value = `(${value}`;
+        } else if (value.length <= 6) {
+            e.target.value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+        } else if (value.length <= 10) {
+            e.target.value = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`;
+        } else {
+            e.target.value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7, 11)}`;
+        }
+    });
 
-            // Animação de envio
-            document.getElementById('contactForm').addEventListener('submit', function(e) {
-                const button = this.querySelector('.submit-button');
-                button.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
-                button.disabled = true;
-            });
-        </script>
-    </body>
-</html>
+    // Contador de caracteres
+    const textarea = document.getElementById('mensagem');
+    const counter = document.querySelector('.char-counter');
+    
+    textarea.addEventListener('input', function() {
+        const length = this.value.length;
+        if (length < 10) {
+            counter.textContent = `Faltam ${10 - length} caracteres`;
+            counter.style.color = '#e6004c';
+        } else {
+            counter.textContent = `${length} caracteres`;
+            counter.style.color = '#4c4c4c';
+        }
+    });
+
+    // Animação de envio
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        const button = this.querySelector('.submit-button');
+        button.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
+        button.disabled = true;
+    });
+</script>
+{% endblock %}

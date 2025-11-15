@@ -1,17 +1,9 @@
+{% extends 'home/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ noticia.titulo }} - Instituto MSG</title>
-    <link rel="stylesheet" href="{% static 'home/style.css' %}">
-    <link rel="stylesheet" href="{% static 'home/style_footer.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/4d8c8e1f2b.js" crossorigin="anonymous"></script>
+{% block title %}Workshops - Instituto MSG{% endblock %}
+
+{% block extra_css %}
     <style>
         body {
             margin: 0;
@@ -278,22 +270,9 @@
             }
         }
     </style>
-</head>
-<body>
+{% endblock %}
 
-    <!-- Navbar -->
-    <header class="navbar">
-        <div class="logo">
-            <a href="/"><img src="{% static 'home/img/logo.png' %}" alt="Mulheres do Sul Global"></a>
-        </div>
-        <ul class="menu">
-            <li><a href="/">Home</a></li>
-            <li><a href="/#sobre">Sobre</a></li>
-            <li><a href="/workshops">Workshops</a></li>
-            <li><a href="/voluntariado">Voluntariado</a></li>
-            <li><a href="/#contato">Contato</a></li>
-        </ul>
-    </header>
+{% block content %}
 
     <!-- Article Container -->
     <div class="article-container">
@@ -326,7 +305,7 @@
             <h1 class="article-title">{{ noticia.titulo }}</h1>
 
             {% if noticia.subtitulo %}
-            <p class="article-subtitle">{{ noticia.subtitulo }}</p>
+                <p class="article-subtitle">{{ noticia.subtitulo }}</p>
             {% endif %}
 
             <div class="article-meta">
@@ -371,48 +350,48 @@
 
         <!-- Related News -->
         {% if noticias_relacionadas %}
-        <section class="related-news">
-            <h3>Notícias Relacionadas</h3>
-            <div class="related-grid">
-                {% for relacionada in noticias_relacionadas %}
-                <article class="news-card">
-                    <div class="news-image">
-                        {% if relacionada.imagem %}
-                            <img src="{{ relacionada.imagem.url }}" alt="{{ relacionada.titulo }}">
-                        {% endif %}
-                        <div class="news-category {{ relacionada.categoria }}">
-                            {% if relacionada.categoria == 'evento' %}
-                                <i class="fas fa-calendar-alt"></i> Evento
-                            {% elif relacionada.categoria == 'projeto' %}
-                                <i class="fas fa-lightbulb"></i> Projeto
-                            {% elif relacionada.categoria == 'conquista' %}
-                                <i class="fas fa-trophy"></i> Conquista
-                            {% elif relacionada.categoria == 'parceria' %}
-                                <i class="fas fa-handshake"></i> Parceria
-                            {% else %}
-                                <i class="fas fa-newspaper"></i> Notícia
+            <section class="related-news">
+                <h3>Notícias Relacionadas</h3>
+                <div class="related-grid">
+                    {% for relacionada in noticias_relacionadas %}
+                    <article class="news-card">
+                        <div class="news-image">
+                            {% if relacionada.imagem %}
+                                <img src="{{ relacionada.imagem.url }}" alt="{{ relacionada.titulo }}">
                             {% endif %}
+                            <div class="news-category {{ relacionada.categoria }}">
+                                {% if relacionada.categoria == 'evento' %}
+                                    <i class="fas fa-calendar-alt"></i> Evento
+                                {% elif relacionada.categoria == 'projeto' %}
+                                    <i class="fas fa-lightbulb"></i> Projeto
+                                {% elif relacionada.categoria == 'conquista' %}
+                                    <i class="fas fa-trophy"></i> Conquista
+                                {% elif relacionada.categoria == 'parceria' %}
+                                    <i class="fas fa-handshake"></i> Parceria
+                                {% else %}
+                                    <i class="fas fa-newspaper"></i> Notícia
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                    <div class="news-content">
-                        <div class="news-meta">
-                            <span class="news-date">
-                                <i class="far fa-clock"></i> 
-                                {{ relacionada.data_publicacao|date:"d/m/Y" }}
-                            </span>
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span class="news-date">
+                                    <i class="far fa-clock"></i> 
+                                    {{ relacionada.data_publicacao|date:"d/m/Y" }}
+                                </span>
+                            </div>
+                            <h3 class="news-title">{{ relacionada.titulo }}</h3>
+                            <p class="news-excerpt">
+                                {{ relacionada.conteudo|truncatewords:20 }}
+                            </p>
+                            <a href="{% url 'noticia_detalhe' relacionada.id %}" class="news-read-more">
+                                Ler mais <i class="fas fa-arrow-right"></i>
+                            </a>
                         </div>
-                        <h3 class="news-title">{{ relacionada.titulo }}</h3>
-                        <p class="news-excerpt">
-                            {{ relacionada.conteudo|truncatewords:20 }}
-                        </p>
-                        <a href="{% url 'noticia_detalhe' relacionada.id %}" class="news-read-more">
-                            Ler mais <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-        </section>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
         {% endif %}
 
     </div>
@@ -449,5 +428,4 @@
         </div>
     </footer>
 
-</body>
-</html>
+{% endblock %}

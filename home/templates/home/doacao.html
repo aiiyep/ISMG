@@ -1,371 +1,375 @@
+{% extends 'home/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faça uma Doação - Instituto Mulheres do Sul Global</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{% static 'home/img/logo.png' %}">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="{% static 'home/doacao.css' %}">
-</head>
-    <body>
+{% block title %}Faça uma Doação - Instituto MSG{% endblock %}
 
-        <!-- Botão de Voltar -->
-        <a href="/" class="back-button">
-            <i class="bi bi-arrow-left"></i> Voltar para Home
-        </a>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'home/doacao.css' %}">
+<style>
+    .back-button {
+        position: fixed;
+        top: 90px;
+        left: 20px;
+        z-index: 999;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: white;
+        color: #E11D48;
+        text-decoration: none;
+        border-radius: 50px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        font-weight: 600;
+        transition: all 0.3s;
+    }
 
-        <div class="container">
-            <div class="donation-section">
-                <!-- Mensagens de Feedback Django -->
-                {% if messages %}
-                    <div class="messages">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
-                                <i class="bi bi-check-circle-fill"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
+    .back-button:hover {
+        background: #E11D48;
+        color: white;
+        transform: translateX(-5px);
+    }
+
+    @media (max-width: 768px) {
+        .back-button {
+            top: 80px;
+            left: 10px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Botão de Voltar -->
+<a href="/" class="back-button">
+    <i class="bi bi-arrow-left"></i> Voltar para Home
+</a>
+
+<div class="container">
+    <div class="donation-section">
+        <h1 class="title">Faça sua Doação</h1>
+        <p class="subtitle">
+            Sua contribuição transforma vidas! Cada doação ajuda mulheres refugiadas a conquistarem autonomia financeira e dignidade através da costura.
+        </p>
+
+        <!-- Selos de Confiança -->
+        <div class="trust-badges">
+            <div class="badge-item">
+                <i class="bi bi-shield-check"></i>
+                <span>100% Seguro</span>
+            </div>
+            <div class="badge-item">
+                <i class="bi bi-lock-fill"></i>
+                <span>Criptografado</span>
+            </div>
+            <div class="badge-item">
+                <i class="bi bi-award-fill"></i>
+                <span>Transparência Total</span>
+            </div>
+        </div>
+
+        <!-- Escolha o Método de Doação -->
+        <div class="payment-methods">
+            <h3>Escolha a forma de pagamento</h3>
+            
+            <div class="method-tabs">
+                <button class="method-tab active" data-method="pix">
+                    <i class="bi bi-phone"></i>
+                    PIX
+                </button>
+                <button class="method-tab" data-method="paypal">
+                    <i class="bi bi-paypal"></i>
+                    PayPal
+                </button>
+            </div>
+
+            <!-- Conteúdo PIX -->
+            <div class="method-content active" id="pix-content">
+                <div class="pix-section">
+                    <h4>
+                        <i class="bi bi-qr-code"></i> 
+                        Doação via PIX
+                    </h4>
+                    <p class="method-description">
+                        Escaneie o QR Code ou copie a chave PIX abaixo. Sua doação chegará instantaneamente!
+                    </p>
+
+                    <!-- Valores Sugeridos -->
+                    <div class="suggested-amounts">
+                        <button class="amount-btn" data-amount="20">R$ 20</button>
+                        <button class="amount-btn" data-amount="50">R$ 50</button>
+                        <button class="amount-btn" data-amount="100">R$ 100</button>
+                        <button class="amount-btn" data-amount="200">R$ 200</button>
+                        <button class="amount-btn custom" data-amount="custom">Outro valor</button>
                     </div>
-                {% endif %}
 
-                <h1 class="title">Faça sua Doação</h1>
-                <p class="subtitle">
-                    Sua contribuição transforma vidas! Cada doação ajuda mulheres refugiadas a conquistarem autonomia financeira e dignidade através da costura.
-                </p>
-
-                <!-- Selos de Confiança -->
-                <div class="trust-badges">
-                    <div class="badge-item">
-                        <i class="bi bi-shield-check"></i>
-                        <span>100% Seguro</span>
-                    </div>
-                    <div class="badge-item">
-                        <i class="bi bi-lock-fill"></i>
-                        <span>Criptografado</span>
-                    </div>
-                    <div class="badge-item">
-                        <i class="bi bi-award-fill"></i>
-                        <span>Transparência Total</span>
-                    </div>
-                </div>
-
-                <!-- Escolha o Método de Doação -->
-                <div class="payment-methods">
-                    <h3>Escolha a forma de pagamento</h3>
-                    
-                    <div class="method-tabs">
-                        <button class="method-tab active" data-method="pix">
-                            <i class="bi bi-phone"></i>
-                            PIX
-                        </button>
-                        <button class="method-tab" data-method="paypal">
-                            <i class="bi bi-paypal"></i>
-                            PayPal
-                        </button>
-                    </div>
-
-                    <!-- Conteúdo PIX -->
-                    <div class="method-content active" id="pix-content">
-                        <div class="pix-section">
-                            <h4>
-                                <i class="bi bi-qr-code"></i> 
-                                Doação via PIX
-                            </h4>
-                            <p class="method-description">
-                                Escaneie o QR Code ou copie a chave PIX abaixo. Sua doação chegará instantaneamente!
-                            </p>
-
-                            <!-- Valores Sugeridos -->
-                            <div class="suggested-amounts">
-                                <button class="amount-btn" data-amount="20">R$ 20</button>
-                                <button class="amount-btn" data-amount="50">R$ 50</button>
-                                <button class="amount-btn" data-amount="100">R$ 100</button>
-                                <button class="amount-btn" data-amount="200">R$ 200</button>
-                                <button class="amount-btn custom" data-amount="custom">Outro valor</button>
-                            </div>
-
-                            <!-- Input Valor Customizado -->
-                            <div class="custom-amount-input" style="display: none;">
-                                <label for="customAmount">Digite o valor desejado:</label>
-                                <div class="input-group">
-                                    <span class="currency">R$</span>
-                                    <input type="number" id="customAmount" placeholder="0,00" min="1" step="0.01">
-                                </div>
-                            </div>
-
-                            <!-- QR Code PIX -->
-                            <div class="qr-code-container">
-                                <img src="{% static 'home/img/qr-code-pix.png' %}" alt="QR Code PIX" class="qr-code">
-                                <p class="qr-info">Escaneie com o app do seu banco</p>
-                            </div>
-
-                            <!-- Chave PIX -->
-                            <div class="pix-key-box">
-                                <div class="pix-key-header">
-                                    <i class="bi bi-key-fill"></i>
-                                    <strong>Chave PIX:</strong>
-                                </div>
-                                <div class="pix-key-value">
-                                    <span id="pixKey">doacao@mulheresdosulglobal.com</span>
-                                    <button class="copy-btn" onclick="copyPixKey()">
-                                        <i class="bi bi-clipboard"></i>
-                                        Copiar
-                                    </button>
-                                </div>
-                                <small class="pix-tip">Tipo: Email • CNPJ: 00.000.000/0001-00</small>
-                            </div>
-
-                            <!-- Instruções PIX -->
-                            <div class="instructions">
-                                <h5>
-                                    <i class="bi bi-info-circle"></i>
-                                    Como doar via PIX:
-                                </h5>
-                                <ol>
-                                    <li>Abra o app do seu banco</li>
-                                    <li>Acesse a área PIX</li>
-                                    <li>Escaneie o QR Code ou cole a chave PIX</li>
-                                    <li>Confirme o valor e finalize a doação</li>
-                                </ol>
-                            </div>
+                    <!-- Input Valor Customizado -->
+                    <div class="custom-amount-input" style="display: none;">
+                        <label for="customAmount">Digite o valor desejado:</label>
+                        <div class="input-group">
+                            <span class="currency">R$</span>
+                            <input type="number" id="customAmount" placeholder="0,00" min="1" step="0.01">
                         </div>
                     </div>
 
-                    <!-- Conteúdo PayPal -->
-                    <div class="method-content" id="paypal-content">
-                        <div class="paypal-section">
-                            <h4>
-                                <i class="bi bi-paypal"></i>
-                                Doação via PayPal
-                            </h4>
-                            <p class="method-description">
-                                Aceite pagamentos com cartão de crédito, débito ou saldo PayPal. Seguro e internacional!
-                            </p>
-
-                            <!-- Valores Sugeridos PayPal -->
-                            <div class="suggested-amounts">
-                                <button class="amount-btn-usd" data-amount="5">US$ 5</button>
-                                <button class="amount-btn-usd" data-amount="10">US$ 10</button>
-                                <button class="amount-btn-usd" data-amount="25">US$ 25</button>
-                                <button class="amount-btn-usd" data-amount="50">US$ 50</button>
-                                <button class="amount-btn-usd custom" data-amount="custom">Outro valor</button>
-                            </div>
-
-                            <!-- Botão PayPal -->
-                            <div class="paypal-button-container">
-                                <!-- Substitua pelo seu botão real do PayPal -->
-                                <form action="https://www.paypal.com/donate" method="post" target="_blank">
-                                    <input type="hidden" name="business" value="doacao@mulheresdosulglobal.com">
-                                    <input type="hidden" name="currency_code" value="USD">
-                                    <input type="hidden" name="item_name" value="Doação - Instituto Mulheres do Sul Global">
-                                    
-                                    <button type="submit" class="paypal-btn">
-                                        <i class="bi bi-paypal"></i>
-                                        Doar com PayPal
-                                    </button>
-                                </form>
-
-                                <!-- Ou use o botão gerado pelo PayPal -->
-                                <div id="paypal-button-container-official" style="margin-top: 20px;">
-                                    <!-- O código do botão PayPal oficial vai aqui -->
-                                </div>
-                            </div>
-
-                            <!-- Instruções PayPal -->
-                            <div class="instructions">
-                                <h5>
-                                    <i class="bi bi-info-circle"></i>
-                                    Como doar via PayPal:
-                                </h5>
-                                <ol>
-                                    <li>Clique no botão "Doar com PayPal"</li>
-                                    <li>Faça login na sua conta PayPal (ou crie uma)</li>
-                                    <li>Escolha o valor e método de pagamento</li>
-                                    <li>Confirme sua doação com segurança</li>
-                                </ol>
-                            </div>
-
-                            <!-- Aceita Cartões -->
-                            <div class="accepted-cards">
-                                <p>Aceitamos os principais cartões:</p>
-                                <div class="cards-icons">
-                                    <i class="bi bi-credit-card-2-front"></i>
-                                    <span>Visa</span>
-                                    <span>Mastercard</span>
-                                    <span>Amex</span>
-                                    <span>Elo</span>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- QR Code PIX -->
+                    <div class="qr-code-container">
+                        <img src="{% static 'home/img/qr-code-pix.png' %}" alt="QR Code PIX" class="qr-code">
+                        <p class="qr-info">Escaneie com o app do seu banco</p>
                     </div>
-                </div>
 
-                <!-- Impacto da Doação -->
-                <div class="impact-section">
-                    <h3>
-                        <i class="bi bi-heart-fill"></i>
-                        O impacto da sua doação
-                    </h3>
-                    <div class="impact-grid">
-                        <div class="impact-card">
-                            <div class="impact-value">R$ 50</div>
-                            <p>Materiais básicos de costura para uma mulher iniciar seu treinamento</p>
+                    <!-- Chave PIX -->
+                    <div class="pix-key-box">
+                        <div class="pix-key-header">
+                            <i class="bi bi-key-fill"></i>
+                            <strong>Chave PIX:</strong>
                         </div>
-                        <div class="impact-card">
-                            <div class="impact-value">R$ 100</div>
-                            <p>Kit completo de tecidos sustentáveis para produção de 5 peças</p>
+                        <div class="pix-key-value">
+                            <span id="pixKey">doacao@mulheresdosulglobal.com</span>
+                            <button class="copy-btn" onclick="copyPixKey()">
+                                <i class="bi bi-clipboard"></i>
+                                Copiar
+                            </button>
                         </div>
-                        <div class="impact-card">
-                            <div class="impact-value">R$ 200</div>
-                            <p>Uma semana de capacitação profissional em costura criativa</p>
-                        </div>
+                        <small class="pix-tip">Tipo: Email • CNPJ: 00.000.000/0001-00</small>
                     </div>
-                </div>
 
-                <!-- Garantias e Segurança -->
-                <div class="security-info">
-                    <h3>
-                        <i class="bi bi-shield-lock-fill"></i>
-                        Sua doação está segura
-                    </h3>
-                    <div class="security-grid">
-                        <div class="security-item">
-                            <i class="bi bi-check-circle"></i>
-                            <div>
-                                <strong>Transparência</strong>
-                                <p>Você receberá recibo e relatórios sobre o uso da sua doação</p>
-                            </div>
-                        </div>
-                        <div class="security-item">
-                            <i class="bi bi-check-circle"></i>
-                            <div>
-                                <strong>Segurança</strong>
-                                <p>Transações criptografadas e protegidas</p>
-                            </div>
-                        </div>
-                        <div class="security-item">
-                            <i class="bi bi-check-circle"></i>
-                            <div>
-                                <strong>Impacto Real</strong>
-                                <p>100% das doações vão direto para os projetos</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Outras Formas de Ajudar -->
-                <div class="other-ways">
-                    <h3>Outras formas de ajudar</h3>
-                    <div class="ways-grid">
-                        <a href="{% url 'voluntariado' %}" class="way-card">
-                            <i class="bi bi-people-fill"></i>
-                            <strong>Seja Voluntário</strong>
-                            <p>Doe seu tempo e conhecimento</p>
-                        </a>
-                        <a href="#produtos" class="way-card">
-                            <i class="bi bi-bag-heart"></i>
-                            <strong>Compre Produtos</strong>
-                            <p>Adquira peças sustentáveis</p>
-                        </a>
-                        <a href="{% url 'contato' %}" class="way-card">
-                            <i class="bi bi-building"></i>
-                            <strong>Parcerias</strong>
-                            <p>Empresas e instituições</p>
-                        </a>
+                    <!-- Instruções PIX -->
+                    <div class="instructions">
+                        <h5>
+                            <i class="bi bi-info-circle"></i>
+                            Como doar via PIX:
+                        </h5>
+                        <ol>
+                            <li>Abra o app do seu banco</li>
+                            <li>Acesse a área PIX</li>
+                            <li>Escaneie o QR Code ou cole a chave PIX</li>
+                            <li>Confirme o valor e finalize a doação</li>
+                        </ol>
                     </div>
                 </div>
             </div>
 
-            <div class="graphic-section">
-                <img src="{% static 'home/img/SULGLOB.jpg' %}" alt="Logo Instituto Mulheres do Sul Global" class="full-size-image">
-                
-                <!-- Stats -->
-                <div class="donation-stats">
-                    <div class="stat-box">
-                        <div class="stat-number">150+</div>
-                        <div class="stat-label">Vidas Transformadas</div>
+            <!-- Conteúdo PayPal -->
+            <div class="method-content" id="paypal-content">
+                <div class="paypal-section">
+                    <h4>
+                        <i class="bi bi-paypal"></i>
+                        Doação via PayPal
+                    </h4>
+                    <p class="method-description">
+                        Aceite pagamentos com cartão de crédito, débito ou saldo PayPal. Seguro e internacional!
+                    </p>
+
+                    <!-- Valores Sugeridos PayPal -->
+                    <div class="suggested-amounts">
+                        <button class="amount-btn-usd" data-amount="5">US$ 5</button>
+                        <button class="amount-btn-usd" data-amount="10">US$ 10</button>
+                        <button class="amount-btn-usd" data-amount="25">US$ 25</button>
+                        <button class="amount-btn-usd" data-amount="50">US$ 50</button>
+                        <button class="amount-btn-usd custom" data-amount="custom">Outro valor</button>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-number">R$ 500K</div>
-                        <div class="stat-label">Arrecadados em 2024</div>
+
+                    <!-- Botão PayPal -->
+                    <div class="paypal-button-container">
+                        <form action="https://www.paypal.com/donate" method="post" target="_blank">
+                            <input type="hidden" name="business" value="doacao@mulheresdosulglobal.com">
+                            <input type="hidden" name="currency_code" value="USD">
+                            <input type="hidden" name="item_name" value="Doação - Instituto Mulheres do Sul Global">
+                            
+                            <button type="submit" class="paypal-btn">
+                                <i class="bi bi-paypal"></i>
+                                Doar com PayPal
+                            </button>
+                        </form>
+
+                        <div id="paypal-button-container-official" style="margin-top: 20px;">
+                            <!-- O código do botão PayPal oficial vai aqui -->
+                        </div>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-number">95%</div>
-                        <div class="stat-label">Taxa de Sucesso</div>
+
+                    <!-- Instruções PayPal -->
+                    <div class="instructions">
+                        <h5>
+                            <i class="bi bi-info-circle"></i>
+                            Como doar via PayPal:
+                        </h5>
+                        <ol>
+                            <li>Clique no botão "Doar com PayPal"</li>
+                            <li>Faça login na sua conta PayPal (ou crie uma)</li>
+                            <li>Escolha o valor e método de pagamento</li>
+                            <li>Confirme sua doação com segurança</li>
+                        </ol>
+                    </div>
+
+                    <!-- Aceita Cartões -->
+                    <div class="accepted-cards">
+                        <p>Aceitamos os principais cartões:</p>
+                        <div class="cards-icons">
+                            <i class="bi bi-credit-card-2-front"></i>
+                            <span>Visa</span>
+                            <span>Mastercard</span>
+                            <span>Amex</span>
+                            <span>Elo</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Scripts -->
-        <script>
-            // Alternância entre PIX e PayPal
-            document.querySelectorAll('.method-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const method = this.dataset.method;
-                    
-                    // Remove active de todos
-                    document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.method-content').forEach(c => c.classList.remove('active'));
-                    
-                    // Adiciona active no selecionado
-                    this.classList.add('active');
-                    document.getElementById(`${method}-content`).classList.add('active');
-                });
-            });
+        <!-- Impacto da Doação -->
+        <div class="impact-section">
+            <h3>
+                <i class="bi bi-heart-fill"></i>
+                O impacto da sua doação
+            </h3>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-value">R$ 50</div>
+                    <p>Materiais básicos de costura para uma mulher iniciar seu treinamento</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-value">R$ 100</div>
+                    <p>Kit completo de tecidos sustentáveis para produção de 5 peças</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-value">R$ 200</div>
+                    <p>Uma semana de capacitação profissional em costura criativa</p>
+                </div>
+            </div>
+        </div>
 
-            // Valores sugeridos PIX
-            document.querySelectorAll('.amount-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-                    this.classList.add('selected');
-                    
-                    if (this.dataset.amount === 'custom') {
-                        document.querySelector('.custom-amount-input').style.display = 'block';
-                    } else {
-                        document.querySelector('.custom-amount-input').style.display = 'none';
-                    }
-                });
-            });
+        <!-- Garantias e Segurança -->
+        <div class="security-info">
+            <h3>
+                <i class="bi bi-shield-lock-fill"></i>
+                Sua doação está segura
+            </h3>
+            <div class="security-grid">
+                <div class="security-item">
+                    <i class="bi bi-check-circle"></i>
+                    <div>
+                        <strong>Transparência</strong>
+                        <p>Você receberá recibo e relatórios sobre o uso da sua doação</p>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <i class="bi bi-check-circle"></i>
+                    <div>
+                        <strong>Segurança</strong>
+                        <p>Transações criptografadas e protegidas</p>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <i class="bi bi-check-circle"></i>
+                    <div>
+                        <strong>Impacto Real</strong>
+                        <p>100% das doações vão direto para os projetos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            // Valores sugeridos PayPal
-            document.querySelectorAll('.amount-btn-usd').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.amount-btn-usd').forEach(b => b.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
+        <!-- Outras Formas de Ajudar -->
+        <div class="other-ways">
+            <h3>Outras formas de ajudar</h3>
+            <div class="ways-grid">
+                <a href="{% url 'voluntariado' %}" class="way-card">
+                    <i class="bi bi-people-fill"></i>
+                    <strong>Seja Voluntário</strong>
+                    <p>Doe seu tempo e conhecimento</p>
+                </a>
+                <a href="#produtos" class="way-card">
+                    <i class="bi bi-bag-heart"></i>
+                    <strong>Compre Produtos</strong>
+                    <p>Adquira peças sustentáveis</p>
+                </a>
+                <a href="{% url 'contato' %}" class="way-card">
+                    <i class="bi bi-building"></i>
+                    <strong>Parcerias</strong>
+                    <p>Empresas e instituições</p>
+                </a>
+            </div>
+        </div>
+    </div>
 
-            // Copiar chave PIX
-            function copyPixKey() {
-                const pixKey = document.getElementById('pixKey').textContent;
-                navigator.clipboard.writeText(pixKey).then(() => {
-                    const btn = document.querySelector('.copy-btn');
-                    const originalContent = btn.innerHTML;
-                    
-                    btn.innerHTML = '<i class="bi bi-check2"></i> Copiado!';
-                    btn.classList.add('copied');
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = originalContent;
-                        btn.classList.remove('copied');
-                    }, 2000);
-                });
+    <div class="graphic-section">
+        <img src="{% static 'home/img/SULGLOB.jpg' %}" alt="Logo Instituto Mulheres do Sul Global" class="full-size-image">
+        
+        <!-- Stats -->
+        <div class="donation-stats">
+            <div class="stat-box">
+                <div class="stat-number">150+</div>
+                <div class="stat-label">Vidas Transformadas</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">R$ 500K</div>
+                <div class="stat-label">Arrecadados em 2024</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">95%</div>
+                <div class="stat-label">Taxa de Sucesso</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Alternância entre PIX e PayPal
+    document.querySelectorAll('.method-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const method = this.dataset.method;
+            
+            document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.method-content').forEach(c => c.classList.remove('active'));
+            
+            this.classList.add('active');
+            document.getElementById(`${method}-content`).classList.add('active');
+        });
+    });
+
+    // Valores sugeridos PIX
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            if (this.dataset.amount === 'custom') {
+                document.querySelector('.custom-amount-input').style.display = 'block';
+            } else {
+                document.querySelector('.custom-amount-input').style.display = 'none';
             }
-        </script>
-    </body>
-</html>
+        });
+    });
+
+    // Valores sugeridos PayPal
+    document.querySelectorAll('.amount-btn-usd').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.amount-btn-usd').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    // Copiar chave PIX
+    function copyPixKey() {
+        const pixKey = document.getElementById('pixKey').textContent;
+        navigator.clipboard.writeText(pixKey).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="bi bi-check2"></i> Copiado!';
+            btn.classList.add('copied');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.classList.remove('copied');
+            }, 2000);
+        }, 2000);
+    }
+
+</script>
+{% endblock %}

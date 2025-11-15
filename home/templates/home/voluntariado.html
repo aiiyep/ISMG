@@ -1,735 +1,603 @@
+{% extends 'home/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Voluntariado - Instituto MSG</title>
-        <link rel="stylesheet" href="{% static 'home/style.css' %}">
-        <link rel="stylesheet" href="{% static 'home/style_footer.css' %}">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-        <script src="https://kit.fontawesome.com/4d8c8e1f2b.js" crossorigin="anonymous"></script>
-        <style>
-            body {
-                margin: 0;
-                padding-top: 70px;
-                background-color: #F9FAFB;
-            }
-
-            /* Navbar */
-            .navbar {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background-color: #fff;
-                padding: 15px 50px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                position: fixed;
-                top: 0;
-                width: 100%;
-                z-index: 1000;
-                box-sizing: border-box;
-            }
-
-            .navbar .logo img {
-                height: 45px;
-            }
-
-            .navbar .menu {
-                display: flex;
-                gap: 30px;
-                list-style: none;
-                margin: 0;
-                padding: 0;
-            }
-
-            .navbar .menu a {
-                text-decoration: none;
-                color: #E11D48;
-                font-weight: 600;
-            }
-
-            /* Hero Section */
-            .voluntariado-hero {
-                background: linear-gradient(135deg, #E11D48 0%, #BE185D 100%);
-                color: white;
-                padding: 5rem 0 4rem;
-                text-align: center;
-            }
-
-            .voluntariado-hero h1 {
-                font-size: 3rem;
-                margin: 0 0 1rem 0;
-                font-weight: 700;
-            }
-
-            .voluntariado-hero p {
-                font-size: 1.25rem;
-                max-width: 800px;
-                margin: 0 auto 2rem;
-                opacity: 0.95;
-                line-height: 1.6;
-            }
-
-            .hero-stats {
-                display: flex;
-                justify-content: center;
-                gap: 3rem;
-                margin-top: 2rem;
-            }
-
-            .hero-stat {
-                text-align: center;
-            }
-
-            .hero-stat-number {
-                font-size: 2.5rem;
-                font-weight: 700;
-                margin-bottom: 0.5rem;
-            }
-
-            .hero-stat-label {
-                font-size: 1rem;
-                opacity: 0.9;
-            }
-
-            /* Container */
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 1rem;
-            }
-
-            /* Why Volunteer Section */
-            .why-volunteer {
-                padding: 4rem 0;
-                background: white;
-            }
-
-            .section-title {
-                text-align: center;
-                font-size: 2.5rem;
-                color: #111827;
-                margin-bottom: 1rem;
-            }
-
-            .section-subtitle {
-                text-align: center;
-                font-size: 1.125rem;
-                color: #6B7280;
-                max-width: 700px;
-                margin: 0 auto 3rem;
-            }
-
-            .benefits-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 2rem;
-            }
-
-            .benefit-card {
-                text-align: center;
-                padding: 2rem;
-                border-radius: 1rem;
-                background: #FEF2F2;
-                transition: transform 0.3s;
-            }
-
-            .benefit-card:hover {
-                transform: translateY(-5px);
-            }
-
-            .benefit-icon {
-                width: 4rem;
-                height: 4rem;
-                margin: 0 auto 1.5rem;
-                background: #E11D48;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .benefit-icon i {
-                font-size: 2rem;
-                color: white;
-            }
-
-            .benefit-title {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: #111827;
-                margin-bottom: 0.75rem;
-            }
-
-            .benefit-description {
-                color: #6B7280;
-                line-height: 1.6;
-            }
-
-            /* Opportunities Section */
-            .opportunities {
-                padding: 4rem 0;
-                background: #F9FAFB;
-            }
-
-            .opportunities-grid {
-                display: grid;
-                gap: 2rem;
-            }
-
-            .opportunity-card {
-                background: white;
-                border-radius: 1rem;
-                padding: 2rem;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                display: grid;
-                grid-template-columns: 1fr auto;
-                gap: 2rem;
-                align-items: start;
-                transition: box-shadow 0.3s, transform 0.3s;
-            }
-
-            .opportunity-card:hover {
-                box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-                transform: translateY(-3px);
-            }
-
-            .opportunity-content h3 {
-                font-size: 1.75rem;
-                color: #111827;
-                margin: 0 0 0.5rem 0;
-            }
-
-            .opportunity-badge {
-                display: inline-block;
-                padding: 0.35rem 0.75rem;
-                background: #FEE2E2;
-                color: #E11D48;
-                border-radius: 50px;
-                font-size: 0.75rem;
-                font-weight: 600;
-                margin-bottom: 1rem;
-            }
-
-            .opportunity-badge.presencial {
-                background: #DBEAFE;
-                color: #1E40AF;
-            }
-
-            .opportunity-badge.remoto {
-                background: #D1FAE5;
-                color: #059669;
-            }
-
-            .opportunity-badge.hibrido {
-                background: #FEF3C7;
-                color: #D97706;
-            }
-
-            .opportunity-description {
-                color: #6B7280;
-                line-height: 1.6;
-                margin-bottom: 1.5rem;
-                white-space: pre-line;
-            }
-
-            .opportunity-requirements {
-                margin-bottom: 1.5rem;
-            }
-
-            .opportunity-requirements h4 {
-                font-size: 1rem;
-                color: #111827;
-                margin-bottom: 0.75rem;
-            }
-
-            .opportunity-requirements ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-
-            .opportunity-requirements li {
-                color: #6B7280;
-                padding-left: 1.5rem;
-                position: relative;
-                margin-bottom: 0.5rem;
-            }
-
-            .opportunity-requirements li:before {
-                content: "✓";
-                position: absolute;
-                left: 0;
-                color: #E11D48;
-                font-weight: 700;
-            }
-
-            .opportunity-meta {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 1.5rem;
-                font-size: 0.875rem;
-                color: #6B7280;
-            }
-
-            .opportunity-meta-item {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-
-            .opportunity-meta-item i {
-                color: #E11D48;
-            }
-
-            .opportunity-cta {
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-                align-items: center;
-            }
-
-            .vagas-info {
-                text-align: center;
-            }
-
-            .vagas-number {
-                font-size: 2rem;
-                font-weight: 700;
-                color: #E11D48;
-            }
-
-            .vagas-label {
-                font-size: 0.875rem;
-                color: #6B7280;
-            }
-
-            .btn-candidatar {
-                padding: 1rem 2rem;
-                background: #E11D48;
-                color: white;
-                border: none;
-                border-radius: 0.5rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s;
-                white-space: nowrap;
-            }
-
-            .btn-candidatar:hover {
-                background: #BE185D;
-                transform: scale(1.05);
-            }
-
-            .btn-candidatar:disabled {
-                background: #D1D5DB;
-                cursor: not-allowed;
-                transform: none;
-            }
-
-            .no-vagas {
-                text-align: center;
-                padding: 3rem;
-                color: #6B7280;
-                font-size: 1.125rem;
-            }
-
-            /* Modal */
-            .modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.7);
-                z-index: 2000;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .modal.active {
-                display: flex;
-            }
-
-            .modal-content {
-                background: white;
-                padding: 2rem;
-                border-radius: 1rem;
-                max-width: 600px;
-                width: 90%;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-
-            .modal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1.5rem;
-            }
-
-            .modal-header h2 {
-                margin: 0;
-                color: #111827;
-            }
-
-            .close-modal {
-                background: none;
-                border: none;
-                font-size: 1.5rem;
-                cursor: pointer;
-                color: #6B7280;
-            }
-
-            .form-group {
-                margin-bottom: 1.5rem;
-            }
-
-            .form-group label {
-                display: block;
-                margin-bottom: 0.5rem;
-                font-weight: 600;
-                color: #374151;
-            }
-
-            .form-group input,
-            .form-group textarea,
-            .form-group select {
-                width: 100%;
-                padding: 0.75rem;
-                border: 1px solid #D1D5DB;
-                border-radius: 0.5rem;
-                font-size: 1rem;
-                box-sizing: border-box;
-            }
-
-            .form-group textarea {
-                resize: vertical;
-                min-height: 120px;
-            }
-
-            .checkbox-group {
-                display: flex;
-                align-items: start;
-                gap: 0.75rem;
-            }
-
-            .checkbox-group input[type="checkbox"] {
-                width: auto;
-                margin-top: 0.25rem;
-            }
-
-            .checkbox-group label {
-                margin-bottom: 0;
-                font-weight: normal;
-            }
-
-            .btn-submit {
-                width: 100%;
-                padding: 1rem;
-                background: #E11D48;
-                color: white;
-                border: none;
-                border-radius: 0.5rem;
-                font-size: 1rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: background 0.3s;
-            }
-
-            .btn-submit:hover {
-                background: #BE185D;
-            }
-
-            @media (max-width: 768px) {
-                .voluntariado-hero h1 {
-                    font-size: 2rem;
-                }
-
-                .hero-stats {
-                    flex-direction: column;
-                    gap: 1.5rem;
-                }
-
-                .opportunity-card {
-                    grid-template-columns: 1fr;
-                }
-
-                .opportunity-cta {
-                    flex-direction: row;
-                    justify-content: space-between;
-                }
-            }
-        </style>
-    </head>
-    <body>
-
-        <!-- Navbar -->
-        <header class="navbar">
-            <div class="logo">
-                <a href="/"><img src="{% static 'home/img/logo.png' %}" alt="Mulheres do Sul Global"></a>
+{% block title %}Voluntariado - Instituto MSG{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #F9FAFB;
+    }
+
+    /* Hero Section */
+    .voluntariado-hero {
+        background: linear-gradient(135deg, #E11D48 0%, #BE185D 100%);
+        color: white;
+        padding: 5rem 0 4rem;
+        text-align: center;
+    }
+
+    .voluntariado-hero h1 {
+        font-size: 3rem;
+        margin: 0 0 1rem 0;
+        font-weight: 700;
+    }
+
+    .voluntariado-hero p {
+        font-size: 1.25rem;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        opacity: 0.95;
+        line-height: 1.6;
+    }
+
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 2rem;
+    }
+
+    .hero-stat {
+        text-align: center;
+    }
+
+    .hero-stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    /* Container */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Why Volunteer Section */
+    .why-volunteer {
+        padding: 4rem 0;
+        background: white;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #1F2937;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        font-size: 1.125rem;
+        color: #6B7280;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+    }
+
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .benefit-card {
+        text-align: center;
+        padding: 2rem;
+        background: #F9FAFB;
+        border-radius: 12px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .benefit-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #E11D48 0%, #BE185D 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 28px;
+        color: white;
+    }
+
+    .benefit-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: #1F2937;
+    }
+
+    .benefit-description {
+        color: #6B7280;
+        line-height: 1.6;
+    }
+
+    /* Vagas Section */
+    .vagas-section {
+        padding: 4rem 0;
+        background: #F9FAFB;
+    }
+
+    .vagas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .vaga-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .vaga-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .vaga-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .vaga-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin: 0;
+    }
+
+    .vaga-badge {
+        background: #DEF7EC;
+        color: #03543F;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .vaga-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6B7280;
+        font-size: 0.875rem;
+    }
+
+    .meta-item i {
+        color: #E11D48;
+        width: 16px;
+    }
+
+    .vaga-description {
+        color: #4B5563;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .vaga-requisitos {
+        margin-bottom: 1.5rem;
+    }
+
+    .vaga-requisitos h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1F2937;
+    }
+
+    .vaga-requisitos ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        color: #6B7280;
+    }
+
+    .vaga-requisitos li {
+        margin-bottom: 0.25rem;
+    }
+
+    .vaga-btn {
+        width: 100%;
+        background: #E11D48;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .vaga-btn:hover {
+        background: #BE185D;
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        overflow-y: auto;
+    }
+
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 2rem;
+        color: #6B7280;
+        cursor: pointer;
+        border: none;
+        background: none;
+    }
+
+    .modal-close:hover {
+        color: #E11D48;
+    }
+
+    .modal h2 {
+        margin-bottom: 1.5rem;
+        color: #1F2937;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #E11D48;
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: #E11D48;
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-submit:hover {
+        background: #BE185D;
+    }
+
+    @media (max-width: 768px) {
+        .voluntariado-hero h1 {
+            font-size: 2rem;
+        }
+
+        .hero-stats {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .vagas-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-content {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="voluntariado-hero">
+        <h1>Seja um Voluntário</h1>
+        <p>Junte-se a nós e faça parte da transformação na vida de mulheres refugiadas. Seu tempo e talento podem fazer toda a diferença!</p>
+        
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number">50+</div>
+                <div class="hero-stat-label">Voluntários Ativos</div>
             </div>
-            <ul class="menu">
-                <li><a href="/">Home</a></li>
-                <li><a href="/#sobre">Sobre</a></li>
-                <li><a href="/workshops">Workshops</a></li>
-                <li><a href="/voluntariado">Voluntariado</a></li>
-                <li><a href="/#contato">Contato</a></li>
-            </ul>
-        </header>
+            <div class="hero-stat">
+                <div class="hero-stat-number">200+</div>
+                <div class="hero-stat-label">Horas de Trabalho</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">100%</div>
+                <div class="hero-stat-label">Impacto Real</div>
+            </div>
+        </div>
+    </section>
 
-        <!-- Hero Section -->
-        <section class="voluntariado-hero">
-            <div class="container">
-                <h1>Seja um Voluntário</h1>
-                <p>Junte-se à nossa missão de empoderar mulheres refugiadas através da costura e empreendedorismo. Seu tempo e talento podem transformar vidas e construir pontes entre culturas.</p>
-                
-                <div class="hero-stats">
-                    <div class="hero-stat">
-                        <div class="hero-stat-number">120+</div>
-                        <div class="hero-stat-label">Voluntários Ativos</div>
+    <!-- Why Volunteer Section -->
+    <section class="why-volunteer">
+        <div class="container">
+            <h2 class="section-title">Por que ser voluntário?</h2>
+            <p class="section-subtitle">Descubra como você pode contribuir e crescer conosco</p>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-heart"></i>
                     </div>
-                    <div class="hero-stat">
-                        <div class="hero-stat-number">5.000+</div>
-                        <div class="hero-stat-label">Horas Doadas</div>
+                    <h3 class="benefit-title">Faça a Diferença</h3>
+                    <p class="benefit-description">Impacte diretamente a vida de mulheres refugiadas e suas famílias</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="hero-stat">
-                        <div class="hero-stat-number">98%</div>
-                        <div class="hero-stat-label">Taxa de Satisfação</div>
+                    <h3 class="benefit-title">Construa Conexões</h3>
+                    <p class="benefit-description">Conecte-se com pessoas de diferentes culturas e histórias inspiradoras</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-lightbulb"></i>
                     </div>
+                    <h3 class="benefit-title">Desenvolva Habilidades</h3>
+                    <p class="benefit-description">Aprenda novas competências e ganhe experiência valiosa</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="benefit-title">Amplie sua Visão</h3>
+                    <p class="benefit-description">Expanda sua perspectiva sobre diversidade e inclusão social</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ✅ OPPORTUNITIES SECTION MOVIDA PARA CIMA -->
-        <section class="opportunities">
-            <div class="container">
-                <h2 class="section-title">Oportunidades de Voluntariado</h2>
-                <p class="section-subtitle">Encontre a oportunidade que mais combina com você e suas habilidades.</p>
-                
-                <div class="opportunities-grid">
-                    {% for vaga in vagas %}
-                    <!-- Vaga {{ forloop.counter }} -->
-                    <div class="opportunity-card">
-                        <div class="opportunity-content">
-                            <span class="opportunity-badge {{ vaga.tipo }}">
-                                {% if vaga.tipo == 'presencial' %}
-                                    Presencial
-                                {% elif vaga.tipo == 'remoto' %}
-                                    Remoto
-                                {% else %}
-                                    Híbrido
-                                {% endif %}
-                            </span>
-                            <h3>{{ vaga.titulo }}</h3>
-                            <p class="opportunity-description">{{ vaga.descricao }}</p>
-                            
-                            <div class="opportunity-requirements">
-                                <h4>O que buscamos:</h4>
-                                <ul>
-                                    {% for requisito in vaga.requisitos.splitlines %}
-                                        {% if requisito.strip %}
-                                            <li>{{ requisito }}</li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            </div>
+    <!-- Vagas Section -->
+    <section class="vagas-section">
+        <div class="container">
+            <h2 class="section-title">Oportunidades de Voluntariado</h2>
+            <p class="section-subtitle">Encontre a vaga perfeita para você</p>
 
-                            <div class="opportunity-meta">
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-{% if vaga.tipo == 'remoto' %}laptop{% else %}map-marker-alt{% endif %}"></i>
-                                    <span>{% if vaga.tipo == 'remoto' %}100% Remoto{% else %}{{ vaga.local }}{% endif %}</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>{{ vaga.horas_semanais }}h/semana</span>
-                                </div>
-                                <div class="opportunity-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>{{ vaga.duracao_minima }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="opportunity-cta">
-                            <div class="vagas-info">
-                                <div class="vagas-number">{{ vaga.vagas_disponiveis }}</div>
-                                <div class="vagas-label">vaga{% if vaga.vagas_disponiveis != 1 %}s{% endif %} aberta{% if vaga.vagas_disponiveis != 1 %}s{% endif %}</div>
-                            </div>
-                            {% if vaga.esta_aberta %}
-                                <button class="btn-candidatar" onclick="openModal('{{ vaga.id }}', '{{ vaga.titulo }}')">Candidatar-se</button>
+            <div class="vagas-grid">
+                {% for vaga in vagas %}
+                <div class="vaga-card">
+                    <div class="vaga-header">
+                        <h3 class="vaga-title">{{ vaga.titulo }}</h3>
+                        <span class="vaga-badge">
+                            {% if vaga.vagas_disponiveis > 0 %}
+                                {{ vaga.vagas_disponiveis }} vaga(s)
                             {% else %}
-                                <button class="btn-candidatar" disabled>Indisponível</button>
+                                Esgotado
                             {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="vaga-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ vaga.get_tipo_display }} - {{ vaga.local|default:"A definir" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ vaga.horas_semanais }}h semanais</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Duração: {{ vaga.duracao_minima }}</span>
                         </div>
                     </div>
-                    {% empty %}
-                    <div class="no-vagas">
-                        <p>No momento não há vagas de voluntariado disponíveis. Volte em breve para conferir novas oportunidades!</p>
+
+                    <p class="vaga-description">{{ vaga.descricao|truncatewords:30 }}</p>
+
+                    <div class="vaga-requisitos">
+                        <h4>Requisitos:</h4>
+                        <ul>
+                            {% for req in vaga.requisitos.splitlines %}
+                                {% if req.strip %}
+                                    <li>{{ req }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
                     </div>
-                    {% endfor %}
+
+                    {% if vaga.status == 'aberta' and vaga.vagas_disponiveis > 0 %}
+                        <button class="vaga-btn" onclick="openModal({{ vaga.id }}, '{{ vaga.titulo }}')">
+                            Candidatar-se
+                        </button>
+                    {% else %}
+                        <button class="vaga-btn" style="background: #9CA3AF; cursor: not-allowed;" disabled>
+                            Indisponível
+                        </button>
+                    {% endif %}
                 </div>
+                {% empty %}
+                <p>Nenhuma vaga disponível no momento. Volte em breve!</p>
+                {% endfor %}
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Why Volunteer Section -->
-        <section class="why-volunteer">
-            <div class="container">
-                <h2 class="section-title">Por que ser voluntário?</h2>
-                <p class="section-subtitle">Descubra como você pode fazer a diferença enquanto desenvolve novas habilidades e amplia sua rede de contatos.</p>
-                
-                <div class="benefits-grid">
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <h3 class="benefit-title">Impacto Real</h3>
-                        <p class="benefit-description">Contribua diretamente para a transformação de vidas e comunidades inteiras.</p>
-                    </div>
+    <!-- Modal de Candidatura -->
+    <div id="candidaturaModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="modalTitle">Candidatura para Voluntariado</h2>
 
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3 class="benefit-title">Networking</h3>
-                        <p class="benefit-description">Conheça pessoas inspiradoras e amplie sua rede de contatos profissionais.</p>
-                    </div>
+            <form method="POST" action="{% url 'voluntariado_candidatura' %}">
+                {% csrf_token %}
+                <input type="hidden" name="vaga_id" id="vaga_id">
 
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <h3 class="benefit-title">Desenvolvimento</h3>
-                        <p class="benefit-description">Desenvolva novas habilidades e ganhe experiência em projetos sociais.</p>
-                    </div>
-
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <h3 class="benefit-title">Diversidade Cultural</h3>
-                        <p class="benefit-description">Vivencie trocas culturais enriquecedoras com mulheres de diversos países.</p>
-                    </div>
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <input type="text" id="nome" name="nome" required>
                 </div>
-            </div>
-        </section>
 
-        <!-- Modal de Candidatura -->
-        <div class="modal" id="candidaturaModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="modalTitle">Candidatura para Voluntariado</h2>
-                    <button class="close-modal" onclick="closeModal()">&times;</button>
+                <div class="form-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" name="email" required>
                 </div>
-                
-                <form method="POST" action="{% url 'voluntariado_candidatura' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="vaga_id" id="vaga_id">
-                    
-                    <div class="form-group">
-                        <label for="nome">Nome Completo *</label>
-                        <input type="text" id="nome" name="nome" required>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="email">E-mail *</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone *</label>
+                    <input type="tel" id="telefone" name="telefone" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="telefone">Telefone/WhatsApp *</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(21) 98765-4321" required>
-                    </div>
+                <div class="form-group">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" name="idade" min="16" max="100">
+                </div>
 
-                    <div class="form-group">
-                        <label for="idade">Idade</label>
-                        <input type="number" id="idade" name="idade" min="16" max="100">
-                    </div>
+                <div class="form-group">
+                    <label for="profissao">Profissão</label>
+                    <input type="text" id="profissao" name="profissao">
+                </div>
 
-                    <div class="form-group">
-                        <label for="profissao">Profissão/Área de Atuação</label>
-                        <input type="text" id="profissao" name="profissao">
-                    </div>
+                <div class="form-group">
+                    <label for="experiencia">Experiência Relevante</label>
+                    <textarea id="experiencia" name="experiencia" placeholder="Conte-nos sobre sua experiência..."></textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label for="experiencia">Experiência Relacionada</label>
-                        <textarea id="experiencia" name="experiencia" placeholder="Conte-nos sobre suas experiências relevantes para esta vaga..."></textarea>
-                    </div>
+                <div class="form-group">
+                    <label for="motivacao">Por que quer ser voluntário? *</label>
+                    <textarea id="motivacao" name="motivacao" required placeholder="Compartilhe sua motivação..."></textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label for="motivacao">Por que você quer ser voluntário(a)? *</label>
-                        <textarea id="motivacao" name="motivacao" placeholder="Compartilhe suas motivações e o que você espera desta experiência..." required></textarea>
-                    </div>
+                <div class="form-group">
+                    <label for="disponibilidade">Disponibilidade</label>
+                    <textarea id="disponibilidade" name="disponibilidade" placeholder="Ex: Segunda a sexta, manhãs"></textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label for="disponibilidade">Disponibilidade de Horário</label>
-                        <textarea id="disponibilidade" name="disponibilidade" placeholder="Exemplo: Segundas e quartas, das 14h às 18h"></textarea>
-                    </div>
+                <button type="submit" class="btn-submit">Enviar Candidatura</button>
+            </form>
+        </div>
+    </div>
 
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="termos" name="termos" required>
-                        <label for="termos">Declaro que as informações fornecidas são verdadeiras e concordo com os termos de voluntariado.</label>
-                    </div>
+    <!-- Footer -->
+    <footer>
+        <div class="newsletter-container">
+            <h2>Receba novidades sobre voluntariado</h2>
+            <p>Inscreva-se e fique por dentro das novas oportunidades de voluntariado.</p>
+            <form class="newsletter" method="POST" action="{% url 'home' %}">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Seu melhor e-mail" required>
+                <button type="submit">Inscrever-se</button>
+            </form>
+        </div>
 
-                    <button type="submit" class="btn-submit">Enviar Candidatura</button>
-                </form>
+        <div class="footer-content">
+            <div class="institucional">
+                <h3>Instituto Mulheres do Sul Global</h3>
+                <p>
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/phone.png" alt="Telefone">
+                    <a href="https://wa.me/5521983551120">+55 21 98355-1120</a>
+                </p>
+                <p>
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/email.png" alt="Email">
+                    <a href="mailto:contato@mulheresdosulglobal.com">contato@mulheresdosulglobal.com</a>
+                </p>
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer>
-            <div class="newsletter-container">
-                <h2>Receba novidades sobre voluntariado</h2>
-                <p>Inscreva-se e fique por dentro das novas oportunidades de voluntariado.</p>
-                <form class="newsletter" method="POST" action="{% url 'home' %}">
-                    {% csrf_token %}
-                    <input type="email" name="email" placeholder="Seu melhor e-mail" required>
-                    <button type="submit">Inscrever-se</button>
-                </form>
-            </div>
+        <div class="copy">
+            <p>&copy; 2025 Instituto Mulheres do Sul Global. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+{% endblock %}
 
-            <div class="footer-content">
-                <div class="institucional">
-                    <h3>Instituto Mulheres do Sul Global</h3>
-                    <p>
-                        <img src="https://img.icons8.com/ios-filled/50/ffffff/phone.png" alt="Telefone">
-                        <a href="https://wa.me/5521983551120">+55 21 98355-1120</a>
-                    </p>
-                    <p>
-                        <img src="https://img.icons8.com/ios-filled/50/ffffff/email.png" alt="Email">
-                        <a href="mailto:contato@mulheresdosulglobal.com">contato@mulheresdosulglobal.com</a>
-                    </p>
-                </div>
-            </div>
+{% block extra_js %}
+<script>
+    function openModal(vagaId, vagaTitulo) {
+        document.getElementById('vaga_id').value = vagaId;
+        document.getElementById('modalTitle').textContent = 'Candidatura para ' + vagaTitulo;
+        document.getElementById('candidaturaModal').classList.add('active');
+    }
 
-            <div class="copy">
-                <p>&copy; 2025 Instituto Mulheres do Sul Global. Todos os direitos reservados.</p>
-            </div>
-        </footer>
+    function closeModal() {
+        document.getElementById('candidaturaModal').classList.remove('active');
+    }
 
-        <script>
-            function openModal(vagaId, vagaTitulo) {
-                document.getElementById('vaga_id').value = vagaId;
-                document.getElementById('modalTitle').textContent = 'Candidatura para ' + vagaTitulo;
-                document.getElementById('candidaturaModal').classList.add('active');
-            }
-
-            function closeModal() {
-                document.getElementById('candidaturaModal').classList.remove('active');
-            }
-
-            // Fechar modal ao clicar fora
-            document.getElementById('candidaturaModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeModal();
-                }
-            });
-        </script>
-
-    </body>
-</html>
+    // Fecha o modal ao clicar fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('candidaturaModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}
