@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db import transaction
-from django.utils.html import format_html  # ✅ ADICIONE ESTE IMPORT
+from django.utils.html import format_html
+from django.utils import timezone
 from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
 
 
@@ -189,33 +190,73 @@ class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
 
 @admin.register(Noticia)
 class NoticiaAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'categoria', 'destaque', 'publicado', 'data_publicacao', 'imagem_preview']
-    list_filter = ['categoria', 'destaque', 'publicado', 'data_publicacao']
-    search_fields = ['titulo', 'subtitulo', 'conteudo']
+    list_display = ['titulo', 'categoria', 'status_publicacao', 'data_publicacao', 'destaque', 'autor']
+    list_filter = ['categoria', 'publicado', 'destaque', 'data_publicacao']
+    search_fields = ['titulo', 'conteudo', 'autor']
+    prepopulated_fields = {'slug': ('titulo',)}
     date_hierarchy = 'data_publicacao'
-    readonly_fields = ['criado_em', 'atualizado_em', 'imagem_preview']
+    list_editable = ['destaque']
     
     fieldsets = (
         ('Conteúdo', {
-            'fields': ('titulo', 'subtitulo', 'conteudo')
-        }),
-        ('Imagem de Capa', {
-            'fields': ('imagem', 'imagem_preview'),
-            'description': '📐 <strong>Tamanho recomendado:</strong> 800x480 pixels (proporção 5:3) | <strong>Formatos:</strong> JPG, PNG | <strong>Tamanho máximo:</strong> 5MB'
-        }),
-        ('Classificação', {
-            'fields': ('categoria', 'destaque')
+            'fields': ('titulo', 'subtitulo', 'slug', 'conteudo', 'imagem', 'categoria')
         }),
         ('Publicação', {
-            'fields': ('publicado', 'data_publicacao')
-        }),
-        ('Informações', {
-            'fields': ('criado_em', 'atualizado_em'),
-            'classes': ('collapse',)
+            'fields': ('publicado', 'data_publicacao', 'destaque', 'autor'),
+            'description': '⏰ A notícia será publicada automaticamente na data/hora definida em "Data de Publicação"'
         }),
     )
     
-    actions = ['publicar_noticias', 'despublicar_noticias', 'marcar_destaque', 'desmarcar_destaque']
+    # ✅ Método para exibir o status visual
+    def status_publicacao(self, obj):
+        agora = timezone.now()
+        
+        if not obj.publicado:
+            return format_html(
+                '<span style="color: #666; font-weight: bold;">⚫ Rascunho</span>'
+            )
+        elif obj.data_publicacao > agora:
+            tempo_restante = obj.data_publicacao - agora
+            dias = tempo_restante.days
+            horas = tempo_restante.seconds // 3600
+            
+            if dias > 0:
+                tempo_txt = f"{dias}d {horas}h"
+            else:
+                tempo_txt = f"{horas}h"
+            
+            return format_html(
+                '<span style="color: #f59e0b; font-weight: bold;">🕐 Agendada (em {})</span>',
+                tempo_txt
+            )
+        else:
+            return format_html(
+                '<span style="color: #10b981; font-weight: bold;">✅ Publicada</span>'
+            )
+    
+    status_publicacao.short_description = 'Status'
+    
+    # ✅ Ações personalizadas
+    actions = ['publicar_agora', 'marcar_como_rascunho', 'marcar_como_destaque']
+    
+    def publicar_agora(self, request, queryset):
+        """Publica imediatamente as notícias selecionadas"""
+        updated = queryset.update(publicado=True, data_publicacao=timezone.now())
+        self.message_user(request, f"✅ {updated} notícia(s) publicada(s) imediatamente!")
+    
+    publicar_agora.short_description = "📢 Publicar agora"
+    
+    def marcar_como_rascunho(self, request, queryset):
+        updated = queryset.update(publicado=False)
+        self.message_user(request, f"⚫ {updated} notícia(s) marcada(s) como rascunho.")
+    
+    marcar_como_rascunho.short_description = "⚫ Marcar como rascunho"
+    
+    def marcar_como_destaque(self, request, queryset):
+        updated = queryset.update(destaque=True)
+        self.message_user(request, f"⭐ {updated} notícia(s) marcada(s) como destaque.")
+    
+    marcar_como_destaque.short_description = "⭐ Marcar como destaque"
     
     # ✅ PREVIEW DA IMAGEM NO ADMIN (USANDO format_html)
     @admin.display(description='Preview da Imagem')
@@ -250,20 +291,31 @@ class NoticiaAdmin(admin.ModelAdmin):
 
 @admin.register(Newsletter)
 class NewsletterAdmin(admin.ModelAdmin):
-    list_display = ['email', 'inscrito_em', 'ativo']
-    list_filter = ['ativo', 'inscrito_em']
+    list_display = ['email', 'data_inscricao', 'ativo']
+    list_filter = ['ativo', 'data_inscricao']
     search_fields = ['email']
-    date_hierarchy = 'inscrito_em'
-    readonly_fields = ['inscrito_em']
+    list_editable = ['ativo']
+    date_hierarchy = 'data_inscricao'
     
-    actions = ['ativar_inscricoes', 'desativar_inscricoes']
+    actions = ['exportar_emails', 'marcar_como_ativo', 'marcar_como_inativo']
     
-    def ativar_inscricoes(self, request, queryset):
+    def exportar_emails(self, request, queryset):
+        """Exportar e-mails ativos"""
+        emails = queryset.filter(ativo=True).values_list('email', flat=True)
+        emails_texto = ', '.join(emails)
+        
+        self.message_user(request, f"📧 E-mails ativos ({queryset.filter(ativo=True).count()}): {emails_texto}")
+    
+    exportar_emails.short_description = "📤 Exportar e-mails selecionados"
+    
+    def marcar_como_ativo(self, request, queryset):
         updated = queryset.update(ativo=True)
-        self.message_user(request, f'{updated} inscrição(ões) ativada(s).')
-    ativar_inscricoes.short_description = 'Ativar inscrições selecionadas'
+        self.message_user(request, f"✅ {updated} inscrito(s) marcado(s) como ativo(s).")
     
-    def desativar_inscricoes(self, request, queryset):
+    marcar_como_ativo.short_description = "✅ Marcar como ativo"
+    
+    def marcar_como_inativo(self, request, queryset):
         updated = queryset.update(ativo=False)
-        self.message_user(request, f'{updated} inscrição(ões) desativada(s).')
-    desativar_inscricoes.short_description = 'Desativar inscrições selecionadas'
+        self.message_user(request, f"❌ {updated} inscrito(s) marcado(s) como inativo(s).")
+    
+    marcar_como_inativo.short_description = "❌ Marcar como inativo"

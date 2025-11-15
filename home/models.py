@@ -157,10 +157,22 @@ class CandidaturaVoluntariado(models.Model):
     def __str__(self):
         return f"{self.nome} - {self.vaga.titulo}"
 
+# ✅ Manager customizado ANTES do modelo
+class NoticiaManager(models.Manager):
+    def publicadas(self):
+        """Retorna apenas notícias publicadas e com data <= agora"""
+        return self.filter(
+            publicado=True,
+            data_publicacao__lte=timezone.now()
+        )
+    
+    def agendadas(self):
+        """Retorna notícias agendadas para o futuro"""
+        return self.filter(
+            publicado=True,
+            data_publicacao__gt=timezone.now()
+        )
 
-# ========================================
-# ✅ NOVO MODEL: NOTÍCIA
-# ========================================
 
 class Noticia(models.Model):
     CATEGORIA_CHOICES = [
@@ -168,38 +180,60 @@ class Noticia(models.Model):
         ('projeto', 'Projeto'),
         ('conquista', 'Conquista'),
         ('parceria', 'Parceria'),
-        ('geral', 'Geral'),
+        ('noticia', 'Notícia Geral'),
     ]
     
     titulo = models.CharField(max_length=200, verbose_name='Título')
     subtitulo = models.CharField(max_length=300, blank=True, verbose_name='Subtítulo')
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
     conteudo = models.TextField(verbose_name='Conteúdo')
-    imagem = models.ImageField(upload_to='noticias/', verbose_name='Imagem de Capa')
-    categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='geral', verbose_name='Categoria')
-    destaque = models.BooleanField(default=False, verbose_name='Notícia em Destaque', help_text='Notícias em destaque aparecem primeiro')
-    publicado = models.BooleanField(default=True, verbose_name='Publicado')
-    data_publicacao = models.DateTimeField(default=timezone.now, verbose_name='Data de Publicação')
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+    imagem = models.ImageField(upload_to='noticias/', blank=True, null=True, verbose_name='Imagem')
+    categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='noticia', verbose_name='Categoria')
+    
+    publicado = models.BooleanField(default=False, verbose_name='Publicado')
+    destaque = models.BooleanField(default=False, verbose_name='Destaque')
+    data_criacao = models.DateTimeField(auto_now_add=True, verbose_name='Data de Criação')
+    data_atualizacao = models.DateTimeField(auto_now=True, verbose_name='Última Atualização')
+    data_publicacao = models.DateTimeField(
+        default=timezone.now,
+        verbose_name='Data de Publicação',
+        help_text='Data e hora em que a notícia será publicada automaticamente'
+    )
+    autor = models.CharField(max_length=100, blank=True, verbose_name='Autor')
+    
+    # ✅ IMPORTANTE: Adicionar o manager customizado
+    objects = NoticiaManager()
     
     class Meta:
         verbose_name = 'Notícia'
         verbose_name_plural = 'Notícias'
-        ordering = ['-destaque', '-data_publicacao']
+        ordering = ['-data_publicacao']
     
     def __str__(self):
         return self.titulo
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            import uuid
+            self.slug = slugify(self.titulo) + '-' + str(uuid.uuid4())[:8]
+        super().save(*args, **kwargs)
+    
+    @property
+    def esta_publicada(self):
+        """Retorna True se a notícia deve estar visível"""
+        return self.publicado and self.data_publicacao <= timezone.now()
 
 
 class Newsletter(models.Model):
-    email = models.EmailField(unique=True)
-    inscrito_em = models.DateTimeField(auto_now_add=True)
-    ativo = models.BooleanField(default=True)
-    
+    email = models.EmailField(unique=True, verbose_name='E-mail')
+    data_inscricao = models.DateTimeField(auto_now_add=True, verbose_name='Data de Inscrição')
+    ativo = models.BooleanField(default=True, verbose_name='Ativo')
+
     class Meta:
-        verbose_name = 'Inscrição Newsletter'
-        verbose_name_plural = 'Inscrições Newsletter'
-        ordering = ['-inscrito_em']
-    
+        verbose_name = 'Inscrito Newsletter'
+        verbose_name_plural = 'Inscritos Newsletter'
+        ordering = ['-data_inscricao']
+
     def __str__(self):
         return self.email

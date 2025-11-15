@@ -3,40 +3,64 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
-
-from django.core.mail import send_mail
-from django.conf import settings
-from django.contrib import messages
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 
 def home(request):
-    """View da página inicial"""
+    """View para página inicial"""
+    
+    # Processar newsletter
     if request.method == 'POST':
-        # Inscrição na newsletter
-        email = request.POST.get('email')
-        if email:
-            newsletter, created = Newsletter.objects.get_or_create(email=email)
-            if created:
-                messages.success(request, 'Obrigado por se inscrever na nossa newsletter!')
-            else:
-                messages.info(request, 'Este e-mail já está cadastrado.')
+        email = request.POST.get('email', '').strip()
+        
+        if not email:
+            messages.error(request, 'Por favor, informe seu e-mail.')
+            return redirect('home')
+        
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, 'E-mail inválido. Por favor, verifique.')
+            return redirect('home')
+        
+        if Newsletter.objects.filter(email=email).exists():
+            messages.warning(request, 'Este e-mail já está cadastrado!')
+            return redirect('home')
+        
+        try:
+            Newsletter.objects.create(email=email)
+            messages.success(request, '🎉 Inscrição realizada com sucesso!')
+        except Exception as e:
+            messages.error(request, 'Erro ao processar inscrição.')
+        
         return redirect('home')
     
-    # Buscar workshops disponíveis
-    workshops_destaque = Workshop.objects.filter(status='disponivel').order_by('data_inicio')[:3]
-    
-    # Buscar vagas de voluntariado abertas
-    vagas_destaque = VagaVoluntariado.objects.filter(status='aberta').order_by('-criada_em')[:3]
-    
-    # Buscar notícias publicadas (máximo 3 para a home)
-    noticias = Noticia.objects.filter(publicado=True).order_by('-destaque', '-data_publicacao')[:3]
+    # ✅ Usar .publicadas() para pegar apenas notícias publicadas
+    noticias = Noticia.objects.publicadas().order_by('-data_publicacao')[:6]
     
     context = {
-        'workshops_destaque': workshops_destaque,
-        'vagas_destaque': vagas_destaque,
         'noticias': noticias,
     }
+    
     return render(request, 'home/home.html', context)
+
+def noticia_detalhe(request, id):
+    """View para exibir detalhes de uma notícia"""
+    # ✅ Usar .publicadas() para garantir que só notícias publicadas sejam acessíveis
+    noticia = get_object_or_404(Noticia.objects.publicadas(), id=id)
+    
+    # Buscar notícias relacionadas (mesma categoria, exceto a atual)
+    noticias_relacionadas = Noticia.objects.publicadas().filter(
+        categoria=noticia.categoria
+    ).exclude(id=noticia.id)[:3]
+    
+    context = {
+        'noticia': noticia,
+        'noticias_relacionadas': noticias_relacionadas,
+    }
+    
+    return render(request, 'home/noticia_detalhe.html', context)
 
 
 def workshops(request):
@@ -268,3 +292,41 @@ Mensagem:
 def doacao(request):
     """View para página de doação"""
     return render(request, 'home/doacao.html')
+
+
+def newsletter_inscricao(request):
+    """View para processar inscrição no newsletter"""
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        nome = request.POST.get('nome', '').strip()
+        
+        # Validação básica
+        if not email:
+            messages.error(request, 'Por favor, informe seu e-mail.')
+            return redirect('home')
+        
+        # Valida formato do e-mail
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, 'E-mail inválido. Por favor, verifique.')
+            return redirect('home')
+        
+        # Verifica se já existe
+        if Newsletter.objects.filter(email=email).exists():
+            messages.warning(request, 'Este e-mail já está cadastrado em nossa newsletter!')
+            return redirect('home')
+        
+        # Salva no banco
+        try:
+            Newsletter.objects.create(
+                email=email,
+                nome=nome
+            )
+            messages.success(request, '🎉 Inscrição realizada com sucesso! Obrigado por se juntar a nós.')
+        except Exception as e:
+            messages.error(request, 'Erro ao processar inscrição. Tente novamente.')
+        
+        return redirect('home')
+    
+    return redirect('home')

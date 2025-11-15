@@ -8,6 +8,7 @@
     <title>Instituto Mulheres do Sul Global</title>
     <link rel="stylesheet" href="{% static 'home/style.css' %}">
     <link rel="stylesheet" href="{% static 'home/style_footer.css' %}">
+    <link rel="stylesheet" href="{% static 'home/messages.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -220,6 +221,18 @@
     </style>
 </head>
 <body>
+
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="bi bi-{% if message.tags == 'success' %}check-circle-fill{% elif message.tags == 'error' %}x-circle-fill{% elif message.tags == 'warning' %}exclamation-triangle-fill{% else %}info-circle-fill{% endif %}"></i>
+                    <span>{{ message }}</span>
+                    <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <!-- Navbar -->
     <header class="navbar">
@@ -563,7 +576,9 @@
         <div class="newsletter-container">
             <h2>Fique por dentro das nossas novidades</h2>
             <p>Inscreva-se na nossa newsletter e receba atualizações sobre nossos projetos e histórias inspiradoras.</p>
-            <form class="newsletter" method="POST">
+            
+            <!-- ✅ ATUALIZADO: Agora aponta para a própria página -->
+            <form class="newsletter" method="POST" action="{% url 'home' %}">
                 {% csrf_token %}
                 <input type="email" name="email" placeholder="Seu melhor e-mail" required>
                 <button type="submit">Inscrever-se</button>
