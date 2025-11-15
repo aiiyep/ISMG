@@ -45,6 +45,7 @@ def home(request):
     
     return render(request, 'home/home.html', context)
 
+
 def noticia_detalhe(request, id):
     """View para exibir detalhes de uma notícia"""
     # ✅ Usar .publicadas() para garantir que só notícias publicadas sejam acessíveis
@@ -214,44 +215,6 @@ Instituto Mulheres do Sul Global
     return redirect('voluntariado')
 
 
-def newsletter_inscricao(request):
-    """View para processar inscrição na newsletter"""
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        if email:
-            newsletter, created = Newsletter.objects.get_or_create(email=email)
-            if created:
-                messages.success(request, 'Obrigado por se inscrever na nossa newsletter!')
-            else:
-                messages.info(request, 'Este e-mail já está cadastrado.')
-        
-        return redirect(request.META.get('HTTP_REFERER', 'home'))
-    
-    return redirect('home')
-
-
-# ========================================
-# ✅ NOVA VIEW: DETALHES DA NOTÍCIA
-# ========================================
-
-def noticia_detalhe(request, id):
-    """View para exibir os detalhes completos de uma notícia"""
-    noticia = get_object_or_404(Noticia, id=id, publicado=True)
-    
-    # Buscar notícias relacionadas (mesma categoria, excluindo a atual)
-    noticias_relacionadas = Noticia.objects.filter(
-        categoria=noticia.categoria,
-        publicado=True
-    ).exclude(id=noticia.id).order_by('-data_publicacao')[:3]
-    
-    context = {
-        'noticia': noticia,
-        'noticias_relacionadas': noticias_relacionadas,
-    }
-    return render(request, 'home/noticia_detalhe.html', context)
-
-
-
 def contato(request):
     """View para processar formulário de contato"""
     if request.method == 'POST':
@@ -261,7 +224,6 @@ def contato(request):
         assunto = request.POST.get('assunto')
         mensagem = request.POST.get('mensagem')
         
-        # Enviar email
         try:
             send_mail(
                 subject=f'[CONTATO] {assunto} - {nome}',
@@ -289,44 +251,7 @@ Mensagem:
     
     return render(request, 'home/contato.html')
 
+
 def doacao(request):
     """View para página de doação"""
     return render(request, 'home/doacao.html')
-
-
-def newsletter_inscricao(request):
-    """View para processar inscrição no newsletter"""
-    if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
-        nome = request.POST.get('nome', '').strip()
-        
-        # Validação básica
-        if not email:
-            messages.error(request, 'Por favor, informe seu e-mail.')
-            return redirect('home')
-        
-        # Valida formato do e-mail
-        try:
-            validate_email(email)
-        except ValidationError:
-            messages.error(request, 'E-mail inválido. Por favor, verifique.')
-            return redirect('home')
-        
-        # Verifica se já existe
-        if Newsletter.objects.filter(email=email).exists():
-            messages.warning(request, 'Este e-mail já está cadastrado em nossa newsletter!')
-            return redirect('home')
-        
-        # Salva no banco
-        try:
-            Newsletter.objects.create(
-                email=email,
-                nome=nome
-            )
-            messages.success(request, '🎉 Inscrição realizada com sucesso! Obrigado por se juntar a nós.')
-        except Exception as e:
-            messages.error(request, 'Erro ao processar inscrição. Tente novamente.')
-        
-        return redirect('home')
-    
-    return redirect('home')
