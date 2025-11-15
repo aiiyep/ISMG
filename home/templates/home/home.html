@@ -66,18 +66,18 @@
             color: #ff5722;
         }
 
-        /* ✅ CORRIGIDO: Apenas a chevron (setinha) fica pequena */
+        /* ✅ Apenas a chevron (setinha) fica pequena */
         .navbar .menu > li > a > .fa-chevron-down {
             font-size: 10px !important;
             transition: transform 0.3s ease-out;
         }
 
-        /* ✅ CORRIGIDO: Rotaciona apenas a chevron */
+        /* ✅ Rotaciona apenas a chevron */
         .navbar .menu li:hover > a > .fa-chevron-down {
             transform: rotate(180deg);
         }
 
-        /* ✅ CORRIGIDO: Dropdown com padding-top invisível para preencher o gap */
+        /* ✅ Dropdown */
         .dropdown-content {
             display: none;
             opacity: 0;
@@ -96,7 +96,6 @@
             margin-top: 0;
         }
 
-        /* ✅ CORRIGIDO: Mantém dropdown visível quando hover no li */
         .navbar .menu li:hover .dropdown-content {
             display: flex;
             opacity: 1;
@@ -115,7 +114,6 @@
             }
         }
 
-        /* ✅ ADICIONAR: Área invisível para manter hover */
         .navbar .menu li::after {
             content: '';
             position: absolute;
@@ -151,13 +149,25 @@
             flex-grow: 1;
         }
 
-        /* ✅ ÍCONES DO DROPDOWN - Tamanho normal e visível */
-        .dropdown-content .item i {
-            font-size: 22px !important;  /* ✅ Ícones grandes */
+        /* ✅ ÍCONES DO DROPDOWN */
+      .dropdown-content .item i {
+            font-size: 24px !important;
             color: #E11D48;
-            min-width: 22px;
+            min-width: 24px;
+            flex-shrink: 0;
             transition: color 0.3s;
-            transform: none !important;  /* ✅ Previne rotação */
+            display: inline-block !important;
+        }
+
+        .dropdown-content .item i.fas,
+        .dropdown-content .item i.fab,
+        .dropdown-content .item i.bi {
+            font-family: inherit !important;
+            -webkit-font-smoothing: antialiased;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
         }
 
         .dropdown-content .item:hover i {
@@ -199,12 +209,10 @@
             color: #ff5722;
         }
 
-        /* Compensar navbar na hero-section */
         .hero-section {
             padding-top: 100px;
         }
 
-        /* Responsive Navbar */
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
@@ -218,6 +226,7 @@
                 padding-top: 90px;
             }
         }
+
     </style>
 </head>
 <body>
@@ -316,19 +325,21 @@
                         </a>
                     </div>
                     
-                    <!-- ✅ Mantenha os outros itens -->
+                    <!-- ✅ Email com Bootstrap Icons -->
                     <div class="item">
                         <a href="mailto:contato@mulheresdosulglobal.com">
-                            <i class="fas fa-envelope"></i>
+                            <i class="bi bi-envelope-fill"></i>
                             <div>
                                 <h4>Email</h4>
                                 <p>contato@mulheresdosulglobal.com</p>
                             </div>
                         </a>
                     </div>
+
+                    <!-- ✅ WhatsApp com Bootstrap Icons -->
                     <div class="item">
                         <a href="https://wa.me/5521983551120" target="_blank">
-                            <i class="fab fa-whatsapp"></i>
+                            <i class="bi bi-whatsapp"></i>
                             <div>
                                 <h4>WhatsApp</h4>
                                 <p>+55 21 98355-1120</p>
