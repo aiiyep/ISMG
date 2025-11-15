@@ -60,10 +60,10 @@
         padding: 0 1rem;
     }
 
-    /* Why Volunteer Section */
-    .why-volunteer {
+    /* Vagas Section */
+    .vagas-section {
         padding: 4rem 0;
-        background: white;
+        background: #F9FAFB;
     }
 
     .section-title {
@@ -81,62 +81,18 @@
         margin: 0 auto 3rem;
     }
 
-    .benefits-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        margin-top: 3rem;
-    }
-
-    .benefit-card {
-        text-align: center;
-        padding: 2rem;
-        background: #F9FAFB;
-        border-radius: 12px;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .benefit-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .benefit-icon {
-        width: 64px;
-        height: 64px;
-        background: linear-gradient(135deg, #E11D48 0%, #BE185D 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        font-size: 28px;
-        color: white;
-    }
-
-    .benefit-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-        color: #1F2937;
-    }
-
-    .benefit-description {
-        color: #6B7280;
-        line-height: 1.6;
-    }
-
-    /* Vagas Section */
-    .vagas-section {
-        padding: 4rem 0;
-        background: #F9FAFB;
-    }
-
     .vagas-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         gap: 2rem;
         margin-top: 3rem;
+    }
+
+    .vagas-grid p {
+        text-align: center;
+        color: #000000;
+        font-size: 1.125rem;
+        grid-column: 1 / -1;
     }
 
     .vaga-card {
@@ -236,6 +192,57 @@
 
     .vaga-btn:hover {
         background: #BE185D;
+    }
+
+    /* Why Volunteer Section */
+    .why-volunteer {
+        padding: 4rem 0;
+        background: white;
+    }
+
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .benefit-card {
+        text-align: center;
+        padding: 2rem;
+        background: #F9FAFB;
+        border-radius: 12px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .benefit-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #E11D48 0%, #BE185D 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 28px;
+        color: white;
+    }
+
+    .benefit-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: #1F2937;
+    }
+
+    .benefit-description {
+        color: #6B7280;
+        line-height: 1.6;
     }
 
     /* Modal */
@@ -386,49 +393,7 @@
         </div>
     </section>
 
-    <!-- Why Volunteer Section -->
-    <section class="why-volunteer">
-        <div class="container">
-            <h2 class="section-title">Por que ser voluntário?</h2>
-            <p class="section-subtitle">Descubra como você pode contribuir e crescer conosco</p>
-
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <h3 class="benefit-title">Faça a Diferença</h3>
-                    <p class="benefit-description">Impacte diretamente a vida de mulheres refugiadas e suas famílias</p>
-                </div>
-
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3 class="benefit-title">Construa Conexões</h3>
-                    <p class="benefit-description">Conecte-se com pessoas de diferentes culturas e histórias inspiradoras</p>
-                </div>
-
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h3 class="benefit-title">Desenvolva Habilidades</h3>
-                    <p class="benefit-description">Aprenda novas competências e ganhe experiência valiosa</p>
-                </div>
-
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h3 class="benefit-title">Amplie sua Visão</h3>
-                    <p class="benefit-description">Expanda sua perspectiva sobre diversidade e inclusão social</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Vagas Section -->
+    <!-- Vagas Section (AGORA AQUI, LOGO APÓS O HERO) -->
     <section class="vagas-section">
         <div class="container">
             <h2 class="section-title">Oportunidades de Voluntariado</h2>
@@ -489,6 +454,48 @@
                 {% empty %}
                 <p>Nenhuma vaga disponível no momento. Volte em breve!</p>
                 {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Volunteer Section (AGORA AQUI, DEPOIS DAS VAGAS) -->
+    <section class="why-volunteer">
+        <div class="container">
+            <h2 class="section-title">Por que ser voluntário?</h2>
+            <p class="section-subtitle">Descubra como você pode contribuir e crescer conosco</p>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="benefit-title">Faça a Diferença</h3>
+                    <p class="benefit-description">Impacte diretamente a vida de mulheres refugiadas e suas famílias</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="benefit-title">Construa Conexões</h3>
+                    <p class="benefit-description">Conecte-se com pessoas de diferentes culturas e histórias inspiradoras</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="benefit-title">Desenvolva Habilidades</h3>
+                    <p class="benefit-description">Aprenda novas competências e ganhe experiência valiosa</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="benefit-title">Amplie sua Visão</h3>
+                    <p class="benefit-description">Expanda sua perspectiva sobre diversidade e inclusão social</p>
+                </div>
             </div>
         </div>
     </section>
