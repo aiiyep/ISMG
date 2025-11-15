@@ -1,14 +1,37 @@
-# Ambiente virtual
-venv/
-
-# Arquivos do Django
+# Python
+*.pyc
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 *.sqlite3
+.Python
+env/
+venv/
+ENV/
 
-# Arquivos de sistema
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+/staticfiles_build
+
+# ✅ IMPORTANTE: Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
 Thumbs.db
 
-# Configurações do VSCode (opcional)
-.vscode/
+# Vercel
+.vercel
