@@ -7,5 +7,5 @@ python-decouple==3.8
 qrcode[pil]==7.4.2
 dj-database-url==2.1.0
 python-decouple==3.8
-cloudinary
-django-cloudinary-storage
+cloudinary==1.41.0
+django-cloudinary-storage==0.3.0
