@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
-from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
+from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, NewsletterSubscriber, Noticia
 
 
 @admin.register(Workshop)
@@ -252,28 +252,19 @@ class NoticiaAdmin(admin.ModelAdmin):
     desmarcar_destaque.short_description = "☆ Desmarcar destaque"
 
 
-@admin.register(Newsletter)
-class NewsletterAdmin(admin.ModelAdmin):
-    list_display = ['email', 'data_inscricao', 'ativo']
-    list_filter = ['ativo', 'data_inscricao']
-    search_fields = ['email']
-    list_editable = ['ativo']
-    date_hierarchy = 'data_inscricao'
-    
-    actions = ['exportar_emails', 'marcar_como_ativo', 'marcar_como_inativo']
-    
-    def exportar_emails(self, request, queryset):
-        emails = queryset.filter(ativo=True).values_list('email', flat=True)
-        emails_texto = ', '.join(emails)
-        self.message_user(request, f"📧 E-mails: {emails_texto}")
-    exportar_emails.short_description = "📤 Exportar e-mails"
-    
-    def marcar_como_ativo(self, request, queryset):
-        updated = queryset.update(ativo=True)
-        self.message_user(request, f"✅ {updated} marcado(s) como ativo.")
-    marcar_como_ativo.short_description = "✅ Marcar como ativo"
-    
-    def marcar_como_inativo(self, request, queryset):
-        updated = queryset.update(ativo=False)
-        self.message_user(request, f"❌ {updated} marcado(s) como inativo.")
-    marcar_como_inativo.short_description = "❌ Marcar como inativo"
+@admin.register(NewsletterSubscriber)
+class NewsletterSubscriberAdmin(admin.ModelAdmin):
+    list_display = ('email', 'nome', 'data_inscricao', 'ativo')
+    list_filter = ('ativo', 'data_inscricao')
+    search_fields = ('email', 'nome')
+    actions = ['ativar_inscritos', 'desativar_inscritos']
+
+    def ativar_inscritos(self, request, queryset):
+        queryset.update(ativo=True)
+        self.message_user(request, f"{queryset.count()} inscritos foram ativados.")
+    ativar_inscritos.short_description = "Ativar inscritos selecionados"
+
+    def desativar_inscritos(self, request, queryset):
+        queryset.update(ativo=False)
+        self.message_user(request, f"{queryset.count()} inscritos foram desativados.")
+    desativar_inscritos.short_description = "Desativar inscritos selecionados"

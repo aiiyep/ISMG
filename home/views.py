@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
+from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, NewsletterSubscriber, Noticia
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -11,6 +11,41 @@ from django.core.paginator import Paginator
 def home(request):
     """View para página inicial"""
     
+    if request.method == 'POST' and 'newsletter_submit' in request.POST:
+        email = request.POST.get('email')
+        
+        if email:
+            subscriber, created = NewsletterSubscriber.objects.get_or_create(
+                email=email,
+                defaults={'ativo': True}
+            )
+            
+            if created:
+                messages.success(request, f'✅ Obrigado! Você foi inscrito na newsletter com sucesso!')
+                
+                # Email de boas-vindas
+                try:
+                    enviar_email_boas_vindas(email)
+                except Exception as e:
+                    print(f"Erro ao enviar email: {e}")
+            else:
+                if subscriber.ativo:
+                    messages.info(request, 'ℹ️ Este e-mail já está cadastrado na nossa newsletter.')
+                else:
+                    subscriber.ativo = True
+                    subscriber.save()
+                    messages.success(request, '✅ Sua inscrição foi reativada!')
+        else:
+            messages.error(request, '❌ Por favor, informe um e-mail válido.')
+        
+        return redirect('home')
+    
+    noticias = Noticia.objects.filter(destaque=True).order_by('-data_publicacao')[:3]
+    
+    context = {
+        'noticias': noticias,
+    }
+
     # Processar newsletter
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
@@ -55,6 +90,140 @@ def home(request):
     
     return render(request, 'home/home.html', context)
 
+def enviar_email_boas_vindas(email):
+    """Envia email de boas-vindas para novo inscrito"""
+    subject = '🎉 Bem-vindo à Newsletter do Instituto Mulheres do Sul Global!'
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: 'Arial', sans-serif; background-color: #f9fafb; margin: 0; padding: 0; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; }}
+            .header {{ background: linear-gradient(135deg, #e6004c, #c7003f); padding: 40px 20px; text-align: center; }}
+            .header h1 {{ color: white; margin: 0; font-size: 28px; }}
+            .content {{ padding: 40px 30px; }}
+            .content h2 {{ color: #1a1a1a; font-size: 24px; margin-bottom: 20px; }}
+            .content p {{ color: #4c4c4c; line-height: 1.6; font-size: 16px; }}
+            .button {{ display: inline-block; background: #e6004c; color: white; padding: 15px 30px; 
+                      text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }}
+            .footer {{ background: #1f2937; color: #d1d5db; padding: 30px; text-align: center; font-size: 14px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎉 Bem-vindo!</h1>
+            </div>
+            <div class="content">
+                <h2>Obrigado por se inscrever!</h2>
+                <p>Olá! Estamos muito felizes em ter você conosco.</p>
+                <p>A partir de agora, você receberá em primeira mão todas as novidades sobre nossos projetos, 
+                   eventos e histórias inspiradoras de transformação.</p>
+                <p>Acompanhe nosso trabalho e faça parte dessa jornada de empoderamento!</p>
+                <a href="https://mulheresdosulglobal.com" class="button">Visite Nosso Site</a>
+            </div>
+            <div class="footer">
+                <p><strong>Instituto Mulheres do Sul Global</strong></p>
+                <p>Maricá, Rio de Janeiro, Brasil</p>
+                <p>contato@mulheresdosulglobal.com | +55 21 98355-1120</p>
+                <p style="font-size: 12px; margin-top: 20px;">
+                    Você está recebendo este email porque se inscreveu em nossa newsletter.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    text_content = f"Bem-vindo à Newsletter do Instituto Mulheres do Sul Global!"
+    
+    msg = EmailMultiAlternatives(subject, text_content, settings.DEFAULT_FROM_EMAIL, [email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+def enviar_newsletter_nova_noticia(noticia):
+    """Envia email para todos os inscritos quando uma nova notícia é publicada"""
+    inscritos = NewsletterSubscriber.objects.filter(ativo=True)
+    
+    if not inscritos.exists():
+        return
+    
+    subject = f'📰 Nova Notícia: {noticia.titulo}'
+    
+    # URL absoluta da notícia
+    noticia_url = f"https://mulheresdosulglobal.com/noticias/{noticia.id}/"
+    
+    for inscrito in inscritos:
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{ font-family: 'Arial', sans-serif; background-color: #f9fafb; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; background: white; }}
+                .header {{ background: linear-gradient(135deg, #e6004c, #c7003f); padding: 40px 20px; text-align: center; }}
+                .header h1 {{ color: white; margin: 0; font-size: 28px; }}
+                .content {{ padding: 40px 30px; }}
+                .content h2 {{ color: #1a1a1a; font-size: 24px; margin-bottom: 15px; }}
+                .content .subtitle {{ color: #e6004c; font-size: 18px; font-weight: bold; margin-bottom: 20px; }}
+                .content p {{ color: #4c4c4c; line-height: 1.6; font-size: 16px; }}
+                .content img {{ max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; }}
+                .button {{ display: inline-block; background: #e6004c; color: white; padding: 15px 30px; 
+                          text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }}
+                .footer {{ background: #1f2937; color: #d1d5db; padding: 30px; text-align: center; font-size: 14px; }}
+                .unsubscribe {{ color: #9ca3af; font-size: 12px; margin-top: 20px; }}
+                .unsubscribe a {{ color: #60a5fa; text-decoration: none; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>📰 Nova Notícia Publicada!</h1>
+                </div>
+                <div class="content">
+                    <h2>{noticia.titulo}</h2>
+                    {f'<p class="subtitle">{noticia.subtitulo}</p>' if noticia.subtitulo else ''}
+                    {f'<img src="https://mulheresdosulglobal.com{noticia.imagem.url}" alt="{noticia.titulo}">' if noticia.imagem else ''}
+                    <p>{noticia.conteudo[:300]}...</p>
+                    <a href="{noticia_url}" class="button">Ler Notícia Completa</a>
+                </div>
+                <div class="footer">
+                    <p><strong>Instituto Mulheres do Sul Global</strong></p>
+                    <p>Maricá, Rio de Janeiro, Brasil</p>
+                    <p>contato@mulheresdosulglobal.com | +55 21 98355-1120</p>
+                    <p class="unsubscribe">
+                        Não quer mais receber nossos emails? 
+                        <a href="https://mulheresdosulglobal.com/newsletter/cancelar/{inscrito.token}/">Cancelar inscrição</a>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        text_content = f"{noticia.titulo}\n\n{noticia.conteudo[:200]}...\n\nLeia mais em: {noticia_url}"
+        
+        try:
+            msg = EmailMultiAlternatives(subject, text_content, settings.DEFAULT_FROM_EMAIL, [inscrito.email])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+        except Exception as e:
+            print(f"Erro ao enviar email para {inscrito.email}: {e}")
+
+def cancelar_newsletter(request, token):
+    try:
+        inscrito = NewsletterSubscriber.objects.get(token=token)
+        inscrito.ativo = False
+        inscrito.save()
+        messages.success(request, '✅ Sua inscrição foi cancelada com sucesso.')
+    except NewsletterSubscriber.DoesNotExist:
+        messages.error(request, '❌ Link inválido.')
+    
+    return redirect('home')
 
 def noticia_detalhe(request, id):
     """View para exibir detalhes de uma notícia"""

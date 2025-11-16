@@ -417,36 +417,4 @@
 
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="newsletter-container">
-            <h2>Fique por dentro das novidades</h2>
-            <p>Inscreva-se em nossa newsletter e receba atualizações sobre nossos projetos.</p>
-            <!-- ✅ DEPOIS -->
-            <form class="newsletter" method="POST" action="{% url 'home' %}">
-                {% csrf_token %}
-                <input type="email" name="email" placeholder="Seu melhor e-mail" required>
-                <button type="submit">Inscrever-se</button>
-            </form>
-        </div>
-
-        <div class="footer-content">
-            <div class="institucional">
-                <h3>Instituto Mulheres do Sul Global</h3>
-                <p>
-                    <img src="https://img.icons8.com/ios-filled/50/ffffff/phone.png" alt="Telefone">
-                    <a href="https://wa.me/5521983551120">+55 21 98355-1120</a>
-                </p>
-                <p>
-                    <img src="https://img.icons8.com/ios-filled/50/ffffff/email.png" alt="Email">
-                    <a href="mailto:contato@mulheresdosulglobal.com">contato@mulheresdosulglobal.com</a>
-                </p>
-            </div>
-        </div>
-
-        <div class="copy">
-            <p>&copy; 2025 Instituto Mulheres do Sul Global. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
 {% endblock %}

@@ -35,7 +35,7 @@ body {
    =================================== */
 .back-button {
     position: fixed;
-    top: 20px;
+    top: 90px;
     left: 20px;
     padding: 12px 24px;
     background: var(--color-white);
@@ -48,7 +48,7 @@ body {
     gap: 8px;
     box-shadow: var(--shadow);
     transition: all 0.3s;
-    z-index: 1000;
+    z-index: 999;
 }
 
 .back-button:hover {
@@ -59,56 +59,100 @@ body {
 }
 
 /* ===================================
-   CONTAINER PRINCIPAL
+   CONTAINER PRINCIPAL - CORRIGIDO
    =================================== */
 .container {
-    display: flex;
     max-width: 1400px;
-    width: 100%;
-    margin: 60px auto 0;
-    margin-right: 0; /* ADICIONE ESTA LINHA */
-    background: var(--color-white);
-    border-radius: 16px;
-    border-top-right-radius: 0; /* ADICIONE ESTA LINHA */
-    border-bottom-right-radius: 0; /* ADICIONE ESTA LINHA */
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    align-items: stretch;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
 }
 
 /* ===================================
-   SEÇÕES
+   DONATION SECTION - CENTRALIZADA
    =================================== */
 .donation-section {
-    flex: 1 1 60%;
-    padding: 60px 50px;
-    animation: slideInLeft 0.6s ease-out;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width: 100%;
+    margin: 0 auto;
+    margin-bottom: 3rem;
 }
 
+/* ================
+   GRAPHIC SECTION
+   ================ */
 .graphic-section {
-    flex: 0 0 40%;
-    min-height: 800px;
+    position: sticky;
+    top: 100px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    gap: 2rem;
+    max-width: 100%;
+    padding: 3rem 2rem;
     background: linear-gradient(135deg, #e6004c 0%, #c7003f 100%);
-    padding: 40px;
-    animation: slideInRight 0.6s ease-out;
-    position: relative;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(230, 0, 76, 0.3);
 }
 
-.graphic-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -100vw;
-    bottom: 0;
-    width: 100vw;
-    background: linear-gradient(135deg, #e6004c 0%, #c7003f 100%);
-    z-index: -1;
+.full-size-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    object-fit: contain;
+    display: block;
 }
 
+/* ===================================
+   STATS - COM FUNDO SEMI-TRANSPARENTE
+   =================================== */
+.donation-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+}
+
+/* ===================================
+   ANIMAÇÕES
+   =================================== */
 @keyframes slideInLeft {
     from {
         opacity: 0;
@@ -131,12 +175,20 @@ body {
     }
 }
 
-.full-size-image {
-    width: 80%;
-    height: auto;
-    object-fit: contain;
-    filter: brightness(1.1);
-    margin-bottom: 40px;
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* ===================================
@@ -156,17 +208,6 @@ body {
     animation: slideDown 0.5s ease-out;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .alert-success {
     background: #d1fae5;
     color: #065f46;
@@ -177,19 +218,21 @@ body {
    TÍTULOS
    =================================== */
 .title {
-    font-size: 48px;
+    font-size: 2.5rem;
     font-weight: 700;
     color: var(--color-text-dark);
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
     line-height: 1.2;
+    text-align: center;
 }
 
 .subtitle {
-    font-size: 16px;
+    font-size: 1.125rem;
     font-weight: 400;
     color: var(--color-text-light);
-    margin-bottom: 30px;
+    margin-bottom: 2rem;
     line-height: 1.6;
+    text-align: center;
 }
 
 /* ===================================
@@ -197,26 +240,31 @@ body {
    =================================== */
 .trust-badges {
     display: flex;
-    gap: 20px;
-    margin-bottom: 40px;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0 3rem;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 0.75rem;
     flex-wrap: wrap;
 }
 
 .badge-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    background: #f0fdf4;
-    border-radius: 8px;
-    color: #065f46;
-    font-size: 14px;
-    font-weight: 600;
+    gap: 0.5rem;
 }
 
 .badge-item i {
-    font-size: 20px;
-    color: var(--color-success);
+    font-size: 2rem;
+    color: var(--color-primary);
+}
+
+.badge-item span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
 }
 
 /* ===================================
@@ -227,9 +275,9 @@ body {
 }
 
 .payment-methods h3 {
-    font-size: 24px;
+    font-size: 1.5rem;
     color: var(--color-text-dark);
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
 }
 
 .method-tabs {
@@ -277,11 +325,6 @@ body {
 .method-content.active {
     display: block;
     animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
 }
 
 .method-description {
@@ -584,7 +627,7 @@ body {
 }
 
 .impact-section h3 {
-    font-size: 24px;
+    font-size: 1.5rem;
     color: var(--color-text-dark);
     margin-bottom: 20px;
     display: flex;
@@ -616,7 +659,7 @@ body {
 }
 
 .impact-value {
-    font-size: 32px;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--color-primary);
     margin-bottom: 10px;
@@ -638,7 +681,7 @@ body {
 }
 
 .security-info h3 {
-    font-size: 24px;
+    font-size: 1.5rem;
     color: var(--color-text-dark);
     margin-bottom: 20px;
     display: flex;
@@ -694,7 +737,7 @@ body {
 }
 
 .other-ways h3 {
-    font-size: 24px;
+    font-size: 1.5rem;
     color: var(--color-text-dark);
     margin-bottom: 20px;
 }
@@ -742,64 +785,59 @@ body {
 }
 
 /* ===================================
-   STATS DO LADO DIREITO
+   STATS - CORRIGIDOS
    =================================== */
 .donation-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
 .stat-box {
-    padding: 25px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
     text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: transform 0.3s;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
 }
 
 .stat-number {
-    font-size: 36px;
+    font-size: 1.75rem;
     font-weight: 700;
-    color: var(--color-white);
-    margin-bottom: 8px;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
 }
 
 .stat-label {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    color: #6B7280;
+    font-weight: 500;
 }
 
 /* ===================================
    RESPONSIVIDADE
    =================================== */
-@media (max-width: 1100px) {
+@media (max-width: 992px) {
     .container {
-        flex-direction: column;
-    }
-
-    .donation-section,
-    .graphic-section {
-        width: 100%;
-    }
-
-    .donation-section {
-        padding: 40px 30px;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 2rem 1rem 3rem;
     }
 
     .graphic-section {
-        min-height: 400px;
-        padding: 40px;
+        position: relative;
+        top: 0;
     }
 
-    .title {
-        font-size: 36px;
-    }
-
-    .method-tabs {
-        flex-direction: column;
+    .donation-stats {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -809,24 +847,31 @@ body {
     }
 
     .back-button {
-        position: static;
-        margin-bottom: 20px;
-        width: fit-content;
+        top: 80px;
+        left: 10px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
     }
 
     .donation-section {
-        padding: 30px 20px;
+        padding: 2rem 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .title {
-        font-size: 28px;
+        font-size: 2rem;
     }
 
     .subtitle {
-        font-size: 14px;
+        font-size: 1rem;
     }
 
     .trust-badges {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .method-tabs {
         flex-direction: column;
     }
 
@@ -849,7 +894,11 @@ body {
         grid-template-columns: 1fr;
     }
 
-    .donation-stats {
-        flex-direction: row;
+    .stat-box {
+        padding: 1.25rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
     }
 }

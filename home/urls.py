@@ -11,4 +11,5 @@ urlpatterns = [
     path('voluntariado/candidatura/', views.voluntariado_candidatura, name='voluntariado_candidatura'),
     path('contato/', views.contato, name='contato'),
     path('doacao/', views.doacao, name='doacao'),
+    path('newsletter/cancelar/<str:token>/', views.cancelar_newsletter, name='cancelar_newsletter'),
 ]

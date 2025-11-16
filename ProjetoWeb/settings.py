@@ -141,9 +141,33 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='contato@mulheresdosulglobal.com')
+# ========================================
+# CONFIGURAÇÃO DE EMAIL
+# ========================================
+
+# Para desenvolvimento (emails no console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Para produção (Gmail)
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'seu-email@gmail.com'  # Seu email
+# EMAIL_HOST_PASSWORD = 'sua-senha-de-app'  # Senha de app do Gmail
+# DEFAULT_FROM_EMAIL = 'Instituto Mulheres do Sul Global <seu-email@gmail.com>'
+
+# Para produção (SendGrid - recomendado)
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.sendgrid.net'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'apikey'
+# EMAIL_HOST_PASSWORD = 'SG.sua-api-key-aqui'
+# DEFAULT_FROM_EMAIL = 'mulheresdsg@gmail.com'
+
+DEFAULT_FROM_EMAIL = 'mulheresdsg@gmail.com'
+
 
 # Security settings
 if not DEBUG:

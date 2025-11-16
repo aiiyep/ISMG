@@ -221,16 +221,37 @@ class Noticia(models.Model):
     def esta_publicada(self):
         return self.publicado and self.data_publicacao <= timezone.now()
 
+    def save(self, *args, **kwargs):
+        # Verifica se é uma nova notícia sendo publicada
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        
+        # Envia newsletter apenas para novas notícias
+        if is_new and self.destaque:
+            from .views import enviar_newsletter_nova_noticia
+            try:
+                enviar_newsletter_nova_noticia(self)
+            except Exception as e:
+                print(f"Erro ao enviar newsletter: {e}")
 
-class Newsletter(models.Model):
-    email = models.EmailField(unique=True, verbose_name='E-mail')
-    data_inscricao = models.DateTimeField(auto_now_add=True, verbose_name='Data de Inscrição')
-    ativo = models.BooleanField(default=True, verbose_name='Ativo')
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True, verbose_name="E-mail")
+    nome = models.CharField(max_length=100, blank=True, verbose_name="Nome")
+    data_inscricao = models.DateTimeField(auto_now_add=True, verbose_name="Data de Inscrição")
+    ativo = models.BooleanField(default=True, verbose_name="Ativo")
+    token = models.CharField(max_length=100, unique=True, blank=True, verbose_name="Token de Confirmação")
 
     class Meta:
-        verbose_name = 'Inscrito Newsletter'
-        verbose_name_plural = 'Inscritos Newsletter'
+        verbose_name = "Inscrito na Newsletter"
+        verbose_name_plural = "Inscritos na Newsletter"
         ordering = ['-data_inscricao']
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            import uuid
+            self.token = str(uuid.uuid4())
+        super().save(*args, **kwargs)

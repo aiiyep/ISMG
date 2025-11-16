@@ -34,7 +34,6 @@
             padding: 0 1rem 4rem;
         }
 
-        /* Filtros */
         .filters-section {
             background: white;
             padding: 2rem;
@@ -131,7 +130,6 @@
             background: #E5E7EB;
         }
 
-        /* Contador de resultados */
         .results-count {
             margin-bottom: 2rem;
             padding: 1rem;
@@ -146,11 +144,11 @@
             font-weight: 600;
         }
 
-        /* Grid de Notícias */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2rem;
+            margin-bottom: 3rem;
         }
 
         .news-card {
@@ -201,25 +199,11 @@
             text-transform: uppercase;
         }
 
-        .news-category.evento {
-            background: linear-gradient(135deg, #3B82F6, #1E40AF);
-        }
-
-        .news-category.projeto {
-            background: linear-gradient(135deg, #8B5CF6, #6D28D9);
-        }
-
-        .news-category.conquista {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-        }
-
-        .news-category.parceria {
-            background: linear-gradient(135deg, #10B981, #059669);
-        }
-
-        .news-category.noticia {
-            background: linear-gradient(135deg, #6B7280, #4B5563);
-        }
+        .news-category.evento { background: linear-gradient(135deg, #3B82F6, #1E40AF); }
+        .news-category.projeto { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
+        .news-category.conquista { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .news-category.parceria { background: linear-gradient(135deg, #10B981, #059669); }
+        .news-category.noticia { background: linear-gradient(135deg, #6B7280, #4B5563); }
 
         .news-badge {
             position: absolute;
@@ -293,11 +277,55 @@
             gap: 0.75rem;
         }
 
-        .news-read-more i {
+        .pagination-container {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .pagination {
+            display: inline-flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            color: #374151;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover:not(.active) {
+            background: #FEF2F2;
+            border-color: #E11D48;
+            color: #E11D48;
+            transform: translateY(-2px);
+        }
+
+        .page-link.active {
+            background: linear-gradient(135deg, #E11D48, #BE185D);
+            border-color: #E11D48;
+            color: white;
+            cursor: default;
+        }
+
+        .pagination-info {
+            color: #6B7280;
             font-size: 0.875rem;
         }
 
-        /* Estado vazio */
         .no-news {
             text-align: center;
             padding: 4rem 2rem;
@@ -316,178 +344,133 @@
             margin-bottom: 0.5rem;
         }
 
-        .no-news p {
-            font-size: 1.125rem;
+                /* ✅ OCULTAR LINKS VAZIOS NA PAGINAÇÃO */
+        .page-link:empty {
+            display: none !important;
+        }
+
+        .page-link:not([href]):not(.active) {
+            display: none !important;
         }
 
         @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 2rem;
-            }
-
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filters-actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
+            .page-header h1 { font-size: 2rem; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .filters-actions { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .news-grid { grid-template-columns: 1fr; }
+            .pagination { gap: 0.25rem; }
+            .page-link { min-width: 36px; height: 36px; padding: 0 8px; font-size: 0.875rem; }
         }
+
+
     </style>
 {% endblock %}
 
 {% block content %}
-
-    <!-- Page Header -->
     <div class="page-header">
         <h1><i class="fas fa-newspaper"></i> Notícias</h1>
         <p>Acompanhe nossas conquistas, eventos e histórias de transformação</p>
     </div>
 
     <div class="container">
-        <!-- Filtros -->
         <div class="filters-section">
-            <h2 class="filters-title">
-                <i class="fas fa-filter"></i>
-                Filtrar Notícias
-            </h2>
-
-            <form method="GET" action="{% url 'noticias_lista' %}">
+            <h2 class="filters-title"><i class="fas fa-filter"></i> Filtrar Notícias</h2>
+            <form method="GET">
                 <div class="filters-grid">
-                    <!-- Filtro por Categoria -->
                     <div class="filter-group">
-                        <label for="categoria">
-                            <i class="fas fa-tag"></i> Categoria
-                        </label>
+                        <label for="categoria"><i class="fas fa-tag"></i> Categoria</label>
                         <select name="categoria" id="categoria">
                             <option value="">Todas as categorias</option>
                             {% for value, label in categorias %}
-                                <option value="{{ value }}" {% if categoria_selecionada == value %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
+                                <option value="{{ value }}" {% if categoria_selecionada == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </div>
-
-                    <!-- Filtro por Ano -->
                     <div class="filter-group">
-                        <label for="ano">
-                            <i class="fas fa-calendar-alt"></i> Ano
-                        </label>
+                        <label for="ano"><i class="fas fa-calendar-alt"></i> Ano</label>
                         <select name="ano" id="ano">
                             <option value="">Todos os anos</option>
                             {% for ano in anos_disponiveis %}
-                                <option value="{{ ano }}" {% if ano_selecionado == ano|stringformat:"s" %}selected{% endif %}>
-                                    {{ ano }}
-                                </option>
+                                <option value="{{ ano }}" {% if ano_selecionado == ano|stringformat:"s" %}selected{% endif %}>{{ ano }}</option>
                             {% endfor %}
                         </select>
                     </div>
-
-                    <!-- Filtro por Mês -->
                     <div class="filter-group">
-                        <label for="mes">
-                            <i class="fas fa-calendar"></i> Mês
-                        </label>
+                        <label for="mes"><i class="fas fa-calendar"></i> Mês</label>
                         <select name="mes" id="mes">
                             <option value="">Todos os meses</option>
                             {% for numero, nome in meses %}
-                                <option value="{{ numero }}" {% if mes_selecionado == numero %}selected{% endif %}>
-                                    {{ nome }}
-                                </option>
+                                <option value="{{ numero }}" {% if mes_selecionado == numero %}selected{% endif %}>{{ nome }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
-
                 <div class="filters-actions">
-                    <a href="{% url 'noticias_lista' %}" class="btn btn-secondary">
-                        <i class="fas fa-redo"></i> Limpar Filtros
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Filtrar
-                    </button>
+                    <a href="{% url 'noticias_lista' %}" class="btn btn-secondary"><i class="fas fa-redo"></i> Limpar</a>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filtrar</button>
                 </div>
             </form>
         </div>
 
-        <!-- Contador de Resultados -->
         {% if noticias %}
-        <div class="results-count">
-            <p>
-                <i class="fas fa-check-circle"></i>
-                Encontrada{{ noticias.count|pluralize }} <strong>{{ noticias.count }}</strong> notícia{{ noticias.count|pluralize }}
-            </p>
-        </div>
-        {% endif %}
+            <div class="news-grid">
+                {% for noticia in noticias %}
+                <article class="news-card">
+                    <div class="news-image">
+                        <img src="{% if noticia.imagem %}{{ noticia.imagem.url }}{% else %}{% static 'home/img/placeholder-news.jpg' %}{% endif %}" alt="{{ noticia.titulo }}">
+                        <div class="news-category {{ noticia.categoria }}">
+                            {% if noticia.categoria == 'evento' %}<i class="fas fa-calendar-alt"></i> Evento
+                            {% elif noticia.categoria == 'projeto' %}<i class="fas fa-lightbulb"></i> Projeto
+                            {% elif noticia.categoria == 'conquista' %}<i class="fas fa-trophy"></i> Conquista
+                            {% elif noticia.categoria == 'parceria' %}<i class="fas fa-handshake"></i> Parceria
+                            {% else %}<i class="fas fa-newspaper"></i> Notícia{% endif %}
+                        </div>
+                        {% if noticia.destaque %}<div class="news-badge"><i class="fas fa-star"></i> Destaque</div>{% endif %}
+                    </div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="news-date"><i class="far fa-clock"></i> {{ noticia.data_publicacao|date:"d/m/Y" }}</span>
+                        </div>
+                        <h3 class="news-title">{{ noticia.titulo }}</h3>
+                        {% if noticia.subtitulo %}<p class="news-subtitle">{{ noticia.subtitulo }}</p>{% endif %}
+                        <p class="news-excerpt">{{ noticia.conteudo|truncatewords:30 }}</p>
+                        <a href="{% url 'noticia_detalhe' noticia.id %}" class="news-read-more">Ler mais <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
 
-        <!-- Grid de Notícias -->
-        {% if noticias %}
-        <div class="news-grid">
-            {% for noticia in noticias %}
-            <article class="news-card">
-                <div class="news-image">
-                    {% if noticia.imagem %}
-                        <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
-                    {% else %}
-                        <img src="{% static 'home/img/placeholder-news.jpg' %}" alt="{{ noticia.titulo }}">
+            {% if page_obj.has_other_pages %}
+            <div class="pagination-container">
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ano_selecionado %}&ano={{ ano_selecionado }}{% endif %}{% if mes_selecionado %}&mes={{ mes_selecionado }}{% endif %}" class="page-link"><i class="fas fa-angle-double-left"></i></a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ano_selecionado %}&ano={{ ano_selecionado }}{% endif %}{% if mes_selecionado %}&mes={{ mes_selecionado }}{% endif %}" class="page-link"><i class="fas fa-angle-left"></i></a>
                     {% endif %}
-                    <div class="news-category {{ noticia.categoria }}">
-                        {% if noticia.categoria == 'evento' %}
-                            <i class="fas fa-calendar-alt"></i> Evento
-                        {% elif noticia.categoria == 'projeto' %}
-                            <i class="fas fa-lightbulb"></i> Projeto
-                        {% elif noticia.categoria == 'conquista' %}
-                            <i class="fas fa-trophy"></i> Conquista
-                        {% elif noticia.categoria == 'parceria' %}
-                            <i class="fas fa-handshake"></i> Parceria
-                        {% else %}
-                            <i class="fas fa-newspaper"></i> Notícia
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="page-link active">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ano_selecionado %}&ano={{ ano_selecionado }}{% endif %}{% if mes_selecionado %}&mes={{ mes_selecionado }}{% endif %}" class="page-link">{{ num }}</a>
                         {% endif %}
-                    </div>
-                    {% if noticia.destaque %}
-                    <div class="news-badge">
-                        <i class="fas fa-star"></i> Destaque
-                    </div>
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ano_selecionado %}&ano={{ ano_selecionado }}{% endif %}{% if mes_selecionado %}&mes={{ mes_selecionado }}{% endif %}" class="page-link"><i class="fas fa-angle-right"></i></a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ano_selecionado %}&ano={{ ano_selecionado }}{% endif %}{% if mes_selecionado %}&mes={{ mes_selecionado }}{% endif %}" class="page-link"><i class="fas fa-angle-double-right"></i></a>
                     {% endif %}
                 </div>
-                <div class="news-content">
-                    <div class="news-meta">
-                        <span class="news-date">
-                            <i class="far fa-clock"></i> 
-                            {{ noticia.data_publicacao|date:"d/m/Y" }}
-                        </span>
-                    </div>
-                    <h3 class="news-title">{{ noticia.titulo }}</h3>
-                    {% if noticia.subtitulo %}
-                    <p class="news-subtitle">{{ noticia.subtitulo }}</p>
-                    {% endif %}
-                    <p class="news-excerpt">
-                        {{ noticia.conteudo|truncatewords:30 }}
-                    </p>
-                    <a href="{% url 'noticia_detalhe' noticia.id %}" class="news-read-more">
-                        Ler mais <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </article>
-            {% endfor %}
-        </div>
+                <p class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</p>
+            </div>
+            {% endif %}
         {% else %}
-        <div class="no-news">
-            <i class="far fa-newspaper"></i>
-            <h3>Nenhuma notícia encontrada</h3>
-            <p>Tente ajustar os filtros ou volte em breve para conferir nossas atualizações!</p>
-        </div>
+            <div class="no-news">
+                <i class="far fa-newspaper"></i>
+                <h3>Nenhuma notícia encontrada</h3>
+                <p>Tente ajustar os filtros ou volte em breve!</p>
+            </div>
         {% endif %}
     </div>
-
 {% endblock %}

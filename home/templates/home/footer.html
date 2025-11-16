@@ -1,0 +1,61 @@
+{% load static %}
+
+<footer>
+    <div class="newsletter-container">
+        <h2>Fique por dentro das nossas novidades</h2>
+        <p>Inscreva-se na nossa newsletter e receba atualizações sobre nossos projetos e histórias inspiradoras.</p>
+        
+        <form class="newsletter" method="POST" action="{% url 'home' %}">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Seu melhor e-mail" required>
+            <button type="submit" name="newsletter_submit">Inscrever-se</button>
+        </form>
+    </div>
+
+    <div class="footer-content">
+        <div class="institucional">
+            <h3>Instituto Mulheres do Sul Global</h3>
+            <p>
+                <i class="bi bi-geo-alt-fill"></i>
+                Av. Irene Lopes Sodré, 4411 - sala 202 e 220 - Engenho do Mato, Niterói - RJ, 24346-040
+            </p>
+            <p>
+                <i class="bi bi-telephone-fill"></i>
+                <a href="tel:+5521983551120">+55 21 98355-1120</a>
+            </p>
+            <p>
+                <i class="bi bi-envelope-fill"></i>
+                <a href="mailto:contato@mulheresdosulglobal.com">contato@mulheresdosulglobal.com</a>
+            </p>
+
+            <div class="social-icons">
+                <a href="https://www.facebook.com/mulheresdosulglobal" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/mulheresdosulglobal" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/company/mulheresdosulglobal" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="apoio">
+            <h4>Como você pode ajudar</h4>
+            <button class="doacao" onclick="window.location.href='{% url 'doacao' %}'">
+                <i class="bi bi-heart-fill"></i> Fazer uma Doação
+            </button>
+            <button onclick="window.location.href='{% url 'voluntariado' %}'">
+                <i class="bi bi-people-fill"></i> Seja Voluntário
+            </button>
+            <button onclick="window.location.href='{% url 'workshops' %}'">
+                <i class="bi bi-easel-fill"></i> Participe dos Workshops
+            </button>
+        </div>
+    </div>
+
+    <div class="copy">
+        <p>&copy; 2025 Instituto Mulheres do Sul Global. Todos os direitos reservados.</p>
+    </div>
+</footer>
