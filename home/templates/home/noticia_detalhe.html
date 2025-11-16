@@ -166,15 +166,36 @@
             font-size: 1.125rem;
             line-height: 1.8;
             color: #374151;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .article-content p {
             margin-bottom: 1.5rem;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .article-content strong {
             color: #111827;
             font-weight: 600;
+        }
+
+        /* Garantir que imagens e vídeos não vazem */
+        .article-content img,
+        .article-content video,
+        .article-content iframe {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Links longos também quebram */
+        .article-content a {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         /* Share Section */
