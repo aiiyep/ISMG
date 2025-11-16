@@ -3,8 +3,6 @@ from pathlib import Path
 from decouple import config, Csv
 import dj_database_url
 import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -87,20 +85,13 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# ===== ARQUIVOS ESTÁTICOS - CONFIGURAÇÃO PARA VERCEL =====
+# ===== ARQUIVOS ESTÁTICOS =====
 STATIC_URL = '/static/'
-
-# ✅ Vercel usa /tmp/ para arquivos temporários
-if os.environ.get('VERCEL'):
-    STATIC_ROOT = '/tmp/staticfiles'
-else:
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = []
 
-# ✅ WhiteNoise DESABILITADO (conflita com Vercel)
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# ✅ WhiteNoise para servir arquivos no Vercel
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # ===== CLOUDINARY =====
 CLOUDINARY_STORAGE = {
@@ -126,9 +117,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'mulheresdsg@gmail.com'
 
-# Security settings
 if not DEBUG:
-    SECURE_SSL_REDIRECT = False  # ✅ DESABILITADO PARA VERCEL
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
