@@ -5,5 +5,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ProjetoWeb.settings')
 
 application = get_wsgi_application()
 
-# ✅ Adicione isso para o Vercel
-app = application
+# ✅ WhiteNoise para servir arquivos estáticos no Vercel
+from whitenoise import WhiteNoise
+application = WhiteNoise(application, root='/tmp')
