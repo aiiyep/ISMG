@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'cloudinary',
     'django.contrib.staticfiles',
     'home',
+    'workshops',  # ✅ ADICIONADO
+    'noticias',   # ✅ ADICIONADO
 ]
 
 MIDDLEWARE = [
@@ -40,7 +42,7 @@ ROOT_URLCONF = 'ProjetoWeb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # ✅ CORRIGIDO
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -48,6 +50,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',  # ✅ ADICIONADO
+                'django.template.context_processors.static',  # ✅ ADICIONADO
             ],
         },
     },
@@ -55,10 +59,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ProjetoWeb.wsgi.application'
 
-# ✅ CONFIGURAÇÃO DO BANCO DE DADOS
-# Usa PostgreSQL em produção (Vercel) e SQLite em desenvolvimento
+# CONFIGURAÇÃO DO BANCO DE DADOS
 if config('DATABASE_URL', default=None):
-    # Produção - PostgreSQL
     DATABASES = {
         'default': dj_database_url.config(
             default=config('DATABASE_URL'),
@@ -67,7 +69,6 @@ if config('DATABASE_URL', default=None):
         )
     }
 else:
-    # Desenvolvimento - SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -95,13 +96,12 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# ===== CONFIGURAÇÃO DE ARQUIVOS ESTÁTICOS =====
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # ✅ SIMPLIFICADO
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# ✅ CORRIGIDO - Removido referência à pasta 'static' que não existe
+STATICFILES_DIRS = []
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -112,10 +112,6 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-# Log para debug (remover depois)
-print(f"DEBUG: {DEBUG}")
-print(f"CLOUDINARY_CLOUD_NAME: {CLOUDINARY_STORAGE['CLOUD_NAME']}")
-
 # Configurar Cloudinary
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
     cloudinary.config(
@@ -124,50 +120,20 @@ if CLOUDINARY_STORAGE['CLOUD_NAME']:
         api_secret=CLOUDINARY_STORAGE['API_SECRET'],
         secure=True
     )
-    print("✅ Cloudinary configurado!")
-else:
-    print("❌ Cloudinary NÃO configurado - variáveis ausentes!")
-
-# Em produção, SEMPRE usa Cloudinary (se configurado)
-if CLOUDINARY_STORAGE['CLOUD_NAME']:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     MEDIA_URL = '/media/'
-    print("✅ Usando Cloudinary Storage")
 else:
-    # Fallback local (só funciona em dev)
+    # Fallback local
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
-    print("⚠️ Usando sistema de arquivos LOCAL")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ========================================
 # CONFIGURAÇÃO DE EMAIL
 # ========================================
-
-# Para desenvolvimento (emails no console)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Para produção (Gmail)
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'seu-email@gmail.com'  # Seu email
-# EMAIL_HOST_PASSWORD = 'sua-senha-de-app'  # Senha de app do Gmail
-# DEFAULT_FROM_EMAIL = 'Instituto Mulheres do Sul Global <seu-email@gmail.com>'
-
-# Para produção (SendGrid - recomendado)
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.sendgrid.net'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'apikey'
-# EMAIL_HOST_PASSWORD = 'SG.sua-api-key-aqui'
-# DEFAULT_FROM_EMAIL = 'mulheresdsg@gmail.com'
-
 DEFAULT_FROM_EMAIL = 'mulheresdsg@gmail.com'
-
 
 # Security settings
 if not DEBUG:
