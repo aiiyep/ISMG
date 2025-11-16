@@ -67,6 +67,44 @@
         </div>
     </section>
 
+        <!-- História Section -->
+    <section id="#historia" class="historia-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nossa História</h2>
+            </div>
+
+            <div class="historia-content">
+                <div class="historia-text">
+                    <p class="historia-intro">
+                        Mulheres do Sul Global é um negócio social de empoderamento econômico de mulheres refugiadas, inseridas em contextos de refúgio e vulnerabilidade social, baseado da promoção do empreendedorismo, capacitação de habilidades, criação e venda de peças de costura comprometidos com os novos paradigmas de se fazer e consumir sustentável.
+                    </p>
+
+                    <div class="historia-grid">
+                        <div class="historia-card">
+                            <div class="historia-icon">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <h3>Ateliê sob Demanda</h3>
+                            <p>Somos um ateliê sob demanda para empresas e marcas comprometidas com uma produção responsável e em escala.</p>
+                        </div>
+
+                        <div class="historia-card">
+                            <div class="historia-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <h3>Marca Social</h3>
+                            <p>Também somos uma marca social, onde criamos coleções a partir da oportunidade de recuperar materiais e tecidos de estoques ociosos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="sobre" class="mission-section">
+
     <!-- Mission Section -->
     <section id="sobre" class="mission-section">
         <div class="container">
@@ -190,7 +228,7 @@
                         <p class="news-subtitle">{{ noticia.subtitulo }}</p>
                         {% endif %}
                         <p class="news-excerpt">
-                            {{ noticia.conteudo|truncatewords:30 }}
+                            {{ noticia.conteudo|truncatewords:20 }}
                         </p>
                         <a href="{% url 'noticia_detalhe' noticia.id %}" class="news-read-more">
                             Ler mais <i class="fas fa-arrow-right"></i>
@@ -198,6 +236,13 @@
                     </div>
                 </article>
                 {% endfor %}
+            </div>
+
+            <!-- Botão Ver Todas as Notícias -->
+            <div class="news-cta">
+                <a href="{% url 'noticias_lista' %}" class="btn-ver-todas">
+                    <i class="fas fa-newspaper"></i> Ver Todas as Notícias
+                </a>
             </div>
             {% else %}
             <div class="no-news">

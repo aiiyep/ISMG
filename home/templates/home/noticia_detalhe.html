@@ -300,11 +300,11 @@
         
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
-            <a href="/">Home</a>
-            <i class="fas fa-chevron-right"></i>
-            <a href="/#noticias">Notícias</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>{{ noticia.titulo|truncatewords:5 }}</span>
+            <a href="{% url 'home' %}">Home</a>
+            <span class="separator">›</span>
+            <a href="{% url 'noticias_lista' %}">Notícias</a>
+            <span class="separator">›</span>
+            <span class="current">{{ noticia.titulo|truncatewords:5 }}</span>
         </nav>
 
         <!-- Article Header -->

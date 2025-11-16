@@ -1,0 +1,493 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Notícias - Instituto Mulheres do Sul Global{% endblock %}
+
+{% block extra_css %}
+    <style>
+        body {
+            background: #F9FAFB;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            font-size: 1.125rem;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 4rem;
+        }
+
+        /* Filtros */
+        .filters-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 3rem;
+        }
+
+        .filters-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filters-title i {
+            color: #E11D48;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .filter-group select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #374151;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #E11D48;
+            box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #E11D48, #BE123C);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+
+        /* Contador de resultados */
+        .results-count {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            border-radius: 0.5rem;
+        }
+
+        .results-count p {
+            margin: 0;
+            color: #1E40AF;
+            font-weight: 600;
+        }
+
+        /* Grid de Notícias */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .news-image {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .news-card:hover .news-image img {
+            transform: scale(1.1);
+        }
+
+        .news-category {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .news-category.evento {
+            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+        }
+
+        .news-category.projeto {
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+        }
+
+        .news-category.conquista {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+        }
+
+        .news-category.parceria {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+
+        .news-category.noticia {
+            background: linear-gradient(135deg, #6B7280, #4B5563);
+        }
+
+        .news-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 215, 0, 0.95);
+            color: #854D0E;
+            padding: 0.5rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .news-date i {
+            color: #E11D48;
+            margin-right: 0.25rem;
+        }
+
+        .news-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .news-subtitle {
+            font-size: 0.95rem;
+            color: #E11D48;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .news-excerpt {
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .news-read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #E11D48;
+            font-weight: 600;
+            text-decoration: none;
+            transition: gap 0.3s;
+        }
+
+        .news-read-more:hover {
+            gap: 0.75rem;
+        }
+
+        .news-read-more i {
+            font-size: 0.875rem;
+        }
+
+        /* Estado vazio */
+        .no-news {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6B7280;
+        }
+
+        .no-news i {
+            font-size: 4rem;
+            color: #E5E7EB;
+            margin-bottom: 1rem;
+        }
+
+        .no-news h3 {
+            font-size: 1.5rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-news p {
+            font-size: 1.125rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-newspaper"></i> Notícias</h1>
+        <p>Acompanhe nossas conquistas, eventos e histórias de transformação</p>
+    </div>
+
+    <div class="container">
+        <!-- Filtros -->
+        <div class="filters-section">
+            <h2 class="filters-title">
+                <i class="fas fa-filter"></i>
+                Filtrar Notícias
+            </h2>
+
+            <form method="GET" action="{% url 'noticias_lista' %}">
+                <div class="filters-grid">
+                    <!-- Filtro por Categoria -->
+                    <div class="filter-group">
+                        <label for="categoria">
+                            <i class="fas fa-tag"></i> Categoria
+                        </label>
+                        <select name="categoria" id="categoria">
+                            <option value="">Todas as categorias</option>
+                            {% for value, label in categorias %}
+                                <option value="{{ value }}" {% if categoria_selecionada == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Ano -->
+                    <div class="filter-group">
+                        <label for="ano">
+                            <i class="fas fa-calendar-alt"></i> Ano
+                        </label>
+                        <select name="ano" id="ano">
+                            <option value="">Todos os anos</option>
+                            {% for ano in anos_disponiveis %}
+                                <option value="{{ ano }}" {% if ano_selecionado == ano|stringformat:"s" %}selected{% endif %}>
+                                    {{ ano }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Mês -->
+                    <div class="filter-group">
+                        <label for="mes">
+                            <i class="fas fa-calendar"></i> Mês
+                        </label>
+                        <select name="mes" id="mes">
+                            <option value="">Todos os meses</option>
+                            {% for numero, nome in meses %}
+                                <option value="{{ numero }}" {% if mes_selecionado == numero %}selected{% endif %}>
+                                    {{ nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filters-actions">
+                    <a href="{% url 'noticias_lista' %}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Limpar Filtros
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Contador de Resultados -->
+        {% if noticias %}
+        <div class="results-count">
+            <p>
+                <i class="fas fa-check-circle"></i>
+                Encontrada{{ noticias.count|pluralize }} <strong>{{ noticias.count }}</strong> notícia{{ noticias.count|pluralize }}
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Grid de Notícias -->
+        {% if noticias %}
+        <div class="news-grid">
+            {% for noticia in noticias %}
+            <article class="news-card">
+                <div class="news-image">
+                    {% if noticia.imagem %}
+                        <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
+                    {% else %}
+                        <img src="{% static 'home/img/placeholder-news.jpg' %}" alt="{{ noticia.titulo }}">
+                    {% endif %}
+                    <div class="news-category {{ noticia.categoria }}">
+                        {% if noticia.categoria == 'evento' %}
+                            <i class="fas fa-calendar-alt"></i> Evento
+                        {% elif noticia.categoria == 'projeto' %}
+                            <i class="fas fa-lightbulb"></i> Projeto
+                        {% elif noticia.categoria == 'conquista' %}
+                            <i class="fas fa-trophy"></i> Conquista
+                        {% elif noticia.categoria == 'parceria' %}
+                            <i class="fas fa-handshake"></i> Parceria
+                        {% else %}
+                            <i class="fas fa-newspaper"></i> Notícia
+                        {% endif %}
+                    </div>
+                    {% if noticia.destaque %}
+                    <div class="news-badge">
+                        <i class="fas fa-star"></i> Destaque
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="news-content">
+                    <div class="news-meta">
+                        <span class="news-date">
+                            <i class="far fa-clock"></i> 
+                            {{ noticia.data_publicacao|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                    <h3 class="news-title">{{ noticia.titulo }}</h3>
+                    {% if noticia.subtitulo %}
+                    <p class="news-subtitle">{{ noticia.subtitulo }}</p>
+                    {% endif %}
+                    <p class="news-excerpt">
+                        {{ noticia.conteudo|truncatewords:30 }}
+                    </p>
+                    <a href="{% url 'noticia_detalhe' noticia.id %}" class="news-read-more">
+                        Ler mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-news">
+            <i class="far fa-newspaper"></i>
+            <h3>Nenhuma notícia encontrada</h3>
+            <p>Tente ajustar os filtros ou volte em breve para conferir nossas atualizações!</p>
+        </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

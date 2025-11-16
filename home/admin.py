@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db import transaction
 from django.utils.html import format_html
 from django.utils import timezone
 from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
@@ -7,11 +6,12 @@ from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVo
 
 @admin.register(Workshop)
 class WorkshopAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'nivel', 'data_inicio', 'data_fim', 'vagas_ocupadas', 'vagas_totais', 'vagas_disponiveis_display', 'status']
+    list_display = ['titulo', 'nivel', 'data_inicio', 'data_fim', 'vagas_ocupadas', 'vagas_totais', 'vagas_disponiveis_display', 'status_visual', 'status']
     list_filter = ['status', 'nivel', 'gratuito']
     search_fields = ['titulo', 'descricao']
     date_hierarchy = 'data_inicio'
     readonly_fields = ['criado_em', 'atualizado_em', 'vagas_disponiveis_display', 'percentual_ocupacao_display']
+    list_editable = ['status']
     
     fieldsets = (
         ('Informações Básicas', {
@@ -28,6 +28,8 @@ class WorkshopAdmin(admin.ModelAdmin):
         }),
     )
     
+    actions = ['marcar_disponivel', 'marcar_esgotado', 'marcar_em_breve', 'marcar_encerrado', 'reabrir_workshop']
+    
     def vagas_disponiveis_display(self, obj):
         return obj.vagas_disponiveis
     vagas_disponiveis_display.short_description = 'Vagas Disponíveis'
@@ -35,6 +37,56 @@ class WorkshopAdmin(admin.ModelAdmin):
     def percentual_ocupacao_display(self, obj):
         return f"{obj.percentual_ocupacao}%"
     percentual_ocupacao_display.short_description = 'Ocupação'
+    
+    @admin.display(description='Status Visual')
+    def status_visual(self, obj):
+        cores = {
+            'disponivel': ('#10B981', '✅ Disponível'),
+            'esgotado': ('#EF4444', '❌ Esgotado'),
+            'em_breve': ('#3B82F6', '🕐 Em Breve'),
+            'encerrado': ('#6B7280', '📦 Encerrado'),
+        }
+        cor, texto = cores.get(obj.status, ('#6B7280', obj.status))
+        return format_html('<span style="color: {}; font-weight: bold;">{}</span>', cor, texto)
+    
+    def marcar_disponivel(self, request, queryset):
+        updated = queryset.update(status='disponivel')
+        self.message_user(request, f"✅ {updated} workshop(s) marcado(s) como Disponível.")
+    marcar_disponivel.short_description = "✅ Marcar como Disponível"
+    
+    def marcar_esgotado(self, request, queryset):
+        updated = queryset.update(status='esgotado')
+        self.message_user(request, f"❌ {updated} workshop(s) marcado(s) como Esgotado.")
+    marcar_esgotado.short_description = "❌ Marcar como Esgotado"
+    
+    def marcar_em_breve(self, request, queryset):
+        updated = queryset.update(status='em_breve')
+        self.message_user(request, f"🕐 {updated} workshop(s) marcado(s) como Em Breve.")
+    marcar_em_breve.short_description = "🕐 Marcar como Em Breve"
+    
+    def marcar_encerrado(self, request, queryset):
+        updated = 0
+        for workshop in queryset:
+            workshop.status = 'encerrado'
+            workshop.vagas_ocupadas = workshop.vagas_totais
+            workshop.save()
+            updated += 1
+        self.message_user(request, f"📦 {updated} workshop(s) encerrado(s) e vagas esgotadas automaticamente.")
+    marcar_encerrado.short_description = "📦 Marcar como Encerrado (esgota vagas)"
+    
+    def reabrir_workshop(self, request, queryset):
+        updated = 0
+        for workshop in queryset:
+            if workshop.status == 'encerrado':
+                workshop.status = 'disponivel'
+                workshop.vagas_ocupadas = 0
+                workshop.save()
+                updated += 1
+        if updated > 0:
+            self.message_user(request, f"♻️ {updated} workshop(s) reaberto(s) com vagas liberadas.")
+        else:
+            self.message_user(request, "⚠️ Nenhum workshop encerrado foi selecionado.", level='warning')
+    reabrir_workshop.short_description = "♻️ Reabrir workshops encerrados"
 
 
 @admin.register(InscricaoWorkshop)
@@ -59,40 +111,18 @@ class InscricaoWorkshopAdmin(admin.ModelAdmin):
     
     actions = ['confirmar_inscricoes', 'recusar_inscricoes', 'marcar_pendente']
     
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-    
-    def delete_model(self, request, obj):
-        super().delete_model(request, obj)
-    
-    def delete_queryset(self, request, queryset):
-        for obj in queryset:
-            self.delete_model(request, obj)
-    
     def confirmar_inscricoes(self, request, queryset):
-        count = 0
-        for inscricao in queryset:
-            inscricao.status = 'confirmado'
-            inscricao.save()
-            count += 1
+        count = queryset.update(status='confirmado')
         self.message_user(request, f'{count} inscrição(ões) confirmada(s).')
     confirmar_inscricoes.short_description = '✅ Confirmar inscrições selecionadas'
     
     def recusar_inscricoes(self, request, queryset):
-        count = 0
-        for inscricao in queryset:
-            inscricao.status = 'recusado'
-            inscricao.save()
-            count += 1
-        self.message_user(request, f'{count} inscrição(ões) recusada(s). Vagas liberadas!')
+        count = queryset.update(status='recusado')
+        self.message_user(request, f'{count} inscrição(ões) recusada(s).')
     recusar_inscricoes.short_description = '❌ Recusar inscrições selecionadas'
     
     def marcar_pendente(self, request, queryset):
-        count = 0
-        for inscricao in queryset:
-            inscricao.status = 'pendente'
-            inscricao.save()
-            count += 1
+        count = queryset.update(status='pendente')
         self.message_user(request, f'{count} inscrição(ões) marcada(s) como pendente.')
     marcar_pendente.short_description = '⏳ Marcar como pendente'
 
@@ -150,43 +180,21 @@ class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
     
     actions = ['aprovar_candidaturas', 'recusar_candidaturas', 'analisar_candidaturas']
     
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-    
     def aprovar_candidaturas(self, request, queryset):
-        count = 0
-        for candidatura in queryset:
-            candidatura.status = 'aprovado'
-            candidatura.save()
-            count += 1
-        
+        count = queryset.update(status='aprovado')
         self.message_user(request, f'{count} candidatura(s) aprovada(s).')
     aprovar_candidaturas.short_description = '✅ Aprovar candidaturas selecionadas'
     
     def recusar_candidaturas(self, request, queryset):
-        count = 0
-        for candidatura in queryset:
-            candidatura.status = 'recusado'
-            candidatura.save()
-            count += 1
-        
-        self.message_user(request, f'{count} candidatura(s) recusada(s). Vagas liberadas automaticamente!')
+        count = queryset.update(status='recusado')
+        self.message_user(request, f'{count} candidatura(s) recusada(s).')
     recusar_candidaturas.short_description = '❌ Recusar candidaturas selecionadas'
     
     def analisar_candidaturas(self, request, queryset):
-        count = 0
-        for candidatura in queryset:
-            candidatura.status = 'em_analise'
-            candidatura.save()
-            count += 1
-        
+        count = queryset.update(status='em_analise')
         self.message_user(request, f'{count} candidatura(s) em análise.')
     analisar_candidaturas.short_description = '🔍 Colocar em análise'
 
-
-# ========================================
-# ✅ ADMIN DE NOTÍCIAS COM PREVIEW DA IMAGEM
-# ========================================
 
 @admin.register(Noticia)
 class NoticiaAdmin(admin.ModelAdmin):
@@ -203,90 +211,45 @@ class NoticiaAdmin(admin.ModelAdmin):
         }),
         ('Publicação', {
             'fields': ('publicado', 'data_publicacao', 'destaque', 'autor'),
-            'description': '⏰ A notícia será publicada automaticamente na data/hora definida em "Data de Publicação"'
+            'description': '⏰ A notícia será publicada automaticamente na data/hora definida'
         }),
     )
     
-    # ✅ Método para exibir o status visual
+    actions = ['publicar_agora', 'marcar_como_rascunho', 'marcar_como_destaque', 'desmarcar_destaque']
+    
     def status_publicacao(self, obj):
         agora = timezone.now()
-        
         if not obj.publicado:
-            return format_html(
-                '<span style="color: #666; font-weight: bold;">⚫ Rascunho</span>'
-            )
+            return format_html('<span style="color: #666; font-weight: bold;">⚫ Rascunho</span>')
         elif obj.data_publicacao > agora:
             tempo_restante = obj.data_publicacao - agora
             dias = tempo_restante.days
             horas = tempo_restante.seconds // 3600
-            
-            if dias > 0:
-                tempo_txt = f"{dias}d {horas}h"
-            else:
-                tempo_txt = f"{horas}h"
-            
-            return format_html(
-                '<span style="color: #f59e0b; font-weight: bold;">🕐 Agendada (em {})</span>',
-                tempo_txt
-            )
+            tempo_txt = f"{dias}d {horas}h" if dias > 0 else f"{horas}h"
+            return format_html('<span style="color: #f59e0b; font-weight: bold;">🕐 Agendada (em {})</span>', tempo_txt)
         else:
-            return format_html(
-                '<span style="color: #10b981; font-weight: bold;">✅ Publicada</span>'
-            )
-    
+            return format_html('<span style="color: #10b981; font-weight: bold;">✅ Publicada</span>')
     status_publicacao.short_description = 'Status'
     
-    # ✅ Ações personalizadas
-    actions = ['publicar_agora', 'marcar_como_rascunho', 'marcar_como_destaque']
-    
     def publicar_agora(self, request, queryset):
-        """Publica imediatamente as notícias selecionadas"""
         updated = queryset.update(publicado=True, data_publicacao=timezone.now())
-        self.message_user(request, f"✅ {updated} notícia(s) publicada(s) imediatamente!")
-    
+        self.message_user(request, f"✅ {updated} notícia(s) publicada(s)!")
     publicar_agora.short_description = "📢 Publicar agora"
     
     def marcar_como_rascunho(self, request, queryset):
         updated = queryset.update(publicado=False)
-        self.message_user(request, f"⚫ {updated} notícia(s) marcada(s) como rascunho.")
-    
+        self.message_user(request, f"⚫ {updated} notícia(s) como rascunho.")
     marcar_como_rascunho.short_description = "⚫ Marcar como rascunho"
     
     def marcar_como_destaque(self, request, queryset):
         updated = queryset.update(destaque=True)
-        self.message_user(request, f"⭐ {updated} notícia(s) marcada(s) como destaque.")
-    
+        self.message_user(request, f"⭐ {updated} notícia(s) como destaque.")
     marcar_como_destaque.short_description = "⭐ Marcar como destaque"
-    
-    # ✅ PREVIEW DA IMAGEM NO ADMIN (USANDO format_html)
-    @admin.display(description='Preview da Imagem')
-    def imagem_preview(self, obj):
-        if obj and obj.imagem:
-            return format_html(
-                '<img src="{}" style="max-width: 320px; max-height: 180px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />',
-                obj.imagem.url
-            )
-        return "Nenhuma imagem"
-    
-    def publicar_noticias(self, request, queryset):
-        updated = queryset.update(publicado=True)
-        self.message_user(request, f'{updated} notícia(s) publicada(s).')
-    publicar_noticias.short_description = '✅ Publicar notícias selecionadas'
-    
-    def despublicar_noticias(self, request, queryset):
-        updated = queryset.update(publicado=False)
-        self.message_user(request, f'{updated} notícia(s) despublicada(s).')
-    despublicar_noticias.short_description = '❌ Despublicar notícias selecionadas'
-    
-    def marcar_destaque(self, request, queryset):
-        updated = queryset.update(destaque=True)
-        self.message_user(request, f'{updated} notícia(s) marcada(s) como destaque.')
-    marcar_destaque.short_description = '⭐ Marcar como destaque'
     
     def desmarcar_destaque(self, request, queryset):
         updated = queryset.update(destaque=False)
-        self.message_user(request, f'{updated} notícia(s) desmarcada(s) de destaque.')
-    desmarcar_destaque.short_description = '☆ Desmarcar destaque'
+        self.message_user(request, f"☆ {updated} notícia(s) desmarcada(s).")
+    desmarcar_destaque.short_description = "☆ Desmarcar destaque"
 
 
 @admin.register(Newsletter)
@@ -300,22 +263,17 @@ class NewsletterAdmin(admin.ModelAdmin):
     actions = ['exportar_emails', 'marcar_como_ativo', 'marcar_como_inativo']
     
     def exportar_emails(self, request, queryset):
-        """Exportar e-mails ativos"""
         emails = queryset.filter(ativo=True).values_list('email', flat=True)
         emails_texto = ', '.join(emails)
-        
-        self.message_user(request, f"📧 E-mails ativos ({queryset.filter(ativo=True).count()}): {emails_texto}")
-    
-    exportar_emails.short_description = "📤 Exportar e-mails selecionados"
+        self.message_user(request, f"📧 E-mails: {emails_texto}")
+    exportar_emails.short_description = "📤 Exportar e-mails"
     
     def marcar_como_ativo(self, request, queryset):
         updated = queryset.update(ativo=True)
-        self.message_user(request, f"✅ {updated} inscrito(s) marcado(s) como ativo(s).")
-    
+        self.message_user(request, f"✅ {updated} marcado(s) como ativo.")
     marcar_como_ativo.short_description = "✅ Marcar como ativo"
     
     def marcar_como_inativo(self, request, queryset):
         updated = queryset.update(ativo=False)
-        self.message_user(request, f"❌ {updated} inscrito(s) marcado(s) como inativo(s).")
-    
+        self.message_user(request, f"❌ {updated} marcado(s) como inativo.")
     marcar_como_inativo.short_description = "❌ Marcar como inativo"

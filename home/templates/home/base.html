@@ -448,13 +448,13 @@
 
         <ul class="menu" id="mobileMenu">
             <li>
-                <a href="/#sobre">Quem Somos</a>
+                <a href="/#">Quem Somos</a>
                 <span class="dropdown-toggle" onclick="toggleDropdown(this)">
                     <i class="bi bi-chevron-down"></i>
                 </span>
                 <div class="dropdown-content">
                     <div class="item">
-                        <a href="/#sobre">
+                        <a href="/##historia">
                             <i class="bi bi-book-half"></i>
                             <div>
                                 <h4>Nossa História</h4>
@@ -463,7 +463,7 @@
                         </a>
                     </div>
                     <div class="item">
-                        <a href="/#missao">
+                        <a href="/#sobre">
                             <i class="bi bi-bullseye"></i>
                             <div>
                                 <h4>Missão e Valores</h4>
@@ -474,7 +474,7 @@
                 </div>
             </li>
 
-            <li>
+          <li>
                 <a href="/#servicos">O Que Fazemos</a>
                 <span class="dropdown-toggle" onclick="toggleDropdown(this)">
                     <i class="bi bi-chevron-down"></i>
@@ -504,6 +504,15 @@
                             <div>
                                 <h4>Workshops</h4>
                                 <p>Capacitação em costura.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="{% url 'noticias_lista' %}">
+                            <i class="bi bi-newspaper"></i>
+                            <div>
+                                <h4>Notícias</h4>
+                                <p>Novidades e impacto social.</p>
                             </div>
                         </a>
                     </div>

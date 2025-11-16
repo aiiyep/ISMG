@@ -36,11 +36,162 @@
         padding: 3rem 1rem;
     }
 
-    .filters {
+    /* Filtros */
+    .filters-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+
+    .filters-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filters-title i {
+        color: #E11D48;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-group label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-group label i {
+        color: #E11D48;
+    }
+
+    .filter-group select {
+        padding: 0.75rem 1rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        color: #374151;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-group select:focus {
+        outline: none;
+        border-color: #E11D48;
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+    }
+
+    .filters-actions {
         display: flex;
         gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #E11D48, #BE185D);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+    }
+
+    .btn-secondary {
+        background: #F3F4F6;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background: #E5E7EB;
+    }
+
+    /* Contador de resultados */
+    .results-count {
         margin-bottom: 2rem;
-        flex-wrap: wrap;
+        padding: 1rem;
+        background: #EFF6FF;
+        border-left: 4px solid #3B82F6;
+        border-radius: 0.5rem;
+    }
+
+    .results-count p {
+        margin: 0;
+        color: #1E40AF;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Estado vazio */
+    .no-workshops {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6B7280;
+    }
+
+    .no-workshops i {
+        font-size: 4rem;
+        color: #E5E7EB;
+        margin-bottom: 1rem;
+    }
+
+    .no-workshops h3 {
+        font-size: 1.5rem;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-workshops p {
+        font-size: 1.125rem;
+    }
+
+    /* Status badges - adicionar novos estilos */
+    .status-badge.em_breve {
+        background: #DBEAFE;
+        color: #1E40AF;
+    }
+
+    .status-badge.encerrado {
+        background: #F3F4F6;
+        color: #6B7280;
     }
 
     .filter-btn {
@@ -297,18 +448,77 @@
 
     <!-- Workshops Container -->
     <div class="workshops-container">
-        <!-- Filters -->
-        <div class="filters">
-            <button class="filter-btn active" onclick="filterWorkshops('todos')">Todos</button>
-            <button class="filter-btn" onclick="filterWorkshops('iniciante')">Iniciante</button>
-            <button class="filter-btn" onclick="filterWorkshops('intermediario')">Intermediário</button>
-            <button class="filter-btn" onclick="filterWorkshops('avancado')">Avançado</button>
+        <!-- Filtros -->
+        <div class="filters-section">
+            <h3 class="filters-title">
+                <i class="fas fa-filter"></i> Filtrar Workshops
+            </h3>
+            
+            <form method="GET" action="{% url 'workshops' %}">
+                <div class="filters-grid">
+                    <!-- Filtro por Nível -->
+                    <div class="filter-group">
+                        <label for="nivel">
+                            <i class="fas fa-signal"></i> Nível
+                        </label>
+                        <select name="nivel" id="nivel">
+                            <option value="">Todos os níveis</option>
+                            <option value="iniciante" {% if nivel_selecionado == 'iniciante' %}selected{% endif %}>Iniciante</option>
+                            <option value="intermediario" {% if nivel_selecionado == 'intermediario' %}selected{% endif %}>Intermediário</option>
+                            <option value="avancado" {% if nivel_selecionado == 'avancado' %}selected{% endif %}>Avançado</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Status -->
+                    <div class="filter-group">
+                        <label for="status">
+                            <i class="fas fa-info-circle"></i> Status
+                        </label>
+                        <select name="status" id="status">
+                            <option value="">Todos os status</option>
+                            <option value="disponivel" {% if status_selecionado == 'disponivel' %}selected{% endif %}>Vagas Disponíveis</option>
+                            <option value="esgotado" {% if status_selecionado == 'esgotado' %}selected{% endif %}>Esgotado</option>
+                            <option value="em_breve" {% if status_selecionado == 'em_breve' %}selected{% endif %}>Em Breve</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro para mostrar todos (incluindo antigos) -->
+                    <div class="filter-group">
+                        <label for="todos">
+                            <i class="fas fa-archive"></i> Exibir
+                        </label>
+                        <select name="todos" id="todos">
+                            <option value="false" {% if not mostrar_todos %}selected{% endif %}>Apenas ativos</option>
+                            <option value="true" {% if mostrar_todos %}selected{% endif %}>Todos (incluindo antigos)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filters-actions">
+                    <a href="{% url 'workshops' %}" class="btn-secondary">
+                        <i class="fas fa-redo"></i> Limpar Filtros
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                </div>
+            </form>
         </div>
+
+        <!-- Contador de Resultados -->
+        {% if workshops %}
+        <div class="results-count">
+            <p>
+                <i class="fas fa-check-circle"></i>
+                Encontrado{{ workshops.count|pluralize }} <strong>{{ workshops.count }}</strong> workshop{{ workshops.count|pluralize }}
+            </p>
+        </div>
+        {% endif %}
 
         <!-- Workshops Grid -->
         <div class="workshops-grid">
             {% for workshop in workshops %}
-            <div class="workshop-card" data-nivel="{{ workshop.nivel }}">
+            <div class="workshop-card">
                 {% if workshop.imagem %}
                     <img src="{{ workshop.imagem.url }}" alt="{{ workshop.titulo }}" class="workshop-image">
                 {% else %}
@@ -319,8 +529,12 @@
                     <span class="status-badge {{ workshop.status }}">
                         {% if workshop.status == 'disponivel' %}
                             ✓ Vagas Disponíveis
-                        {% else %}
+                        {% elif workshop.status == 'esgotado' %}
                             ✕ Esgotado
+                        {% elif workshop.status == 'em_breve' %}
+                            🕐 Em Breve
+                        {% elif workshop.status == 'encerrado' %}
+                            📦 Encerrado
                         {% endif %}
                     </span>
 
@@ -339,12 +553,15 @@
                             <i class="fas fa-signal"></i>
                             <span>Nível: {{ workshop.get_nivel_display }}</span>
                         </div>
+                        
+                        <!-- ✅ Só mostra vagas se NÃO for encerrado E NÃO for esgotado -->
+                        {% if workshop.status != 'encerrado' and workshop.status != 'esgotado' %}
                         <div class="meta-item">
                             <i class="fas fa-users"></i>
                             <span>{{ workshop.vagas_disponiveis }} vagas disponíveis</span>
                         </div>
+                        {% endif %}
                     </div>
-
                     <p class="workshop-description">{{ workshop.descricao|truncatewords:20 }}</p>
 
                     <div class="workshop-footer">
@@ -359,6 +576,14 @@
                             <button class="workshop-btn" onclick="openInscricao({{ workshop.id }}, '{{ workshop.titulo }}')">
                                 Inscrever-se
                             </button>
+                        {% elif workshop.status == 'em_breve' %}
+                            <button class="workshop-btn" style="background: #3B82F6; cursor: default;" disabled>
+                                Em Breve
+                            </button>
+                        {% elif workshop.status == 'encerrado' %}
+                            <button class="workshop-btn" style="background: #6B7280; cursor: not-allowed;" disabled>
+                                Encerrado
+                            </button>
                         {% else %}
                             <button class="workshop-btn" style="background: #9CA3AF; cursor: not-allowed;" disabled>
                                 Esgotado
@@ -368,7 +593,11 @@
                 </div>
             </div>
             {% empty %}
-            <p>Nenhum workshop disponível no momento.</p>
+            <div class="no-workshops">
+                <i class="fas fa-box-open"></i>
+                <h3>Nenhum workshop encontrado</h3>
+                <p>Ajuste os filtros ou volte em breve para conferir novos workshops!</p>
+            </div>
             {% endfor %}
         </div>
     </div>

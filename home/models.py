@@ -173,7 +173,6 @@ class NoticiaManager(models.Manager):
             data_publicacao__gt=timezone.now()
         )
 
-
 class Noticia(models.Model):
     CATEGORIA_CHOICES = [
         ('evento', 'Evento'),
@@ -201,16 +200,12 @@ class Noticia(models.Model):
     )
     autor = models.CharField(max_length=100, blank=True, verbose_name='Autor')
     
-    # ✅ IMPORTANTE: Adicionar o manager customizado
     objects = NoticiaManager()
     
     class Meta:
         verbose_name = 'Notícia'
         verbose_name_plural = 'Notícias'
         ordering = ['-data_publicacao']
-    
-    def __str__(self):
-        return self.titulo
     
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -219,9 +214,11 @@ class Noticia(models.Model):
             self.slug = slugify(self.titulo) + '-' + str(uuid.uuid4())[:8]
         super().save(*args, **kwargs)
     
+    def __str__(self):
+        return self.titulo
+    
     @property
     def esta_publicada(self):
-        """Retorna True se a notícia deve estar visível"""
         return self.publicado and self.data_publicacao <= timezone.now()
 
 

@@ -5,6 +5,7 @@ from django.conf import settings
 from .models import Workshop, InscricaoWorkshop, VagaVoluntariado, CandidaturaVoluntariado, Newsletter, Noticia
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 
 
 def home(request):
@@ -36,8 +37,17 @@ def home(request):
         
         return redirect('home')
     
-    # ✅ Usar .publicadas() para pegar apenas notícias publicadas
-    noticias = Noticia.objects.publicadas().order_by('-data_publicacao')[:6]
+    # ✅ NOVA LÓGICA: Sempre priorizar notícias em DESTAQUE
+    # 1. Buscar todas as notícias em destaque primeiro (ordenadas por data)
+    noticias_destaque = list(Noticia.objects.publicadas().filter(destaque=True).order_by('-data_publicacao'))
+    
+    # 2. Se não tiver 4 notícias em destaque, completar com as mais recentes (que NÃO são destaque)
+    if len(noticias_destaque) < 4:
+        noticias_restantes = Noticia.objects.publicadas().filter(destaque=False).order_by('-data_publicacao')[:4 - len(noticias_destaque)]
+        noticias = noticias_destaque + list(noticias_restantes)
+    else:
+        # Se tiver 4 ou mais em destaque, pegar apenas as 4 primeiras
+        noticias = noticias_destaque[:4]
     
     context = {
         'noticias': noticias,
@@ -63,14 +73,148 @@ def noticia_detalhe(request, id):
     
     return render(request, 'home/noticia_detalhe.html', context)
 
+from django.core.paginator import Paginator
+
+def noticias_lista(request):
+    """View para listagem completa de notícias com filtros e paginação"""
+    
+    # Pegar todas as notícias publicadas
+    noticias = Noticia.objects.publicadas()
+    
+    # Filtro por categoria
+    categoria = request.GET.get('categoria')
+    if categoria:
+        noticias = noticias.filter(categoria=categoria)
+    
+    # Filtro por ano
+    ano = request.GET.get('ano')
+    if ano:
+        noticias = noticias.filter(data_publicacao__year=ano)
+    
+    # Filtro por mês
+    mes = request.GET.get('mes')
+    if mes and ano:
+        noticias = noticias.filter(data_publicacao__month=mes)
+    
+    # Ordenar por data mais recente
+    noticias = noticias.order_by('-data_publicacao')
+    
+    # ✅ PAGINAÇÃO: 9 notícias por página (grid 3x3)
+    paginator = Paginator(noticias, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Obter anos disponíveis para os filtros
+    from django.db.models.functions import ExtractYear
+    anos_disponiveis = Noticia.objects.publicadas().annotate(
+        ano=ExtractYear('data_publicacao')
+    ).values_list('ano', flat=True).distinct().order_by('-ano')
+    
+    # Categorias disponíveis
+    categorias = Noticia.CATEGORIA_CHOICES
+    
+    # Meses para o select
+    meses = [
+        (1, 'Janeiro'), (2, 'Fevereiro'), (3, 'Março'),
+        (4, 'Abril'), (5, 'Maio'), (6, 'Junho'),
+        (7, 'Julho'), (8, 'Agosto'), (9, 'Setembro'),
+        (10, 'Outubro'), (11, 'Novembro'), (12, 'Dezembro')
+    ]
+    
+    context = {
+        'noticias': page_obj,  # ✅ MUDOU: agora usa page_obj
+        'page_obj': page_obj,  # ✅ NOVO: para navegação de páginas
+        'categorias': categorias,
+        'anos_disponiveis': anos_disponiveis,
+        'meses': meses,
+        'categoria_selecionada': categoria,
+        'ano_selecionado': ano,
+        'mes_selecionado': int(mes) if mes else None,
+    }
+    
+    return render(request, 'home/noticias_lista.html', context)
+
 
 def workshops(request):
-    """View da página de workshops"""
-    workshops_list = Workshop.objects.filter(status='disponivel').order_by('data_inicio')
+    """View da página de workshops com filtros"""
+    
+    # Por padrão, mostrar apenas workshops disponíveis
+    mostrar_todos = request.GET.get('todos', 'false') == 'true'
+    nivel = request.GET.get('nivel')
+    status = request.GET.get('status')
+    
+    if mostrar_todos:
+        # Mostrar todos os workshops (incluindo esgotados e encerrados)
+        workshops_list = Workshop.objects.all()
+    else:
+        # Mostrar apenas disponíveis e em breve
+        workshops_list = Workshop.objects.filter(status__in=['disponivel', 'em_breve'])
+    
+    # Filtro por nível
+    if nivel:
+        workshops_list = workshops_list.filter(nivel=nivel)
+    
+    # Filtro por status
+    if status:
+        workshops_list = workshops_list.filter(status=status)
+    
+    # Ordenar por data de início (mais recentes primeiro)
+    workshops_list = workshops_list.order_by('-data_inicio')
+    
+    # Dados para os filtros
+    niveis = Workshop.NIVEL_CHOICES
+    status_choices = Workshop.STATUS_CHOICES
     
     context = {
         'workshops': workshops_list,
+        'niveis': niveis,
+        'status_choices': status_choices,
+        'mostrar_todos': mostrar_todos,
+        'nivel_selecionado': nivel,
+        'status_selecionado': status,
     }
+    
+    return render(request, 'home/workshops.html', context)
+
+def workshops(request):
+    """View da página de workshops com filtros"""
+    
+    # Por padrão, mostrar apenas workshops disponíveis
+    mostrar_todos = request.GET.get('todos', 'false') == 'true'
+    nivel = request.GET.get('nivel')
+    status = request.GET.get('status')
+    
+    if mostrar_todos:
+        # Mostrar todos os workshops (incluindo esgotados e encerrados)
+        workshops_list = Workshop.objects.all()
+    else:
+        # Mostrar apenas disponíveis e em breve
+        workshops_list = Workshop.objects.filter(status__in=['disponivel', 'em_breve'])
+    
+    # Filtro por nível
+    if nivel:
+        workshops_list = workshops_list.filter(nivel=nivel)
+    
+    # Filtro por status
+    if status:
+        workshops_list = workshops_list.filter(status=status)
+    
+    # Ordenar por data de início (mais recentes primeiro)
+    workshops_list = workshops_list.order_by('-data_inicio')
+    
+    # Dados para os filtros
+    niveis = Workshop.NIVEL_CHOICES
+    status_choices = Workshop.STATUS_CHOICES
+    
+    context = {
+        'workshops': workshops_list,
+        'niveis': niveis,
+        'status_choices': status_choices,
+        'mostrar_todos': mostrar_todos,
+        'nivel_selecionado': nivel,
+        'status_selecionado': status,
+    }
+    
     return render(request, 'home/workshops.html', context)
 
 
