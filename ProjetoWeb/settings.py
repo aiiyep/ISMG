@@ -87,10 +87,14 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# ===== ARQUIVOS ESTÁTICOS - CORRIGIDO PARA VERCEL =====
+# ===== ARQUIVOS ESTÁTICOS =====
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'  # ✅ CORRIGIDO!
+STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
+
+# ✅ IMPORTANTE: Não precisa de STATICFILES_DIRS porque os arquivos já estão em home/static/
 STATICFILES_DIRS = []
+
+# ✅ WhiteNoise para servir arquivos estáticos
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ===== CLOUDINARY =====
