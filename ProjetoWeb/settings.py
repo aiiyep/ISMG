@@ -105,12 +105,16 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Configuração do Cloudinary
+# ===== CLOUDINARY CONFIGURATION =====
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
     'API_KEY': config('CLOUDINARY_API_KEY', default=''),
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
+
+# Log para debug (remover depois)
+print(f"DEBUG: {DEBUG}")
+print(f"CLOUDINARY_CLOUD_NAME: {CLOUDINARY_STORAGE['CLOUD_NAME']}")
 
 # Configurar Cloudinary
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
@@ -120,15 +124,20 @@ if CLOUDINARY_STORAGE['CLOUD_NAME']:
         api_secret=CLOUDINARY_STORAGE['API_SECRET'],
         secure=True
     )
+    print("✅ Cloudinary configurado!")
+else:
+    print("❌ Cloudinary NÃO configurado - variáveis ausentes!")
 
-# Em produção (Vercel), usa Cloudinary; em desenvolvimento, usa sistema local
-if not DEBUG and CLOUDINARY_STORAGE['CLOUD_NAME']:
+# Em produção, SEMPRE usa Cloudinary (se configurado)
+if CLOUDINARY_STORAGE['CLOUD_NAME']:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     MEDIA_URL = '/media/'
+    print("✅ Usando Cloudinary Storage")
 else:
-    # Desenvolvimento local
+    # Fallback local (só funciona em dev)
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
+    print("⚠️ Usando sistema de arquivos LOCAL")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
