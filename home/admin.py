@@ -22,11 +22,10 @@ class WorkshopAdmin(admin.ModelAdmin):
         'nivel', 
         'data_inicio', 
         'data_fim', 
-        'get_vagas_ocupadas',  # ✅ CORRIGIDO
+        'get_vagas_ocupadas',
         'vagas_totais', 
-        'get_vagas_disponiveis',  # ✅ CORRIGIDO
-        'status_visual', 
-        'status'
+        'get_vagas_disponiveis',
+        'status_visual',
     ]
     list_filter = ['status', 'nivel', 'gratuito']
     search_fields = ['titulo', 'descricao']
@@ -38,7 +37,7 @@ class WorkshopAdmin(admin.ModelAdmin):
         'get_vagas_ocupadas',
         'get_percentual_ocupacao'
     ]
-    list_editable = ['status']
+    # ❌ REMOVIDO 'status' de list_editable - estava causando conflito
     
     fieldsets = (
         ('Informações Básicas', {
@@ -50,9 +49,9 @@ class WorkshopAdmin(admin.ModelAdmin):
         ('Vagas e Preço', {
             'fields': (
                 'vagas_totais', 
-                'get_vagas_ocupadas',  # ✅ READONLY
-                'get_vagas_disponiveis',  # ✅ READONLY
-                'get_percentual_ocupacao',  # ✅ READONLY
+                'get_vagas_ocupadas',
+                'get_vagas_disponiveis',
+                'get_percentual_ocupacao',
                 'preco', 
                 'gratuito'
             )
@@ -70,6 +69,7 @@ class WorkshopAdmin(admin.ModelAdmin):
     ]
     
     # ✅ MÉTODOS PARA EXIBIR PROPRIEDADES CALCULADAS
+    @admin.display(description='Vagas Disponíveis')
     def get_vagas_disponiveis(self, obj):
         """Exibe vagas disponíveis calculadas"""
         vagas = obj.vagas_disponiveis
@@ -79,13 +79,13 @@ class WorkshopAdmin(admin.ModelAdmin):
             cor, 
             vagas
         )
-    get_vagas_disponiveis.short_description = 'Vagas Disponíveis'
     
+    @admin.display(description='Vagas Ocupadas')
     def get_vagas_ocupadas(self, obj):
         """Exibe vagas ocupadas calculadas"""
         return obj.vagas_ocupadas
-    get_vagas_ocupadas.short_description = 'Vagas Ocupadas'
     
+    @admin.display(description='Ocupação')
     def get_percentual_ocupacao(self, obj):
         """Exibe percentual de ocupação"""
         percentual = obj.percentual_ocupacao
@@ -100,9 +100,8 @@ class WorkshopAdmin(admin.ModelAdmin):
             cor, 
             percentual
         )
-    get_percentual_ocupacao.short_description = 'Ocupação'
     
-    @admin.display(description='Status Visual')
+    @admin.display(description='Status')
     def status_visual(self, obj):
         cores = {
             'disponivel': ('#10B981', '✅ Disponível'),
@@ -114,25 +113,25 @@ class WorkshopAdmin(admin.ModelAdmin):
         return format_html('<span style="color: {}; font-weight: bold;">{}</span>', cor, texto)
     
     # ✅ ACTIONS
+    @admin.action(description="✅ Marcar como Disponível")
     def marcar_disponivel(self, request, queryset):
         updated = queryset.update(status='disponivel')
         self.message_user(request, f"✅ {updated} workshop(s) marcado(s) como Disponível.")
-    marcar_disponivel.short_description = "✅ Marcar como Disponível"
     
+    @admin.action(description="❌ Marcar como Esgotado")
     def marcar_esgotado(self, request, queryset):
         updated = queryset.update(status='esgotado')
         self.message_user(request, f"❌ {updated} workshop(s) marcado(s) como Esgotado.")
-    marcar_esgotado.short_description = "❌ Marcar como Esgotado"
     
+    @admin.action(description="🕐 Marcar como Em Breve")
     def marcar_em_breve(self, request, queryset):
         updated = queryset.update(status='em_breve')
         self.message_user(request, f"🕐 {updated} workshop(s) marcado(s) como Em Breve.")
-    marcar_em_breve.short_description = "🕐 Marcar como Em Breve"
     
+    @admin.action(description="📦 Marcar como Encerrado")
     def marcar_encerrado(self, request, queryset):
         updated = queryset.update(status='encerrado')
         self.message_user(request, f"📦 {updated} workshop(s) encerrado(s).")
-    marcar_encerrado.short_description = "📦 Marcar como Encerrado"
 
 
 # ========================================
@@ -141,12 +140,12 @@ class WorkshopAdmin(admin.ModelAdmin):
 
 @admin.register(InscricaoWorkshop)
 class InscricaoWorkshopAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'email', 'workshop', 'experiencia', 'status', 'inscrito_em']
+    list_display = ['nome', 'email', 'workshop', 'experiencia', 'status_badge', 'inscrito_em']
     list_filter = ['workshop', 'experiencia', 'status', 'inscrito_em']
     search_fields = ['nome', 'email', 'telefone']
     date_hierarchy = 'inscrito_em'
     readonly_fields = ['inscrito_em']
-    list_editable = ['status']
+    # ❌ REMOVIDO list_editable - estava causando conflito
     
     fieldsets = (
         ('Participante', {
@@ -162,20 +161,30 @@ class InscricaoWorkshopAdmin(admin.ModelAdmin):
     
     actions = ['confirmar_inscricoes', 'recusar_inscricoes', 'marcar_pendente']
     
+    @admin.display(description='Status')
+    def status_badge(self, obj):
+        cores = {
+            'pendente': ('#F59E0B', '⏳ Pendente'),
+            'confirmado': ('#10B981', '✅ Confirmado'),
+            'recusado': ('#EF4444', '❌ Recusado'),
+        }
+        cor, texto = cores.get(obj.status, ('#6B7280', obj.status))
+        return format_html('<span style="color: {}; font-weight: bold;">{}</span>', cor, texto)
+    
+    @admin.action(description='✅ Confirmar inscrições selecionadas')
     def confirmar_inscricoes(self, request, queryset):
         count = queryset.update(status='confirmado')
         self.message_user(request, f'✅ {count} inscrição(ões) confirmada(s).')
-    confirmar_inscricoes.short_description = '✅ Confirmar inscrições selecionadas'
     
+    @admin.action(description='❌ Recusar inscrições selecionadas')
     def recusar_inscricoes(self, request, queryset):
         count = queryset.update(status='recusado')
         self.message_user(request, f'❌ {count} inscrição(ões) recusada(s).')
-    recusar_inscricoes.short_description = '❌ Recusar inscrições selecionadas'
     
+    @admin.action(description='⏳ Marcar como pendente')
     def marcar_pendente(self, request, queryset):
         count = queryset.update(status='pendente')
         self.message_user(request, f'⏳ {count} inscrição(ões) marcada(s) como pendente.')
-    marcar_pendente.short_description = '⏳ Marcar como pendente'
 
 
 # ========================================
@@ -184,7 +193,7 @@ class InscricaoWorkshopAdmin(admin.ModelAdmin):
 
 @admin.register(VagaVoluntariado)
 class VagaVoluntariadoAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'tipo', 'local', 'horas_semanais', 'vagas_disponiveis', 'vagas_totais', 'status', 'criada_em']
+    list_display = ['titulo', 'tipo', 'local', 'horas_semanais', 'vagas_disponiveis', 'vagas_totais', 'status_badge', 'criada_em']
     list_filter = ['status', 'tipo', 'criada_em']
     search_fields = ['titulo', 'descricao', 'local']
     date_hierarchy = 'criada_em'
@@ -207,6 +216,17 @@ class VagaVoluntariadoAdmin(admin.ModelAdmin):
     
     actions = ['abrir_vagas', 'fechar_vagas', 'pausar_vagas']
     
+    @admin.display(description='Status')
+    def status_badge(self, obj):
+        cores = {
+            'aberta': ('#10B981', '✅ Aberta'),
+            'fechada': ('#EF4444', '❌ Fechada'),
+            'pausada': ('#F59E0B', '⏸️ Pausada'),
+        }
+        cor, texto = cores.get(obj.status, ('#6B7280', obj.status))
+        return format_html('<span style="color: {}; font-weight: bold;">{}</span>', cor, texto)
+    
+    @admin.display(description='Candidaturas')
     def total_candidaturas(self, obj):
         count = obj.candidaturas.count()
         ativos = obj.candidaturas.exclude(status='recusado').count()
@@ -215,22 +235,21 @@ class VagaVoluntariadoAdmin(admin.ModelAdmin):
             count, 
             ativos
         )
-    total_candidaturas.short_description = 'Candidaturas'
     
+    @admin.action(description='✅ Abrir vagas')
     def abrir_vagas(self, request, queryset):
         count = queryset.update(status='aberta')
         self.message_user(request, f'✅ {count} vaga(s) aberta(s).')
-    abrir_vagas.short_description = '✅ Abrir vagas'
     
+    @admin.action(description='❌ Fechar vagas')
     def fechar_vagas(self, request, queryset):
         count = queryset.update(status='fechada')
         self.message_user(request, f'❌ {count} vaga(s) fechada(s).')
-    fechar_vagas.short_description = '❌ Fechar vagas'
     
+    @admin.action(description='⏸️ Pausar vagas')
     def pausar_vagas(self, request, queryset):
         count = queryset.update(status='pausada')
         self.message_user(request, f'⏸️ {count} vaga(s) pausada(s).')
-    pausar_vagas.short_description = '⏸️ Pausar vagas'
 
 
 # ========================================
@@ -239,12 +258,12 @@ class VagaVoluntariadoAdmin(admin.ModelAdmin):
 
 @admin.register(CandidaturaVoluntariado)
 class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'email', 'vaga', 'status', 'candidatou_em']
+    list_display = ['nome', 'email', 'vaga', 'status_badge', 'candidatou_em']
     list_filter = ['status', 'vaga', 'candidatou_em']
     search_fields = ['nome', 'email', 'telefone', 'vaga__titulo']
     date_hierarchy = 'candidatou_em'
     readonly_fields = ['candidatou_em']
-    list_editable = ['status']
+    # ❌ REMOVIDO list_editable
     
     fieldsets = (
         ('Candidato', {
@@ -263,20 +282,31 @@ class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
     
     actions = ['aprovar_candidaturas', 'recusar_candidaturas', 'analisar_candidaturas']
     
+    @admin.display(description='Status')
+    def status_badge(self, obj):
+        cores = {
+            'pendente': ('#F59E0B', '⏳ Pendente'),
+            'em_analise': ('#3B82F6', '🔍 Em Análise'),
+            'aprovado': ('#10B981', '✅ Aprovado'),
+            'recusado': ('#EF4444', '❌ Recusado'),
+        }
+        cor, texto = cores.get(obj.status, ('#6B7280', obj.status))
+        return format_html('<span style="color: {}; font-weight: bold;">{}</span>', cor, texto)
+    
+    @admin.action(description='✅ Aprovar candidaturas selecionadas')
     def aprovar_candidaturas(self, request, queryset):
         count = queryset.update(status='aprovado')
         self.message_user(request, f'✅ {count} candidatura(s) aprovada(s).')
-    aprovar_candidaturas.short_description = '✅ Aprovar candidaturas selecionadas'
     
+    @admin.action(description='❌ Recusar candidaturas selecionadas')
     def recusar_candidaturas(self, request, queryset):
         count = queryset.update(status='recusado')
         self.message_user(request, f'❌ {count} candidatura(s) recusada(s).')
-    recusar_candidaturas.short_description = '❌ Recusar candidaturas selecionadas'
     
+    @admin.action(description='🔍 Colocar em análise')
     def analisar_candidaturas(self, request, queryset):
         count = queryset.update(status='em_analise')
         self.message_user(request, f'🔍 {count} candidatura(s) em análise.')
-    analisar_candidaturas.short_description = '🔍 Colocar em análise'
 
 
 # ========================================
@@ -285,12 +315,12 @@ class CandidaturaVoluntariadoAdmin(admin.ModelAdmin):
 
 @admin.register(Noticia)
 class NoticiaAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'categoria', 'status_publicacao', 'data_publicacao', 'destaque', 'visualizacoes', 'autor']
+    list_display = ['titulo', 'categoria', 'status_publicacao', 'data_publicacao', 'destaque_badge', 'visualizacoes', 'autor']
     list_filter = ['categoria', 'publicado', 'destaque', 'data_publicacao']
     search_fields = ['titulo', 'conteudo', 'autor']
     prepopulated_fields = {'slug': ('titulo',)}
     date_hierarchy = 'data_publicacao'
-    list_editable = ['destaque']
+    # ❌ REMOVIDO list_editable
     readonly_fields = ['visualizacoes', 'data_criacao', 'data_atualizacao']
     
     fieldsets = (
@@ -309,6 +339,13 @@ class NoticiaAdmin(admin.ModelAdmin):
     
     actions = ['publicar_agora', 'marcar_como_rascunho', 'marcar_como_destaque', 'desmarcar_destaque']
     
+    @admin.display(description='Destaque')
+    def destaque_badge(self, obj):
+        if obj.destaque:
+            return format_html('<span style="color: #F59E0B; font-weight: bold;">⭐ Sim</span>')
+        return format_html('<span style="color: #6B7280;">☆ Não</span>')
+    
+    @admin.display(description='Status')
     def status_publicacao(self, obj):
         agora = timezone.now()
         if not obj.publicado:
@@ -321,27 +358,26 @@ class NoticiaAdmin(admin.ModelAdmin):
             return format_html('<span style="color: #f59e0b; font-weight: bold;">🕐 Agendada (em {})</span>', tempo_txt)
         else:
             return format_html('<span style="color: #10b981; font-weight: bold;">✅ Publicada</span>')
-    status_publicacao.short_description = 'Status'
     
+    @admin.action(description="📢 Publicar agora")
     def publicar_agora(self, request, queryset):
         updated = queryset.update(publicado=True, data_publicacao=timezone.now())
         self.message_user(request, f"✅ {updated} notícia(s) publicada(s)!")
-    publicar_agora.short_description = "📢 Publicar agora"
     
+    @admin.action(description="⚫ Marcar como rascunho")
     def marcar_como_rascunho(self, request, queryset):
         updated = queryset.update(publicado=False)
         self.message_user(request, f"⚫ {updated} notícia(s) como rascunho.")
-    marcar_como_rascunho.short_description = "⚫ Marcar como rascunho"
     
+    @admin.action(description="⭐ Marcar como destaque")
     def marcar_como_destaque(self, request, queryset):
         updated = queryset.update(destaque=True)
         self.message_user(request, f"⭐ {updated} notícia(s) como destaque.")
-    marcar_como_destaque.short_description = "⭐ Marcar como destaque"
     
+    @admin.action(description="☆ Desmarcar destaque")
     def desmarcar_destaque(self, request, queryset):
         updated = queryset.update(destaque=False)
         self.message_user(request, f"☆ {updated} notícia(s) desmarcada(s).")
-    desmarcar_destaque.short_description = "☆ Desmarcar destaque"
     
     def save_model(self, request, obj, form, change):
         """Envia newsletter ao criar nova notícia em destaque"""
@@ -368,25 +404,25 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
     search_fields = ('email', 'nome')
     date_hierarchy = 'data_inscricao'
     readonly_fields = ('token', 'data_inscricao')
-    list_editable = ()
     actions = ['ativar_inscritos', 'desativar_inscritos', 'enviar_email_teste']
     
+    @admin.display(description='Status')
     def ativo_badge(self, obj):
         if obj.ativo:
             return format_html('<span style="color: #10b981; font-weight: bold;">✅ Ativo</span>')
         return format_html('<span style="color: #ef4444; font-weight: bold;">❌ Inativo</span>')
-    ativo_badge.short_description = 'Status'
 
+    @admin.action(description="✅ Ativar inscritos selecionados")
     def ativar_inscritos(self, request, queryset):
         count = queryset.update(ativo=True)
         self.message_user(request, f"✅ {count} inscrito(s) ativado(s).")
-    ativar_inscritos.short_description = "✅ Ativar inscritos selecionados"
 
+    @admin.action(description="❌ Desativar inscritos selecionados")
     def desativar_inscritos(self, request, queryset):
         count = queryset.update(ativo=False)
         self.message_user(request, f"❌ {count} inscrito(s) desativado(s).")
-    desativar_inscritos.short_description = "❌ Desativar inscritos selecionados"
     
+    @admin.action(description="📧 Enviar email de boas-vindas")
     def enviar_email_teste(self, request, queryset):
         from .views import enviar_email_boas_vindas
         count = 0
@@ -398,4 +434,3 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
                 self.message_user(request, f"❌ Erro ao enviar para {inscrito.email}: {e}", level='error')
         
         self.message_user(request, f"📧 Email de teste enviado para {count} inscrito(s).")
-    enviar_email_teste.short_description = "📧 Enviar email de boas-vindas"
