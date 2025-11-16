@@ -38,7 +38,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding-top: 75px; /* Sempre 75px para dar espaço à navbar fixa */
+            padding-top: 75px;
         }
 
         /* ===== NAVBAR PADRONIZADA ===== */
@@ -53,7 +53,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 75px; /* Altura fixa */
+            height: 75px;
             z-index: 1000;
         }
 
@@ -91,16 +91,13 @@
             color: #ff5722;
         }
 
-        .navbar .menu > li > a > .fa-chevron-down {
+        .navbar .menu > li > a > .fa-chevron-down,
+        .navbar .menu > li > a > .bi-chevron-down {
             font-size: 10px !important;
             transition: transform 0.3s ease-out;
         }
 
-        .navbar .menu li:hover > a > .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-
-        /* Dropdown */
+        /* Dropdown Desktop */
         .dropdown-content {
             display: none;
             opacity: 0;
@@ -119,11 +116,18 @@
             margin-top: 0;
         }
 
-        .navbar .menu li:hover .dropdown-content {
-            display: flex;
-            opacity: 1;
-            pointer-events: auto;
-            animation: fadeInDown 0.3s ease;
+        @media (min-width: 769px) {
+            .navbar .menu li:hover > a > .fa-chevron-down,
+            .navbar .menu li:hover > a > .bi-chevron-down {
+                transform: rotate(180deg);
+            }
+
+            .navbar .menu li:hover .dropdown-content {
+                display: flex;
+                opacity: 1;
+                pointer-events: auto;
+                animation: fadeInDown 0.3s ease;
+            }
         }
 
         @keyframes fadeInDown {
@@ -266,7 +270,7 @@
         /* ===== RESPONSIVO MOBILE ===== */
         @media (max-width: 768px) {
             body {
-                padding-top: 70px; /* Navbar um pouco menor no mobile */
+                padding-top: 70px;
             }
 
             .navbar {
@@ -298,39 +302,90 @@
                 left: 0;
             }
 
-            .navbar .menu li {
+            .navbar .menu > li {
                 border-bottom: 1px solid #f0f0f0;
+                position: relative;
             }
 
             .navbar .menu > li > a {
                 padding: 15px 20px;
-                justify-content: space-between;
+                padding-right: 60px;
+                display: block;
+                text-decoration: none;
+                color: #E11D48;
+                font-weight: 600;
+                font-size: 16px;
+            }
+
+            /* Esconde setas no desktop que aparecem no mobile */
+            .navbar .menu > li > a > .bi-chevron-down,
+            .navbar .menu > li > a > .fa-chevron-down {
+                display: none !important;
+            }
+
+            .dropdown-toggle {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                padding: 0 20px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border: none;
+                z-index: 10;
+                min-width: 60px;
+            }
+
+            .dropdown-toggle .bi-chevron-down {
+                font-size: 16px !important;
+                color: #E11D48;
+                transition: transform 0.3s ease;
+                display: block !important;
+            }
+
+            .navbar .menu li.open .dropdown-toggle .bi-chevron-down {
+                transform: rotate(180deg);
             }
 
             .dropdown-content {
-                position: static;
-                box-shadow: none;
+                position: static !important;
+                box-shadow: none !important;
                 padding: 0;
-                min-width: 100%;
+                width: 100%;
                 max-height: 0;
                 overflow: hidden;
-                transition: max-height 0.3s ease;
+                transition: max-height 0.4s ease-in-out;
+                display: flex !important;
+                flex-direction: column;
+                background-color: #f9f9f9;
             }
 
             .navbar .menu li.open .dropdown-content {
-                max-height: 500px;
-                display: flex;
+                max-height: 1000px !important;
+                overflow: visible;
                 opacity: 1;
                 pointer-events: auto;
             }
 
             .navbar .menu li:hover .dropdown-content {
-                display: none;
+                max-height: 0;
+                overflow: hidden;
             }
 
             .dropdown-content .item {
                 padding: 12px 30px;
                 background-color: #f9f9f9;
+            }
+
+            .dropdown-content .item a {
+                display: flex;
+                gap: 15px;
+                align-items: flex-start;
+                text-decoration: none;
+                color: #333;
             }
 
             .social {
@@ -360,7 +415,6 @@
             <a href="/"><img src="{% static 'home/img/logo.png' %}" alt="Mulheres do Sul Global"></a>
         </div>
 
-        <!-- Botão Hambúrguer -->
         <button class="menu-toggle" onclick="toggleMenu()">
             <span></span>
             <span></span>
@@ -368,8 +422,11 @@
         </button>
 
         <ul class="menu" id="mobileMenu">
-            <li onclick="toggleDropdown(this)">
-                <a href="/#sobre">Quem Somos <i class="fas fa-chevron-down"></i></a>
+            <li>
+                <a href="/#sobre">Quem Somos</a>
+                <span class="dropdown-toggle" onclick="toggleDropdown(this)">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="/#sobre">
@@ -392,8 +449,11 @@
                 </div>
             </li>
 
-            <li onclick="toggleDropdown(this)">
-                <a href="/#servicos">O Que Fazemos <i class="fas fa-chevron-down"></i></a>
+            <li>
+                <a href="/#servicos">O Que Fazemos</a>
+                <span class="dropdown-toggle" onclick="toggleDropdown(this)">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="/#atelie">
@@ -425,8 +485,11 @@
                 </div>
             </li>
 
-            <li onclick="toggleDropdown(this)">
-                <a href="{% url 'contato' %}">Contato <i class="fas fa-chevron-down"></i></a>
+            <li>
+                <a href="{% url 'contato' %}">Contato</a>
+                <span class="dropdown-toggle" onclick="toggleDropdown(this)">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="{% url 'contato' %}">
@@ -458,8 +521,11 @@
                 </div>
             </li>
 
-            <li onclick="toggleDropdown(this)">
-                <a href="/voluntariado">Seja Voluntário <i class="fas fa-chevron-down"></i></a>
+            <li>
+                <a href="/voluntariado">Seja Voluntário</a>
+                <span class="dropdown-toggle" onclick="toggleDropdown(this)">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="/voluntariado">
@@ -473,8 +539,11 @@
                 </div>
             </li>
 
-            <li onclick="toggleDropdown(this)">
-                <a href="#apoie">Apoie <i class="fas fa-chevron-down"></i></a>
+            <li>
+                <a href="#apoie">Apoie</a>
+                <span class="dropdown-toggle" onclick="toggleDropdown(this)">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
                 <div class="dropdown-content">
                     <div class="item">
                         <a href="{% url 'doacao' %}">
@@ -505,10 +574,8 @@
         </div>
     </header>
 
-    <!-- ===== CONTEÚDO DA PÁGINA ===== -->
     {% block content %}{% endblock %}
 
-    <!-- ===== JAVASCRIPT ===== -->
     <script>
         function toggleMenu() {
             const menu = document.getElementById('mobileMenu');
@@ -519,19 +586,26 @@
 
         function toggleDropdown(element) {
             if (window.innerWidth <= 768) {
-                element.classList.toggle('open');
+                const listItem = element.closest('li');
+                
+                document.querySelectorAll('.navbar .menu li.open').forEach(item => {
+                    if (item !== listItem) {
+                        item.classList.remove('open');
+                    }
+                });
+                
+                listItem.classList.toggle('open');
             }
         }
 
-        // Fecha o menu ao clicar em um link
-        document.querySelectorAll('.navbar .menu a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if (!this.parentElement.querySelector('.dropdown-content')) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.navbar .menu .dropdown-content a').forEach(link => {
+                link.addEventListener('click', function() {
                     const menu = document.getElementById('mobileMenu');
                     const toggle = document.querySelector('.menu-toggle');
                     menu.classList.remove('active');
                     toggle.classList.remove('active');
-                }
+                });
             });
         });
     </script>
