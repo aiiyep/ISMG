@@ -22,8 +22,8 @@ INSTALLED_APPS = [
     'cloudinary',
     'django.contrib.staticfiles',
     'home',
-    'workshops',  # ✅ ADICIONADO
-    'noticias',   # ✅ ADICIONADO
+    'workshops',
+    'noticias',
 ]
 
 MIDDLEWARE = [
@@ -42,7 +42,7 @@ ROOT_URLCONF = 'ProjetoWeb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # ✅ CORRIGIDO
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -50,8 +50,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',  # ✅ ADICIONADO
-                'django.template.context_processors.static',  # ✅ ADICIONADO
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
             ],
         },
     },
@@ -59,7 +59,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ProjetoWeb.wsgi.application'
 
-# CONFIGURAÇÃO DO BANCO DE DADOS
 if config('DATABASE_URL', default=None):
     DATABASES = {
         'default': dj_database_url.config(
@@ -77,18 +76,10 @@ else:
     }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'pt-br'
@@ -96,23 +87,19 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# ===== CONFIGURAÇÃO DE ARQUIVOS ESTÁTICOS =====
+# ===== ARQUIVOS ESTÁTICOS - CORRIGIDO PARA VERCEL =====
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # ✅ SIMPLIFICADO
-
-# ✅ CORRIGIDO - Removido referência à pasta 'static' que não existe
+STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'  # ✅ CORRIGIDO!
 STATICFILES_DIRS = []
-
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ===== CLOUDINARY CONFIGURATION =====
+# ===== CLOUDINARY =====
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
     'API_KEY': config('CLOUDINARY_API_KEY', default=''),
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-# Configurar Cloudinary
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
     cloudinary.config(
         cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
@@ -123,19 +110,13 @@ if CLOUDINARY_STORAGE['CLOUD_NAME']:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     MEDIA_URL = '/media/'
 else:
-    # Fallback local
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ========================================
-# CONFIGURAÇÃO DE EMAIL
-# ========================================
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'mulheresdsg@gmail.com'
 
-# Security settings
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True

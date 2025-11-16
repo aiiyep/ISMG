@@ -30,5 +30,8 @@
       "src": "/(.*)",
       "dest": "ProjetoWeb/wsgi.py"
     }
-  ]
+  ],
+  "env": {
+    "PYTHONUNBUFFERED": "1"
+  }
 }
