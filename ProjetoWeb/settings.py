@@ -90,8 +90,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = []
 
-# ✅ WhiteNoise para servir arquivos no Vercel
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# ✅ WhiteNoise - desabilitar compressão para evitar erros no Render
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # ===== CLOUDINARY =====
 CLOUDINARY_STORAGE = {
