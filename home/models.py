@@ -31,6 +31,7 @@ class Workshop(models.Model):
     numero_encontros = models.IntegerField(verbose_name="Número de Encontros")
     nivel = models.CharField(max_length=20, choices=NIVEL_CHOICES, verbose_name="Nível")
     vagas_totais = models.IntegerField(verbose_name="Total de Vagas")
+    vagas_ocupadas = models.IntegerField(default=0, verbose_name="Vagas Ocupadas")
     preco = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Preço")
     gratuito = models.BooleanField(default=False, verbose_name="Gratuito")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='disponivel', verbose_name="Status")
@@ -58,7 +59,9 @@ class Workshop(models.Model):
         """Calcula percentual de ocupação"""
         if self.vagas_totais is None or self.vagas_totais == 0:
             return 0
-        return int((self.vagas_ocupadas / self.vagas_totais) * 100)
+        # Calcula vagas ocupadas baseado nas inscrições
+        inscricoes_ativas = self.inscricoes.exclude(status='recusado').count()
+        return int((inscricoes_ativas / self.vagas_totais) * 100)
     
     def esta_disponivel(self):
         """Verifica se workshop está disponível"""
