@@ -52,10 +52,6 @@ class Workshop(models.Model):
         vagas_livres = self.vagas_totais - inscricoes_ativas
         return max(0, vagas_livres)
     
-    @property
-    def vagas_ocupadas(self):
-        """Conta inscrições ativas (não recusadas)"""
-        return self.inscricoes.exclude(status='recusado').count()
     
     @property
     def percentual_ocupacao(self):
@@ -137,6 +133,7 @@ class VagaVoluntariado(models.Model):
     horas_semanais = models.IntegerField(verbose_name="Horas Semanais")
     duracao_minima = models.CharField(max_length=100, verbose_name="Duração Mínima", help_text="Ex: 3 meses, 6 meses, flexível")
     vagas_totais = models.IntegerField(verbose_name="Total de Vagas")
+    vagas_ocupadas = models.IntegerField(default=0, verbose_name="Vagas Ocupadas")
     vagas_disponiveis = models.IntegerField(verbose_name="Vagas Disponíveis")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='aberta', verbose_name="Status")
     criada_em = models.DateTimeField(auto_now_add=True, verbose_name="Criada em")
