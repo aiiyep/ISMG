@@ -150,8 +150,6 @@ class VagaVoluntariado(models.Model):
     def __str__(self):
         return self.titulo
     
-    vagas_totais = models.IntegerField(verbose_name="Total de Vagas")  # ✅ DEVE EXISTIR
-    vagas_disponiveis = models.IntegerField(verbose_name="Vagas Disponíveis")
     
     def esta_aberta(self):
         """Verifica se vaga está aberta"""
